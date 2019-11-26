@@ -15,315 +15,200 @@
 # limitations under the License.
 ##############################################################################
 
-Created on Jun 29, 2015
-Updated on Aug 15, 2016
+Created on Apr 4, 2017
 
-@author: fer
+@author: NSCHULD
 '''
+#
+import sys
+
+
+def isString(val):
+    if sys.version < '3':
+        return isinstance(val, basestring)
+    else:
+        return isinstance(val, str)
+
 
 class Query(object):
     '''
-    classdocs
+    Updated Version of a Zimon Query Interface for metric queries only
+    Allows construction most queries with the  Ctor. Also adds a fluent API for other cases
     '''
 
     # OPERATION TYPES
-    # No operation (metric only)
-    NOP = 0;
-    # sum operation
-    SUM = 1;
-    # avg operation
-    AVG = 2;
-    # max operation
-    MAX = 3;
-    # min operation
-    MIN = 4;
-    # rate operation
-    RATE = 5;
+    NOP = 0  # No operation (metric only)
+    SUM = 1  # sum operation
+    AVG = 2   # avg operation
+    MAX = 3  # max operation
+    MIN = 4   # min operation
+    RATE = 5  # rate operation
+    OPERATIONS = {
+        NOP: "{0}", SUM: "sum({0})", AVG: "avg({0})", MAX: "max({0})", MIN: "min({0})", RATE: "rate({0})"}
+    OPS_STR = {'nop': NOP, 'noop': NOP, 'sum': SUM, 'avg': AVG, 'max': MAX, 'min': MIN, 'rate': RATE}
 
-    def __init__(self):
-        '''
-        Constructor
-        '''
-        self.useMetrics     = True           # use "metrics" or "key" (True or False)
-        self.includeDiskData = False         # disk or archived data (False or True)
-        self.useJSON        = False          # receive response as a JSON string (if set to True)
-        self.metricsOrKeys  = []             # list of string metrics or keys
-        self.filters        = []             # list of filters
-        self.groupByMetrics = []             # list of groupBy metrics
-        self.ratioMetrics   = []             # list of ratio metrics
-        self.timeRep        = ''             # string time representation
-        self.bucket_size    = 1              # bucket size
-        
-    def setUseMetrics(self,useMetricsValue):
-        '''
-        If set to "true", then the metrics are specified using
-        the (short) name only, e.g., "cpu_idle". Otherwise, the
-        metrics are specified using the key representation, 
-        e.g., machine1|CPU|cpu_idle
-        Default: metric type
-        '''
-        self.useMetrics = useMetricsValue
-    
-    def getUseMetrics(self):
-        '''
-        Helper function
-        '''
-        return self.useMetrics
-    
-    def setIncludeDiskData(self, includeDiskDataValue):
-        '''
-        If set to "true", then the queryM will also use archived data
-        from the disk. This allows more fine grain data to be available, but
-        as it reads data from disk, it is slower. By default, includeDiskData
-        is set to false (disabled).
-        '''   
-        self.includeDiskData = includeDiskDataValue
-   
-    def getIncludeDiskData(self):
-        '''
-        Helper function
-        '''
-        return self.includeDiskData
-    
-    def setUseJSON(self, useJSONValue):
-        '''
-        Response to the query will be returned as a JSON string
-        '''
-        self.useJSON = useJSONValue
-        
-    def getUseJSON(self):
-        '''
-        Helper function
-        '''
-        return self.useJSON
-    
-    def addMetric(self,metric):
-        '''
-        Add string metric name to the queryM
-        '''
-        self.metricsOrKeys.append(metric)
+    FIELDS = set(["gpfs_cluster_name", "gpfs_disk_name", "gpfs_diskpool_name",
+                  "gpfs_disk_usage_name", "gpfs_fset_name", "gpfs_fs_name",
+                  "mountPoint", "netdev_name", "node", "db_name",
+                  "operation", "protocol", "waiters_time_threshold", "export",
+                  "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass"])
 
-    def addMetricOp(self, op, metric):
+    def __init__(self, metrics=None, bucketsize=1, filters=None, groupby=None, includeDiskDate=False):
         '''
-        Add metric operation to the queryM, e.g., "sum(cpu_idle)" using the input
+        Constructor, filters and groupby must be preformmated
+        '''
+        self.includeDiskData = includeDiskDate     # disk or archived data (False or True)
+        self.bucket_size = bucketsize              # bucket size
+
+        self.metrics = []             # list of string metrics
+        self.filters = []             # list of filters
+        self.groupby = []             # list of groupBy metrics
+
+        if metrics is not None:
+            if (isString(metrics)):
+                self.metrics = metrics.split(',')
+            elif iter(metrics) is not iter(metrics):
+                self.metrics = metrics
+            else:
+                raise ValueError("metrics are not in the right format")
+
+        if filters is not None:
+            if (isString(filters)):
+                self.filters = filters.split(',')
+            elif iter(filters) is not iter(filters):
+                self.filters = filters
+            else:
+                raise ValueError("filters are not in the right format")
+
+        if groupby is not None:
+            if (isString(groupby)):
+                self.groupby = groupby.split(',')
+            elif iter(groupby) is not iter(groupby):
+                self.groupby = groupby
+            else:
+                raise ValueError("groupby are not in the right format")
+
+        self.timeRep = ' now'         # string time representation
+        self.measurements = {}
+        self.normalize_rates = True
+        self.key = None
+        self.sensor = None
+
+    def addMetric(self, metric, op=None):
+        '''
+        Add metric operation to the query, e.g., "sum(cpu_idle)" using the input
         metric name and operation type
         '''
-        metricOp = ''
-        
-        if op == self.NOP:
-            metricOp = metric
-        elif op == self.SUM:
-            metricOp = 'sum('+metric+')'
-        elif op == self.AVG:
-            metricOp = 'avg('+metric+')'
-        elif op == self.MAX:
-            metricOp = 'max('+metric+')'
-        elif op == self.MIN:
-            metricOp = 'min('+metric+')'
-        elif op == self.RATE:
-            metricOp = 'rate('+metric+')'
-            
-        self.metricsOrKeys.append(metricOp)
+        if isString(op):
+            op = Query.OPS_STR.get(op.lower(), Query.NOP)
 
-    def getMetrics(self):
-        '''
-        Helper function
-        '''
-        response=''
-        count = len(self.metricsOrKeys)
-        for m in self.metricsOrKeys:
-            response += m
-            if (count-1 > 0): 
-                response += ', '
-            count -= 1
-        
-        return response
-    
+        metricop = Query.OPERATIONS.get(op, '{0}').format(metric)
+        self.metrics.append(metricop)
+        return self
+
     def addKey(self, key):
-        '''
-        Add string metric key to the queryM
-        '''
-        self.metricsOrKeys.append(key)
+        self.key = key
 
-    def getKeys(self):
-        '''
-        Helper function
-        '''
-        return self.getMetrics()
-    
-    def addRatio(self,op,metric1,metric2):
-        '''
-        Add a ratio with two metrics, each using the op, e.g., metrics x and y and SUM operator, with 
-        sum(x)/sum(y) as the desired output. Supported operation types: Query.NOP, Query.SUM, and Query.AVG.
-        '''
-        metricOp1 = ''
-        metricOp2 = ''
+    def addMetricsGroup(self, sensor):
+        self.sensor = sensor
 
-        if op == self.NOP:
-            metricOp1 = metric1
-            metricOp2 = metric2
-        elif op == self.SUM:
-            metricOp1 = 'sum('+metric1+')'
-            metricOp2 = 'sum('+metric2+')'
-        elif op == self.AVG:
-            metricOp1 = 'avg('+metric1+')'
-            metricOp2 = 'avg('+metric2+')'
+    def addGroupByMetric(self, groupByMetric):
+        '''Add a metric to be used in grouping multi-metric (operation) columns'''
+        if groupByMetric not in self.FIELDS:
+            raise ValueError("unknown groupby type %s" % groupByMetric)
+        self.groupby.append(groupByMetric)
+        return self
+
+    def addFilter(self, field, value):
+        '''Add a filter of the form "field=value" where
+        the field is an identifier key element and
+        value is a constant or a regular expression'''
+        if field not in self.FIELDS:
+            raise ValueError("unknown filter type %s" % field)
+        newFilter = field + "=" + value
+        if newFilter not in self.filters:
+            self.filters.append(newFilter)
+        return self
+
+    def setBucketSize(self, bucketsize):
+        self.bucket_size = bucketsize
+        return self
+
+    def setTime(self, tstart='', tend='', num_buckets=0, duration=0):
+        '''
+        Specify time bounds
+        '''
+        self.timeRep = 'now'  # default
+
+        if tstart:
+            self.timeRep = "tstart " + tstart
+        if tend:
+            if not tstart:
+                self.timeRep = ''
+            self.timeRep += " tend " + tend
+        if num_buckets:
+            self.timeRep = "last " + str(num_buckets)
+        if duration:
+            self.timeRep = "duration " + str(duration)
+        return self
+
+    def addComputation(self, name, prg):
+        '''add a named, derived column to the resultset
+        :param name: name used for the colum in the reultset
+        :param prg: comma delimited list of steps to take,
+        step can be metric name, operation or number (UPN notation)
+
+        '''
+        self.measurements[name] = prg.split(',')
+        return self
+
+    def addRatio(self, metric1, metric2, op=NOP):
+        '''
+        Add ratio computation
+        '''
+        metricop1 = Query.OPERATIONS.get(op, '{0}').format(metric1)
+        metricop2 = Query.OPERATIONS.get(op, '{0}').format(metric2)
+        if metricop1 not in self.metrics:
+            self.metrics.append(metricop1)
+        if metricop2 not in self.metrics:
+            self.metrics.append(metricop2)
+        self.addComputation(metricop1 + '/' + metricop2, metric1 + ',' + metric2 + ',/')
+        return self
+
+    def addMeasurement(self, meassure):
+        '''
+        Add a pre-defined measurement
+        '''
+        self.metrics.extend(meassure.metrics)
+        self.groupby.extend(meassure.groupby)
+        self.filters.extend(meassure.filters)
+        self.measurements.update(meassure.measurements)
+        return self
+
+    def __str__(self):
+        dd = '-a' if self.includeDiskData else ''
+
+        if self.sensor is not None:
+            queryString = 'get -j {0} group {1} bucket_size {2} {3}'.format(
+                dd, self.sensor, self.bucket_size, self.timeRep)
+        elif self.key is not None:
+            queryString = 'get -j {0} {1} bucket_size {2} {3}'.format(
+                dd, self.key, self.bucket_size, self.timeRep)
         else:
-            print('Operation {} not valid for ratios, addRatio failed'.format(op))
-        
-        if len(metricOp1) > 0 and len(metricOp2) > 0:
-            self.ratioMetrics.append(metricOp1)
-            self.ratioMetrics.append(metricOp2)
-        
-    def getRatioMetrics(self):
-        '''
-        Return comma separated ratio metrics
-        '''
-        return ','.join(self.ratioMetrics)
-    
-    def getRatioMetric(self,idx):
-        '''
-        Return ratioMetric at the given index
-        '''
-        if idx < len(self.ratioMetrics):
-            return self.ratioMetrics[idx]
-        else:
-            return ''
-        
-    def getRatioMetricsCount(self):
-        '''
-        Return the number of ratio metrics defined
-        '''
-        return len(self.ratioMetrics)       
-    
-    def addFilter(self,metric, value):
-        '''
-        Add a filter of the form "metric=value" where
-        the metric is an identifier key element and
-        value is a constant or a regular expression       
-        '''
-        if self.useMetrics == False:    # this query uses keys, not metrics
-            raise(Exception("Query::addFilter: cannot specify filter when using metric keys"));
-        else:
-            self.filters.append(metric+"="+value);
-    
-    def getFilters(self):
-        '''
-        Helper function
-        '''
-        response = '';
-        count = len(self.filters);
-        for f in self.filters:
-            response += f
-            if (count-1 > 0): 
-                response += ', '
-            count -= 1
-        
-        return response
-    
-    def addGroupByMetric(self,groupByMetric):
-        '''
-        Add a metric to be used in grouping multi-metric (operation)
-        columns
-        '''                                 
-        self.groupByMetrics.append(groupByMetric);
+            queryString = 'get -j {0} metrics {1} bucket_size {2} {3}'.format(
+                dd, ','.join(self.metrics), self.bucket_size, self.timeRep)
 
-    
-    def getGroupByMetrics(self):
-        '''
-        Helper function
-        '''
-        response = '';
-        count = len(self.groupByMetrics);
-        for g in self.groupByMetrics:
-            response += g
-            if (count-1 > 0): 
-                response += ', '
-            count -= 1
-        
-        return response
+        if self.filters:
+            queryString += ' from ' + ",".join(self.filters)
 
-    def set_timeBounds(self,tstart,tend):
-        '''
-        Specify time bounds (start and end)
-        Note: an empty "" argument implies tstart or tend has no value
-        '''
-        if (len(tstart) != 0):
-            self.timeRep += "tstart " + tstart;
-        if (len(tend) != 0):
-            self.timeRep += " tend " + tend;
-  
-    def set_timeLastNBuckets(self,num_buckets):
-        '''
-        Number of most recent buckets to include in the response
-        to the query
-        '''
-        self.timeRep = "last " + str(num_buckets);
+        if self.groupby:
+            queryString += ' group_by ' + ','.join(self.groupby)
+        queryString += '\n'
+        return queryString
 
-    def set_timeDuration(self,seconds):
-        '''
-        Most recent duration in seconds to cover in the response
-        to the query
-        '''
-        self.timeRep = "duration " + str(seconds);
 
-    def set_timeNow(self):
-        '''
-        Sets the query to return the current value ("now")
-        '''
-        self.timeRep = ' now';   
+class Measurement(Query):
+    '''Just a marker class'''
 
-    def getTimeSpec(self):
-        '''
-        Helper function
-        '''
-        return self.timeRep;
-    
-    def setBucketSize(self,bucket_size):
-        '''
-        Number of seconds that constitute a bucket
-        '''
-        self.bucket_size = bucket_size;
-    
-    def getBucketSize(self):
-        '''
-        Helper function
-        '''
-        return 'bucket_size ' + str(self.bucket_size);
-       
-if __name__ == '__main__':
-    # Create query with metrics
-    queryM = Query()
-    queryM.setUseMetrics(True)
-    queryM.addMetric('cpu_idle')
-    queryM.addMetricOp(Query.AVG,'netdev_bytes_r')
-    print(queryM.getMetrics())
-    # Create query with keys
-    queryK = Query()
-    queryK.setUseMetrics(False)
-    queryK.addKey('host1|CPU|cpu_idle')
-    queryK.addKey('host2|Network|eth0|netdev_packets_s')
-    print(queryK.getKeys())
-    # filter (metric)
-    queryM.addFilter('node','host3')
-    queryM.addFilter('netdev_name','eth[01]')
-    print(queryM.getFilters())
-    # filter (key): should not work
-    try:
-        queryK.addFilter('node','host3')
-    except Exception as e:
-        print('Caught exception: {0}'.format(e))
-    # groupByMetrics
-    queryM.addGroupByMetric('netdev_name')
-    print(queryM.getGroupByMetrics())
-    # time specification
-    queryM.set_timeBounds("2014-03-24 09:00:00", "2014-03-30 09:00:00");
-    print(queryM.getTimeSpec());
-    queryK.set_timeLastNBuckets(100);
-    print(queryK.getTimeSpec());
-    # bucket_size
-    queryM.setBucketSize(60);
-    print(queryM.getBucketSize());
-         
-    print('Done')
-    
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
