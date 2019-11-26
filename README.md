@@ -11,14 +11,14 @@ Grafana Bridge is a standalone Python application. It translates the IBM Spectru
 Before installing the IBM Spectrum Scale bridge for Grafana you must install the software prerequisites. Those are:
 1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
 2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_configurecollector.htm) the following software need to be installed:
-- [Python2.7](https://www.python.org/downloads/release/python-2717/)/ [Python3.4](https://www.python.org/downloads/release/python-340/)
+- [Python2.7](https://www.python.org/downloads/release/python-2717/)/ [Python3.6](https://www.python.org/downloads/release/python-369/)
 - [CerryPy](https://cherrypy.org/)
 
 
 ### Dependencies
 This package could be used for: 
 - IBM Spectrum Scale devices having mimimum release level 4.2.3 FP8 and above
-- Grafana 4.2 and above
+- Grafana 5.0.0 and above
 
 To use this tool on the older IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](SUPPORT_MATRIX.md) file.
 
@@ -75,7 +75,7 @@ Download and install [Grafana](https://grafana.com/get) according to the given i
 
 Define a new data source (Data Sources -> Add New)
 
-![](Add_DataSource.png)
+![](Add_DataSource_2.3.png)
 
 **NOTE**: The IBM Spectrum Scale bridge listens on port 4242 for HTTP connections, and on port 8443 for HTTPS connections
 
