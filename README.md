@@ -1,6 +1,6 @@
 The ***IBM Spectrum Scale bridge for Grafana*** could be used for exploring IBM Spectrum Scale performance data on [Grafana dashboards](https://grafana.com/grafana/).
 
-Grafana Bridge is a standalone Python application. It translates the IBM Spectrum Scale metadata and performance data collected by the [IBM Spectrum Scale performance monitoring tool (ZiMon)](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.0/com.ibm.spectrum.scale.v4r2.adv.doc/bl1adv_PMToverview.htm) to the query requests acceptable by the [Grafana integrated openTSDB plugin](https://grafana.com/docs/features/datasources/opentsdb/).
+Grafana Bridge is a standalone Python application. It translates the IBM Spectrum Scale metadata and performance data collected by the [IBM Spectrum Scale performance monitoring tool (ZiMon)](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_PMToverview.htm) to the query requests acceptable by the [Grafana integrated openTSDB plugin](https://grafana.com/docs/features/datasources/opentsdb/).
 
 
 
@@ -9,16 +9,18 @@ Grafana Bridge is a standalone Python application. It translates the IBM Spectru
 ### Prerequisites
 
 Before installing the IBM Spectrum Scale bridge for Grafana you must install the software prerequisites. Those are:
-1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.0/com.ibm.spectrum.scale.v4r2.adv.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
-2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.0/com.ibm.spectrum.scale.v4r2.adv.doc/bl1adv_PMToverview.htm) the following software need to be installed:
-- [Python2.7](https://www.python.org/downloads/release/python-2717/)
+1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
+2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_5.0.4/com.ibm.spectrum.scale.v5r04.doc/bl1adv_configurecollector.htm) the following software need to be installed:
+- [Python2.7](https://www.python.org/downloads/release/python-2717/)/ [Python3.6](https://www.python.org/downloads/release/python-369/)
 - [CherryPy](https://cherrypy.org/)
 
 
 ### Dependencies
 This package could be used for: 
-- IBM Spectrum Scale devices having mimimum release level 4.2.1 and above
-- Grafana 3.0.4 and above
+- IBM Spectrum Scale devices having mimimum release level 5.0.3 FP2 and above
+- Grafana 6.0.0 and above
+
+To use this tool on the older IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](SUPPORT_MATRIX.md) file.
 
 
 
@@ -43,7 +45,7 @@ Check the [SUPPORT_MATRIX](SUPPORT_MATRIX.md) file for the recommended version.
 
 #### Step 3. Set up IBM Spectrum Scale Performance Monitoring Bridge
 
-Download the zip package and unpack it in your favorite directory:
+Download the zip package and unpack it in your favorite directory on the collector node :
 
 ```shell
 # unzip zimonGrafanaIntf.zip
@@ -52,7 +54,7 @@ Download the zip package and unpack it in your favorite directory:
 Start the bridge application by issuing:
 
 ```shell
-# python zimonGrafanaIntf.py -s <pmcollector host>
+# python zimonGrafanaIntf.py 
 ```
 
 If the bridge did establish the connection to the specified pmcollector and the initialization of the metadata was performed successfully, you should get the message "server started" at the end of line. Otherwise check the zserver.log stored in the zimonGrafanaIntf  directory.  Additionally, check the pmcollector service running properly by issuing:
@@ -73,9 +75,9 @@ Download and install [Grafana](https://grafana.com/get) according to the given i
 
 Define a new data source (Data Sources -> Add New)
 
-![](Add_DataSource.png)
+![](Add_DataSource_2.3.png)
 
-**NOTE**: The IBM Spectrum Scale bridge listens on port 4242
+**NOTE**: The IBM Spectrum Scale bridge listens on port 4242 for HTTP connections, and on port 8443 for HTTPS connections
 
 Grafana now can talk to Spectrum Scale Performance Monitoring tool via the bridge. Follow the grafana instructions to create dashboards.
 
