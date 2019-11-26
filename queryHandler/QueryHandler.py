@@ -15,7 +15,7 @@
 # limitations under the License.
 ##############################################################################
 
-Created on Feb 4, 2017
+Created on Apr 4, 2017
 
 @author: NSCHULD
 '''
@@ -30,6 +30,11 @@ import socket
 import sys
 import time
 import select
+
+try:
+    import SysmonLogger
+except Exception:
+    pass
 
 
 
@@ -74,8 +79,8 @@ class ColumnInfo(namedtuple('_ColumnInfo', 'name, semType, keys, column')):
         ''' get parent(s) of this column'''
         parent = set(key.parent for key in self.flat_keys if key.parent)
         if len(parent) == 1:
-            parent = parent.pop()
-        return parent
+            return parent.pop()
+        return tuple(parent)
 
     @property
     def flat_keys(self):
@@ -87,29 +92,6 @@ class ColumnInfo(namedtuple('_ColumnInfo', 'name, semType, keys, column')):
         else:
             flat_keys = self.keys
         return flat_keys
-
-    def is_counter(self):
-        '''column has counter type values in keys'''
-        return self.semType != 1
-
-    def probably_stale(self):
-        ''' checks whether at least on key has data in the current domain, if not object might be gone'''
-        for key in self.flat_keys:
-            for domain in key.domains:
-                if domain.domainID == 1:
-                    return False
-        return True
-
-    def bucket_sizes(self, row_time):
-        '''get a set of bucket sizes for the keys in this column'''
-        buckets = set()
-        for key in self.flat_keys:
-            for domain in key.domains:
-                if domain.start <= row_time <= domain.end:
-                    buckets.add(domain.bucketSize)
-        if not buckets:  # no domain found for the time given
-            buckets.add(1)
-        return buckets
 
     def __hash__(self):
         return hash((self.name, self.key_str))
@@ -135,7 +117,7 @@ class Key(namedtuple('_Key', 'parent, sensor, identifier, metric, domains')):
         return Key(items[0], items[1], tuple(items[2:-1]), items[-1], domains)
 
     def __str__(self):
-        return '|'.join([self.parent, self.sensor, '|'.join(self.identifier), self.metric])
+        return '|'.join([self.parent, self.sensor, '|'.join(self.identifier), self.metric]).replace('||','|')
 
     def shortKey_str(self):
         return '|'.join([self.parent, self.sensor, '|'.join(self.identifier)])
@@ -165,6 +147,7 @@ class Domain(namedtuple('_domain', 'domainID, start, end, bucketSize')):
     def end_str(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(self.end))
 
+DEFAULT_DOMAIN = Domain(99, 0, 6666666666, 666)
 
 class QueryResult:
     '''Wrapper for the data returned by a Zimon query'''
@@ -180,16 +163,12 @@ class QueryResult:
         self.index_cache = {}  # (metric, id) -> row value index
         self.ids = self._findIdentifiers()
 
-        if self.query:
-            if self.query.normalize_rates:
-                self._normalize_rates()
+        if self.query and len(self.query.measurements) > 0:
+            self._add_calculated_colunm_headers()
 
-            if len(self.query.measurements) > 0:
-                self._add_calculated_colunm_headers()
-
-                calc = Calculator()
-                for row in self.rows:
-                    self._add_calculated_row_data(calc, row)
+            calc = Calculator()
+            for row in self.rows:
+                self._add_calculated_row_data(calc, row)
 
     def __parseHeader(self):
         item = self.json['header']
@@ -200,15 +179,17 @@ class QueryResult:
         columnInfos = []
 
         domains_by_key = defaultdict(list)
-        for item in self.json["rangeData"]:
-            dkey = item.get('key')
-            for domain in item.get('domains'):
-                domains_by_key[dkey].append(Domain(**domain))
+        if "rangedata" in self.json:
+            for item in self.json["rangeData"]:
+                dkey = item.get('key')
+                for domain in item.get('domains'):
+                    domains_by_key[dkey].append(Domain(**domain))
+                if len(domains_by_key[dkey]) == 0:
+                    domains_by_key[dkey].append(DEFAULT_DOMAIN)
 
         for count, item in enumerate(legendItems):
             keys = item['keys']
-            parsedKeys = tuple(Key._from_string(key, tuple(domains_by_key.get(key)))
-                               for key in keys)
+            parsedKeys = tuple(Key._from_string(key, tuple(domains_by_key.get(key, [DEFAULT_DOMAIN]))) for key in keys)
             col_info = ColumnInfo(item['caption'], item['semType'], parsedKeys, count)
             columnInfos.append(col_info)
         return columnInfos
@@ -220,30 +201,15 @@ class QueryResult:
         ids = []  # not a set or dict because order matters
         for ci in self.columnInfos:
             p = set(key.parent for key in ci.keys)
-            parents = ",".join(p)
+            if len(p) == 1:
+                parents = p.pop()
+            else:
+                parents = tuple(p)
 
             id_item = (parents, ci.identifiers)
             if id_item not in ids:
                 ids.append(id_item)
         return ids
-
-    def _normalize_rates(self):
-        '''for all counter columns normalize data to "per second" '''
-        for column in self.columnInfos:
-            if column.is_counter():
-                for row in self.rows:
-                    val = row.values[column.column]
-                    if val:
-                        buckets = column.bucket_sizes(row.tstamp)
-                        if len(buckets) > 1 and len(column.keys) == 1:
-                            samples = row.nsamples[column.column]
-                            for bs in buckets:
-                                if samples * bs == self.header.bsize:
-                                    buckets = set([bs])
-                                    break
-                        buckets.add(self.header.bsize)
-                        d = max(buckets)
-                        row.values[column.column] = val / d
 
     def _add_calculated_colunm_headers(self):
         '''for each measurement create a result column for each ID '''
@@ -253,7 +219,7 @@ class QueryResult:
                 for step in prg:
                     if step not in Calculator.OPS and not is_number(step):
                         metric = step
-                        idx = self._index_by_metric_id(metric, myid)
+                        idx = self._index_by_metric_id(metric, parent, myid)
                         if idx != -1:
                             # key_aq.append([key for key in self.columnInfos[idx].keys if key])
                             key_aq.extend(key for key in self.columnInfos[idx].keys if key)
@@ -271,7 +237,7 @@ class QueryResult:
                     elif is_number(step):
                         calc.push(float(step))
                     else:
-                        idx = self._index_by_metric_id(step, myid)
+                        idx = self._index_by_metric_id(step, parent, myid)
                         if idx != -1:
                             value = row.values[idx]
                             if value is None:
@@ -287,16 +253,16 @@ class QueryResult:
     def __getitem__(self, index):
         return self.rows[index]
 
-    def _index_by_metric_id(self, metric, identifier):
+    def _index_by_metric_id(self, metric, parent, identifier):
         '''get index to columInfo / values for a given metric and identifier'''
-        idx = self.index_cache.get((metric, identifier), -1)
+        idx = self.index_cache.get((metric, parent, identifier), -1)
         if idx != -1:
             return idx
 
         for ci in self.columnInfos:
             # check for k.name too? handle parent?
-            if ci.keys[0].metric == metric and ci.identifiers == identifier:
-                self.index_cache[(metric, identifier)] = ci.column
+            if ci.keys[0].metric == metric and ci.identifiers == identifier and ci.parents == parent:
+                self.index_cache[(metric, parent, identifier)] = ci.column
                 return ci.column
         return -1
 
@@ -324,19 +290,8 @@ class QueryResult:
         ts = self.rows[-1].tstamp if len(self.rows) > 0 else int(time.time())
         return Row(ts, values, [1] * len(values))
 
-    def has_multiple_domains(self):
-        '''check whether result has data from different aggregation domains'''
-        start = self.rows[0].tstamp
-        end = self.rows[-1].tstamp
-
-        min_domain = 9999
-        max_domain = 0
-
-        for column in self.columnInfos:
-            min_domain = min(min_domain, min(column.bucket_sizes(start)))
-            max_domain = max(max_domain, max(column.bucket_sizes(end)))
-
-        return min_domain != max_domain
+    def check_rows_have_no_data(self):
+        return True if(len([r for r in self.rows if not r.is_empty()]) == 0) else False
 
     def latest(self, column):
         ''' get last non null value of a column'''
@@ -442,31 +397,27 @@ class QueryHandler2:
     Interface class to access ZIMon data
     '''
 
-    def __init__(self, server, port=9084, logger=None):
+    def __init__(self, server='localhost', port=9084, logger=None):
         '''
         Constructor requires name (or IP address) of the server and the port number (default: 9084)
         '''
         self.server = server
         self.remote_ip = socket.gethostbyname(server)
         self.port = port
-        self.logger = logger 
+        self.logger = logger or SysmonLogger.getLogger(__name__)
 
     def __do_query(self, data):
         '''handle communication which collector node'''
         if data is None or len(data) == 0:
             return None
-        
-        timer = time.clock if sys.platform == 'win32' else time.time
-        
         chunks = []
         msg = ''
         endstr = '.\n'
         if sys.version >= '3':
             msg = b''
             endstr = b'.\n'
-            
         try:
-            with closing(socket.socket(socket.AF_INET,socket.SOCK_STREAM)) as sock:
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
                 sock.settimeout(60)
                 sock.connect((self.remote_ip, self.port))
                 if sys.version >= '3':
@@ -474,36 +425,28 @@ class QueryHandler2:
                 sock.sendall(data)
 
                 while True:
-                    tstart = timer()
                     r, _, _ = select.select([sock], [], [])
                     if r:
                         chunk = sock.recv(4096)
                         if chunk == '':
                             raise IOError('QueryHandler: Socket connection broken, received no data')
-                        chunks.append(chunk)
                         if chunk.endswith(endstr):
-                            tend1 = timer()
-                            count = len(chunks)
+                            chunks.append(chunk[0:-2])
                             msg = msg.join(chunks)
                             if sys.version >= '3':
                                 msg = msg.decode('UTF-8')
-                            lmsg = len(msg)
-                            tend2 = timer()
-                            self.logger.debug("__do_query completed. Received %s chunks of totally %s data within % s seconds. \
-Total time spent for string reading and decoding %s seconds" %(count,lmsg,(tend1 - tstart),(tend2-tstart)))
                             break
+                        else:
+                            chunks.append(chunk)
         except socket.timeout as e:
-            print('socket timeout')
             self.logger.error(e)
         except Exception as e:
             self.logger.error(e)
             return None
-        res = msg.split('\n')[0]
-        if res.startswith('Error'):
-            if self.logger:
-                self.logger.debug('QueryHandler: query returned no data: {0}'.format(res))
+        if msg.startswith('Error'):
+            self.logger.error('QueryHandler: query returned no data: {0}'.format(msg))
             return None
-        return res
+        return msg
 
     def getTopology(self, ignoreMetrics=False):
         '''
@@ -514,7 +457,50 @@ Total time spent for string reading and decoding %s seconds" %(count,lmsg,(tend1
         if ignoreMetrics:
             queryString = 'topo -a \n'
 
+        res = self.__do_query(queryString)
+
+        if res is None:
+            self.logger.error("QueryHandler: getTopology returns no data.")
+            return
+        try:
+            if sys.version < '3':
+                res = res.decode('utf-8', 'ignore')
+            result = json.loads(res, strict=False)
+            return result
+        except Exception as e:
+            self.logger.error(
+                'QueryHandler: getTopology response not valid json: {0} {1}'.format(res[:20], e))
+
+    def getAvailableMetrics(self):
+        '''
+        Returns output from topo -m
+        '''
+        queryString = 'topo -m \n'
         return self.__do_query(queryString)
+
+    def deleteKeyFromTopology(self, keyStr, precheck=True):
+        '''
+        Executes the delete command for the given key
+        Returns result dictionary
+        '''
+        #delete pre-check option
+        check = '-n' if precheck == True else ''
+
+        deleteString = 'delete %s key %s \n' %(check, keyStr)
+
+        response = self.__do_query(deleteString)
+
+        if response is None:
+            self.logger.debug('QueryHandler: deleteKeysFromTopology response has no data results')
+            return None
+        try:
+            if sys.version < '3':
+                response = response.decode('utf-8', 'ignore')
+            result = json.loads(response, strict=False)
+            return result
+        except Exception as e:
+            self.logger.error(
+                'QueryHandler: deleteKeysFromTopology response not valid json: {0} {1}'.format(response[:20], e))
 
     def runQuery(self, query):
         '''
@@ -524,8 +510,7 @@ Total time spent for string reading and decoding %s seconds" %(count,lmsg,(tend1
         res = self.__do_query(str(query))
 
         if res is None:
-            if self.logger:
-                self.logger.error('QueryHandler: query response has no data results')
+            self.logger.error('QueryHandler: query response has no data results')
             return None
         try:
             result = json.loads(res)
@@ -543,7 +528,8 @@ Total time spent for string reading and decoding %s seconds" %(count,lmsg,(tend1
 
     @staticmethod
     def getQueryHandler():
-        server = '127.0.0.1'
+        server = 'localhost'
         port = 9084
 
         return QueryHandler2(server, port)
+

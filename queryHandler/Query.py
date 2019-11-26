@@ -15,11 +15,11 @@
 # limitations under the License.
 ##############################################################################
 
-Created on Feb 4, 2017
+Created on Apr 4, 2017
 
 @author: NSCHULD
 '''
-
+#
 import sys
 
 
@@ -51,7 +51,7 @@ class Query(object):
                   "gpfs_disk_usage_name", "gpfs_fset_name", "gpfs_fs_name",
                   "mountPoint", "netdev_name", "node", "db_name",
                   "operation", "protocol", "waiters_time_threshold", "export",
-                  "nodegroup", "account", "filesystem"])
+                  "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass"])
 
     def __init__(self, metrics=None, bucketsize=1, filters=None, groupby=None, includeDiskDate=False):
         '''
@@ -92,6 +92,7 @@ class Query(object):
         self.measurements = {}
         self.normalize_rates = True
         self.key = None
+        self.sensor = None
 
     def addMetric(self, metric, op=None):
         '''
@@ -108,6 +109,9 @@ class Query(object):
     def addKey(self, key):
         self.key = key
 
+    def addMetricsGroup(self, sensor):
+        self.sensor = sensor
+
     def addGroupByMetric(self, groupByMetric):
         '''Add a metric to be used in grouping multi-metric (operation) columns'''
         if groupByMetric not in self.FIELDS:
@@ -121,7 +125,9 @@ class Query(object):
         value is a constant or a regular expression'''
         if field not in self.FIELDS:
             raise ValueError("unknown filter type %s" % field)
-        self.filters.append(field + "=" + value)
+        newFilter = field + "=" + value
+        if newFilter not in self.filters:
+            self.filters.append(newFilter)
         return self
 
     def setBucketSize(self, bucketsize):
@@ -175,13 +181,17 @@ class Query(object):
         '''
         self.metrics.extend(meassure.metrics)
         self.groupby.extend(meassure.groupby)
+        self.filters.extend(meassure.filters)
         self.measurements.update(meassure.measurements)
         return self
 
     def __str__(self):
         dd = '-a' if self.includeDiskData else ''
 
-        if self.key is not None:
+        if self.sensor is not None:
+            queryString = 'get -j {0} group {1} bucket_size {2} {3}'.format(
+                dd, self.sensor, self.bucket_size, self.timeRep)
+        elif self.key is not None:
             queryString = 'get -j {0} {1} bucket_size {2} {3}'.format(
                 dd, self.key, self.bucket_size, self.timeRep)
         else:

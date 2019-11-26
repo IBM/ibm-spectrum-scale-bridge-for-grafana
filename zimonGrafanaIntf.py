@@ -26,89 +26,186 @@ import re
 import argparse
 import logging.handlers
 import sys
-
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+import socket
 
 from queryHandler.Query import Query
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
+from queryHandler import SensorConfig
 from collections import defaultdict
-import time
+from timeit import default_timer as timer
 
 
-# global variable to store and use topo data module wide
-__TOPO__ = None
-__TIMER__ = time.clock if sys.platform == 'win32' else time.time
+ERR = {
+400:'Bad Request',
+404:'Not Found',
+500:'Internal Server Error. Please check logs for more details.'}
 
+MSG = {
+'IntError':'Server internal error occurred. Reason: {}',
+'sysStart':'Initial cherryPy server engine start have been invoked. Python version: {}, cherryPy version: {}.',
+'MissingParm':'Missing mandatory parameters, quitting',
+'CollectorErr':'Failed to initialize connection to pmcollector, quitting',
+'MetaError':'Metadata could not be retrieved. Check log file for more details, quitting',
+'MetaSuccess': 'Successfully retrieved MetaData',
+'QueryError':'Query request could not be proceed. Reason: {}',
+'SearchErr': 'Search for {} did cause exception: {}',
+'LookupErr':'Lookup for metric {} did not return any results',
+'FilterByErr':'No component entry found for the specified \'filterby\' attribute',
+'GroupByErr': 'In the current setup the group aggregation \'groupby\' is not possible.',
+'MetricErr':'Metric {0} cannot be found. Please check if the corresponding sensor is configured',
+'InconsistentParams':'Received parameters {} inconsistent with request parameters {}',
+'SensorDisabled':'Sensor for metric {} is disabled',
+'NoData':'Empty results received', #Please check the pmcollector is properly configured and running.
+'BucketsizeChange':'Based on requested downsample value: {} the bucketsize will be set: {}',
+'BucketsizeToPeriod':'Bucketsize will be set to sensors period: {}',
+'ReceivedQuery':'Received query request for query:{}, start:{}, end:{}',
+'RunQuery':'Execute zimon query: {}',
+'AttrNotValid':'Invalid attribute:{}',
+'AllowedAttrValues': 'For attribute {} applicable values:{}',
+'ReceivAttrValues': 'Received {}:{}',
+'TimerInfo':'Processing {} took {} seconds',
+'Query2port':'For better bridge performance multithreaded port {} will be used'
+}
 
 
 class MetadataHandler():
 
-    def __init__(self):
-        self.qh = None
-        self.logger = None
-        self.server = '127.0.0.1'
-        self.port = 9084
-
-    def init(self, logger, server, port=9084):
-        self.qh = None
+    def __init__(self, logger, server, port=9084):
+        self.__qh = None
+        self.__sensorsConf = None
+        self.__metaData = None
         self.logger = logger
         self.server = server
         self.port = port
 
-        return self.initializeTables()
+        self.__initializeTables()
 
+    @property
+    def qh(self):
+        if not self.__qh:
+            self.__qh = QueryHandler(self.server, self.port, self.logger)
+        return self.__qh
 
+    @property
+    def SensorsConfig(self):
+        if not self.__sensorsConf or len(self.__sensorsConf) == 0:
+            self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+        return self.__sensorsConf
 
-    def initializeTables(self):
+    @property
+    def metaData(self):
+        return self.__metaData
+
+    def __initializeTables(self):
         '''Read the topology from ZIMon and (re-)construct
         the tables for metrics, keys, key elements (tag keys)
         and key values (tag values)'''
-        
-        if not self.qh: 
-            try:
-                self.qh = QueryHandler(self.server, self.port, self.logger)
-            except Exception as e:
-                self.logger.error('mdHandler: Could not initialize the QueryHandler Reason: %s' % e)
-                return -1
-            
-        try: 
-            global __TOPO__
-            global __TIMER__
-            tstart = __TIMER__()
-            __TOPO__ = Topo(self.qh)
-            tend = __TIMER__()
-            foundItems = len(__TOPO__.topo)
-            sensors = __TOPO__.topo['metricsMap'].keys()
-            self.logger.info("Successfully retrieved MetaData for %s parent components totally, and the following sensors:\n %s" % (foundItems-1,", ".join(sensors)))
-            self.logger.debug("Received metadata for the following parent components: %s" % ", ".join(__TOPO__.topo.keys()))
-            self.logger.debug("Metadata retireval took %s seconds" % (tend-tstart))
-            print("Successfully retrieved MetaData for sensors:\n\n %s \n" % "\t".join(sensors))
-        except Exception as e:
-                self.logger.error('mdHandler: Could not initializeTables Reason: %s' % e)
-                return -2
-        
-        return 0
+
+        self.__qh = QueryHandler(self.server, self.port, self.logger)
+        self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+        tstart = timer()
+        self.__metaData = Topo(self.qh.getTopology())
+        tend = timer()
+        if not (self.metaData and self.metaData.topo):
+            raise ValueError(MSG['NoData'])
+        foundItems = len(self.metaData.allParents) -1
+        sensors = self.metaData.sensorsSpec.keys()
+        self.logger.info(MSG['MetaSuccess'])
+        self.logger.info(MSG['ReceivAttrValues'].format('parents totally', foundItems))
+        self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
+        self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
+        self.logger.info(MSG['TimerInfo'].format('Metadata',str(tend-tstart)))
+
+    def update(self):
+        '''Read the topology from ZIMon and update
+        the tables for metrics, keys, key elements (tag keys)
+        and key values (tag values)'''
+
+        tstart = timer()
+        self.__metaData = Topo(self.qh.getTopology())
+        tend = timer()
+        if not (self.metaData and self.metaData.topo):
+            self.logger.error(MSG['NoData']) # Please check the pmcollector is properly configured and running.
+            raise cherrypy.HTTPError(404, MSG[404]) 
+        self.logger.info(MSG['MetaSuccess'])
+        self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
+        self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend-tstart)))
+        return({'msg':MSG['MetaSuccess']})
 
 
 
 class GetHandler(object):
     exposed = True
-        
-    def __init__(self):
-        pass
-     
-    def init(self, logger, mdHandler, server, port=9084):
+
+    def __init__(self, logger, mdHandler):
         self.logger = logger
-        self.mdHandler = mdHandler
-        self.server = server
-        self.port = port                 
+        self.__md = mdHandler
 
+    @property
+    def md(self):
+        return self.__md
 
+    @property
+    def qh(self):
+        return self.__md.qh
+
+    @property
+    def TOPO(self):
+        return self.__md.metaData
+
+    def __getSuggest(self, params):
+        resp = []
+
+        if params.get('q'):
+            searchStr = params['q'].strip()
+            # if '*' and tagv, then it denotes a grouping key value: do not process
+            if not(searchStr == '*' and params['type'] == 'tagv'):
+                # Since grafana sends the candidate string quickly, one character at a time, it
+                # is likely that the reg exp compilation will fail.
+                try:
+                    regex = re.compile("^" + searchStr + ".*")
+                except re.error:
+                    self.logger.debug(MSG['SearchErr'].format(searchStr, str(re.error)))
+                    regex = None  # failed to compile, return empty response
+                if regex:
+                    try: 
+                        if params['type'] == 'metrics':
+                            resp = sorted([m.group(0) for item in self.TOPO.getAllEnabledMetricsNames for m in [regex.search(item)] if m])
+                        elif params['type'] == 'tagk':
+                            resp = sorted([m.group(0) for item in self.TOPO.getAllAvailableTagNames for m in [regex.search(item)] if m])
+                        elif params['type'] == 'tagv':
+                            resp = sorted([m.group(0) for item in self.TOPO.getAllAvailableTagValues for m in [regex.search(item)] if m])
+                    except Exception as e:
+                        self.logger.exception(MSG['IntError'].format(str(e)))
+                        raise cherrypy.HTTPError(500, ERR[500])
+        return resp
+
+    def __getLookup(self, params):
+
+        if params.get('m'): 
+            try: 
+                params_list = re.split(r'\{(.*)\}', params['m'].strip())
+                searchMetric = params_list[0]
+                if searchMetric and str(searchMetric).strip() not in self.TOPO.getAllEnabledMetricsNames:
+                    self.logger.debug(MSG['LookupErr'].format(searchMetric))
+                    return {}
+                else:
+                    filterBy = None
+                    if len(params_list) > 1:
+                        attr = params_list[1]
+                        filterBy = dict(x.split('=') for x in attr.split(','))
+                    identifiersMap = self.TOPO.getIdentifiersMapForQueryAttr('metric', searchMetric, filterBy)
+                    res = LookupResultObj(searchMetric)
+                    res.parseResultTags(identifiersMap)
+                    res.parseRequestTags(filterBy)
+                    resp = res.__dict__
+
+            except Exception as e:
+                self.logger.exception(MSG['IntError'].format(str(e)))
+                raise cherrypy.HTTPError(500, MSG[500])
+
+        return resp
 
     @cherrypy.tools.json_out()
     def GET(self, **params):
@@ -121,90 +218,20 @@ class GetHandler(object):
         /api/lookup 
         /api/search/lookup 
         '''
-        
-        resp = []
-        
-        global __TOPO__
-        if __TOPO__ is None:
-            rc = self.mdHandler.initializeTables()
-            if rc != 0:
-                raise cherrypy.HTTPError(500, 'Failed to update metadata, please check log file for more details.')
+        resp =[]
 
-        
-        if 'suggest' in cherrypy.request.script_name:  
-            if params.get('q'):  # /api/suggest
-                searchStr = params['q'].strip()
-                # if '*' and tagv, then it denotes a grouping key value: do not process
-                if not(searchStr == '*' and params['type'] == 'tagv'):
-                    # Since grafana sends the candidate string quickly, one character at a time, it
-                    # is likely that the reg exp compilation will fail.
-                    try:
-                        regex = re.compile("^" + searchStr + ".*")
-                    except re.error:
-                        self.logger.debug("ERROR: Search for %s did cause exception: %s" %(searchStr, str(re.error)))
-                        regex = None  # failed to compile, return empty response
-                    if regex:
-                        try: 
-                            if params['type'] == 'metrics':
-                                resp = sorted([m.group(0) for item in __TOPO__.getAllSupportedMetrics() for m in [regex.search(item)] if m])
-                            elif params['type'] == 'tagk':
-                                resp = sorted([m.group(0) for item in __TOPO__.getAllSupportedTagNames() for m in [regex.search(item)] if m])
-                            elif params['type'] == 'tagv':
-                                resp = sorted([m.group(0) for item in __TOPO__.getAllSupportedTagValues() for m in [regex.search(item)] if m])
-                        except Exception as e:
-                            self.logger.error('Server internal error occurred. Reason: %s' % str(e))
-                            raise cherrypy.HTTPError(500, 'Internal Server Error. Please check logs for more details.')
-                    
+        # /api/suggest
+        if 'suggest' in cherrypy.request.script_name:
+            resp = self.__getSuggest(params)
+
+        # /api/search/lookup
         elif 'lookup' in cherrypy.request.script_name:
-            if params.get('m'):  # /api/search/lookup
-                filterBy = None
-                queryTags = []
-                resultTags = []
+            resp = self.__getLookup(params)
 
-
-                try: 
-                    params_list = re.split(r'\{(.*)\}', params['m'].strip())
-                    searchMetric = params_list[0]
-                    if searchMetric and str(searchMetric).strip() not in __TOPO__.getAllSupportedMetrics():
-                        self.logger.debug("ERROR: Lookup for metric  %s didn't return any results." % searchMetric)
-                    else:
-                        if len(params_list) > 1:
-                            attr = params_list[1]
-                            filterBy = dict(x.split('=') for x in attr.split(','))
-                        identifiersMap =__TOPO__.getIdentifiersMapForQueryAttr('metric', searchMetric, filterBy)
-                    
-                        if identifiersMap:
-                            for identifiers in identifiersMap:
-                                d = defaultdict(dict)
-                                for key in identifiers.keys():
-                                    d['tags'][key]= identifiers[key]
-                                    if d not in resultTags:
-                                        resultTags.append(d)
-
-                    if filterBy:
-                        for key, value in filterBy.items():
-                            tmp = {'key' : key, 'value' : value}
-                            queryTags.append(tmp)
-                        
-                except Exception as e:
-                    self.logger.error('Server internal error occurred. Reason: %s' % str(e))
-                    raise cherrypy.HTTPError(500, 'Internal Server Error. Please check logs for more details.')
-
-                resp = {}
-                resp['type'] = "LOOKUP"
-                resp['metric'] = searchMetric
-                resp['tags'] = queryTags
-                resp['results'] = resultTags
-
+        # /api/update
         elif 'update' in cherrypy.request.script_name:
-            rc = self.mdHandler.initializeTables()
-            resp = {}
-            if rc == 0:
-                resp['msg'] = 'metadata successfully updated.'
-            else:
-                resp['msg'] = 'failed to update metadata, please check log.'
-            resp['rc'] = rc
-            
+            resp = self.md.update()
+
         elif 'aggregators' in cherrypy.request.script_name:
             resp = [ "noop", "sum", "avg", "max", "min", "rate"]
 
@@ -217,25 +244,33 @@ class GetHandler(object):
             node=pm_filter(mac.*), node=pm_filter((?!^z).*)'''
             supportedFilters['pm_filter'] = filterDesc
             resp = supportedFilters
-        
+
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-        return resp        
-    
-    
-    
+        return resp
+
+
+
 class PostHandler(object):
     exposed = True
-    
-    def init(self, logger, mdHandler, server, port=9084):
+
+    def __init__(self, logger, mdHandler):
         self.logger = logger
-        self.mdHandler = mdHandler
-        self.server = server
-        self.port = port
+        self.__md = mdHandler
 
+    @property
+    def qh(self):
+        return self.__md.qh
 
+    @property
+    def sensorsConf(self):
+        return self.__md.SensorsConfig
 
-    def getTimeMultiplier(self, timeunit):
+    @property
+    def TOPO(self):
+        return self.__md.metaData
+
+    def _getTimeMultiplier(self, timeunit):
         '''Translate OpenTSDB time units, ignoring ms (milliseconds)'''
         return {
             's' : 1,
@@ -247,70 +282,63 @@ class PostHandler(object):
             'y' : 31536000,
             }.get(timeunit, -1)
 
+    def _retrieveData(self, query):
+        '''Executes zimon query and returns results'''
 
-
-    def retrieveData(self, zimonQuery, qh):
-        
-        self.logger.info('execute query: %s', str(zimonQuery))
-        res = qh.runQuery(zimonQuery)
-        
+        self.logger.info(MSG['RunQuery'].format(query))
+        tstart = timer()
+        res = self.qh.runQuery(query)
+        tend = timer()
+        self.logger.info(MSG['TimerInfo'].format('runQuery: \"'+ str(query)+'\"', str(tend-tstart)))
         if res == None:
             return
-
         columnValues = defaultdict(dict)
         for row in res.rows:
             for value, columnInfo in zip(row.values, res.columnInfos):
                 columnValues[columnInfo][row.tstamp] = value
         return columnValues
 
-
-
-    def validateQueryFilters(self, metricName, query):
+    def _validateQueryFilters(self, metricName, query):
         notValid = False
-        msg = "Filter validation fails.It might affect query results. Please check logs for more information"
 
         # check filterBy settings
         if query.filters:
             filterBy = dict(x.split('=') for x in query.filters)
-            identifiersMap = __TOPO__.getIdentifiersMapForQueryAttr('metric', metricName, filterBy)
+            identifiersMap = self.TOPO.getIdentifiersMapForQueryAttr('metric', metricName, filterBy)
+
             if not identifiersMap:
-                self.logger.error("ERROR: No component entry found for the specified \'filterby\' attribute")
-                return (notValid, msg)
+                self.logger.error(MSG['FilterByErr'])
+                return (notValid, MSG['AttrNotValid'].format('filter'))
 
         # check groupBy settings
         if query.groupby:
-            filter_keys = __TOPO__.getAllFilterKeysForMetric(metricName)
+            filter_keys = self.TOPO.getAllFilterKeysForMetric(metricName)
             if not filter_keys:
-                self.logger.error("ERROR: In the current setup the group aggregation \'groupby\' is not possible. ")
-                return (notValid, msg)
-            groupKeys = query.groupby.split(',')
+                self.logger.error(MSG['GroupByErr'])
+                return (notValid, MSG['AttrNotValid'].format('filter'))
+            groupKeys = query.groupby
             if not all(key in filter_keys for key in groupKeys):
-                self.logger.error("ERROR: The specified \'groupby\' attribute is invalid.\n\
-The following group keys applicable for the selected metric(measurement): \n\
-" + str(", ".join(filter_keys)))
-                return (notValid, msg)
-        
+                self.logger.error(MSG['AttrNotValid'].format('groupBy'))
+                self.logger.error(MSG['ReceivAttrValues'].format('groupBy', ", ".join(filter_keys)))
+                return (notValid, MSG['AttrNotValid'].format('filter'))
+
         return (True, '')
 
-
-
-    def createZimonQuery(self, q, start, end):
+    def _createZimonQuery(self, q, start, end):
+        '''Creates zimon query string '''
         query = Query()
         query.normalize_rates = False
-        #aggregation = 'nop'
         bucketSize = 1  # default
-        
         inMetric = q.get('metric')
-        if not inMetric in __TOPO__.getAllSupportedMetrics():
-            self.logger.error('Metric %s not found. Please check if the corresponding sensor is configured' % inMetric)
-            raise cherrypy.HTTPError(404, 'Metric {0} cannot be found'.format(inMetric))
+        if not inMetric in self.TOPO.getAllEnabledMetricsNames:
+            self.logger.error(MSG['MetricErr'].format(inMetric))
+            raise cherrypy.HTTPError(404, MSG['MetricErr'].format(inMetric))
         else:
-            #self.logger.info("Received query request for 'metric': %s, 'start': %s, 'end': %s " % (inMetric, str(start), str(end)))
-            self.logger.info("Received query request for 'query': %s, 'start': %s, 'end': %s " % (str(q), str(start), str(end)))
+            self.logger.info(MSG['ReceivedQuery'].format(str(q), str(start), str(end)))
 
         # add tagName or metric using the same method. There is no 'NOOP' option in openTSDB            
         query.addMetric(inMetric, q.get('aggregator'))
-        
+
         if q.get('filters'):
             try:
                 for f in q.get('filters'):
@@ -320,10 +348,10 @@ The following group keys applicable for the selected metric(measurement): \n\
                             query.addGroupByMetric(tagk)
                         if f.get('filter'):
                             query.addFilter(tagk, f.get('filter'))
-                        
+
             except  ValueError as e:
-                self.logger.error('ERROR: Parsing filers parameters from the request query. Reason: %s', str(e))
-                raise cherrypy.HTTPError(400, 'Query request could not be proceed. Reason: %s', str(e))
+                self.logger.error(MSG['QueryError'].format(str(e)))
+                raise cherrypy.HTTPError(400, MSG['QueryError'].format(str(e)))
 
         # set time bounds
         if end:
@@ -331,64 +359,42 @@ The following group keys applicable for the selected metric(measurement): \n\
                                      str(int(int(end) / 1000)))
         else:
             query.setTime(str(int(int(start) / 1000)), '')
-            
+
         # set bucket size
         if q.get('downsample'):
-            bucketSize = self.calc_bucketSize(q.get('downsample'))
-            self.logger.info('Based on requested downsample value: %s the bucketsize will be set: %s' %(str(q.get('downsample')), str(bucketSize)))
+            bucketSize = self._calc_bucketSize(q.get('downsample'))
+            self.logger.info(MSG['BucketsizeChange'].format(q.get('downsample'), bucketSize))
+        else:
+            bucketSize = self._getSensorPeriod(inMetric)
+            if bucketSize < 1 :
+                self.logger.error(MSG['SensorDisabled'].format(inMetric))
+                raise cherrypy.HTTPError(400, MSG['SensorDisabled'].format(inMetric))
+            self.logger.info(MSG['BucketsizeToPeriod'].format(bucketSize))
         query.setBucketSize(bucketSize)
-        
+
         return query
 
+    def _formatQueryResponse(self, inputQuery, results, showQuery=False, globalAnnotations=False):
 
-
-    def formatQueryResponse(self, inputQuery, results, showQuery=False, globalAnnotations=False):
-        
         resList = []
-        
 
         for columnInfo, dps in results.items():
             if columnInfo.name.find(inputQuery.get('metric')) == -1:
-                    self.logger.error('Inconsistent metric name. Received results for metric name: %s. Requested data for metric: %s' % (str(columnInfo.name), str(inputQuery.get('metric'))) )
-                    raise cherrypy.HTTPError(404, 'Inconsistent reuest and response data. Please check log messages for more information')
-                
-            res = dict.fromkeys(['metric','tags','aggregatedTags','dps'])
-            res['metric'] = inputQuery.get('metric')
-            res['dps'] = dps
-            res['tags']= {}
-            res['aggregatedTags']= []
-            
-            if len(columnInfo.keys) > 1:
-                res['aggregatedTags'] = __TOPO__.getAllFilterKeysForMetric(inputQuery.get('metric'))
-            
-            elif len(columnInfo.keys) == 1:
-                ident = [columnInfo.parents]
-                ident.extend(columnInfo.identifiers)
-                self.logger.debug('Single ts identifiers: %s' % str(', '.join(ident)))
-                filtersMap =__TOPO__.getAllFilterMapsForMetric(columnInfo.name)
-                for filtersDict in filtersMap:
-                    if all((value in filtersDict.values()) for value in ident):
-                        self.logger.debug('Keys found for identifiers in filtersMap: %s' % str(', '.join(filtersDict.keys())))
-                        res['tags'] = filtersDict
-                
-            if showQuery:
-                self.logger.debug('showQuery enabled')
-                res['query']= inputQuery
-                
-            if globalAnnotations:
-                self.logger.debug('globalAnnotations enabled')
-                res['globalAnnotations'] = []
-            
+                self.logger.error(MSG['InconsistentParams'].format(columnInfo.name, inputQuery.get('metric')))
+                raise cherrypy.HTTPError(500, MSG[500])
+
+            filtersMap = self.TOPO.getAllFilterMapsForMetric(columnInfo.keys[0].metric)
+            res = QueryResultObj(inputQuery, dps, showQuery, globalAnnotations)
+            res.parseTags(self.logger, filtersMap, columnInfo)
             cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-            resList.append(res)
+            resList.append(res.__dict__)
 
         return resList
 
-
-
-    def calc_bucketSize(self, downsample):
+    def _calc_bucketSize(self, downsample):
         bucketSize = 1  # default
         bstr = downsample
+
         if '-' in bstr:
             x = re.split('(\d+)', bstr[:bstr.find('-')])
             if len(x) == 3:  # if not 3, then split failed
@@ -396,7 +402,7 @@ The following group keys applicable for the selected metric(measurement): \n\
                     if x[1].isdigit():
                         timeMultiplier = -1
                         if x[2]:  # there is a unit
-                            timeMultiplier = self.getTimeMultiplier(x[2])
+                            timeMultiplier = self._getTimeMultiplier(x[2])
                             if timeMultiplier == -1:
                                 bucketSize = int(x[1])
                             else:
@@ -406,7 +412,17 @@ The following group keys applicable for the selected metric(measurement): \n\
                             
         return bucketSize
 
+    def _getSensorPeriod(self, metric):
+        bucketSize = 0
+        sensor = self.TOPO.getSensorForMetric(metric)
+        if not sensor:
+            self.logger.error(MSG['MetricErr'].format(metric))
+            raise cherrypy.HTTPError(404, MSG['MetricErr'].format(metric))
 
+        for sensorAttr in self.sensorsConf:
+            if sensorAttr['name'] == str('\"%s\"' % sensor):
+                bucketSize = int(sensorAttr['period']) 
+        return bucketSize
 
     @cherrypy.config(**{'tools.json_in.force' : False})
     @cherrypy.tools.json_in()
@@ -418,65 +434,110 @@ The following group keys applicable for the selected metric(measurement): \n\
         # read query request parameters
         jreq = cherrypy.request.json
 
-        qh = self.mdHandler.qh
-        resp = []
-        
+        _resp = []
+
         if jreq.get('queries') == None:
-            self.logger.error('Empty query received, returning an error response')
-            raise cherrypy.HTTPError(400, 'Empty query received') 
+            self.logger.error(MSG['QueryError'].format('empty'))
+            raise cherrypy.HTTPError(400, MSG[400]) 
 
         # A request query can include more than one sub query and any mixture of the two types
         # For more details please check openTSDB API (version 2.2 and higher) documentation for
         # /api/query
-        for q in jreq.get('queries'):
-            if qh == None:
-                try:
-                    qh = QueryHandler(self.server, self.port, self.logger)
-                except Exception as e:
-                    self.logger.error('Could not initialize the QueryHandler, PostHandler::POST failed (errno: {}, errmsg: {})'.format(e.args[0], e.args[1]))
-                    return []
-                
-            global __TOPO__
-            if __TOPO__ is None:
-                rc = self.mdHandler.initializeTables()
-                if rc != 0:
-                    raise cherrypy.HTTPError(500, 'Failed to update metadata, please check log file for more details.')
+        for i, q in enumerate(jreq.get('queries')):
 
-            query = self.createZimonQuery( q, jreq.get('start'), jreq.get('end'))
+            q['index']=i
+            query = self._createZimonQuery(q, jreq.get('start'), jreq.get('end'))
             if self.logger.level == logging.DEBUG:
-                (valid, msg) = self.validateQueryFilters(q.get('metric'), query)
+                (valid, msg) = self._validateQueryFilters(q.get('metric'), query)
                 if not valid:
-                    raise cherrypy.HTTPError(404, msg)
-            columnValues = self.retrieveData(query, qh)
+                    raise cherrypy.HTTPError(400, msg)
+            columnValues = self._retrieveData(query)
             if columnValues == None:
-                self.logger.debug('Error: query returning empty results')
+                self.logger.debug(MSG['NoData'])
                 if len(jreq.get('queries')) == 1:
-                    raise cherrypy.HTTPError(404, 'No data available for the requested query')
+                    raise cherrypy.HTTPError(404, ERR[404])
                 else:
-                    continue;
-                
-            res = self.formatQueryResponse(q, columnValues, jreq.get('showQuery'), jreq.get('globalAnnotations'))
-            resp.extend(res)
+                    continue
 
-        qh = None     
-        return resp        
+            res = self._formatQueryResponse(q, columnValues, jreq.get('showQuery'), jreq.get('globalAnnotations'))
+            cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+            _resp.extend(res)
 
-
+        return _resp
 
     def OPTIONS(self):
         # print('options_post')
         del cherrypy.response.headers['Allow']
-        cherrypy.response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        cherrypy.response.headers['Access-Control-Allow-Methods'] = 'GET, POST, NEW, OPTIONS'
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         cherrypy.response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Accept'
         cherrypy.response.headers['Access-Control-Max-Age'] = 604800
 
 
 
+class LookupResultObj():
+
+    def __init__(self, metric):
+        self.type = "LOOKUP"
+        self.metric = metric
+        self.tags = []
+        self.results = []
+
+    def parseRequestTags(self, filtersDict):
+        if filtersDict:
+            for key, value in filtersDict.items():
+                tmp = {'key':key, 'value' : value}
+                self.tags.append(tmp)
+
+    def parseResultTags(self, identifiersMap):
+        if identifiersMap:
+            for identifiers in identifiersMap:
+                d = defaultdict(dict)
+                for key in identifiers.keys():
+                    d['tags'][key]= identifiers[key]
+                    if d not in self.results:
+                        self.results.append(d)
+
+
+
+class QueryResultObj():
+
+    def __init__(self, inputQuery, dps, showQuery=False, globalAnnotations=False):
+        self.metric = inputQuery.get('metric')
+        self.dps = dps
+        if showQuery:
+            self.query = inputQuery
+        if globalAnnotations:
+            self.globalAnnotations = []
+        self.tags = defaultdict(list)
+        self.aggregatedTags = []
+
+    def parseTags(self, logger, filtersMap, columnInfo):
+        tagsDict = defaultdict(list)
+        for key in columnInfo.keys:
+            ident = [key.parent]
+            ident.extend(key.identifier)
+            logger.debug(MSG['ReceivAttrValues'].format('Single ts identifiers', ', '.join(ident)))
+            for filtersDict in filtersMap:
+                if all((value in filtersDict.values()) for value in ident):
+                    logger.debug(MSG['ReceivAttrValues'].format('filtersKeys',', '.join(filtersDict.keys())))
+                    if len(columnInfo.keys) == 1:
+                        self.tags = filtersDict
+                    else:
+                        for _key, _value in filtersDict.items():
+                            tagsDict[_key].append(_value)
+
+        for _key, _values in tagsDict.items():
+            if len(set(_values)) > 1:
+                self.aggregatedTags.append(_key)
+            else:
+                self.tags[_key] = _values[0]
+
+
+
 def processFormJSON(entity):
     ''' Used to generate JSON when the content
     is of type application/x-www-form-urlencoded. Added for grafana 3 support'''
-    # print('processFormJSON')
 
     body = entity.fp.read()
     if len(body) > 0:
@@ -486,31 +547,47 @@ def processFormJSON(entity):
 
 
 
-def configureLogging(args):
+def configureLogging(logfile, loglevel):
     # prepare the logger
     logger = logging.getLogger('zimonGrafanaIntf')
-    rfhandler = logging.handlers.RotatingFileHandler(args['l'], 'a', 1000000, 5)  # 5 x 1M files
+    rfhandler = logging.handlers.RotatingFileHandler(logfile, 'a', 1000000, 5)  # 5 x 1M files
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     rfhandler.setFormatter(formatter)
     logger.addHandler(rfhandler)
-    log_level = int(args['c'])
-    if log_level in [10, 20, 30, 40]:
-        logger.setLevel(log_level)
-    else:
+    try:
+        logger.setLevel(loglevel)
+    except (ValueError, TypeError):
         logger.setLevel(logging.INFO)
-        logger.warn('Given log level is incorrect, will assume default (20: INFO)')
     logger.propagate = False  # prevent propagation to default (console) logger
-    
     return logger
-    
-    
-    
+
+
+
+def validateCollectorConf(args, logger):
+
+    if not (args.server == 'localhost') and not (args.server == '127.0.0.1'):
+        try:
+            s = socket.socket()
+            s.connect((args.server, args.serverPort)) 
+        finally:
+            s.close()
+    else:
+        #get queryport
+        foundPorts = SensorConfig.getCollectorPorts(logger)
+        if foundPorts and str(args.serverPort) not in foundPorts:
+            raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
+        elif foundPorts[1] and not (args.serverPort == int(foundPorts[1])):
+            args.serverPort = int(foundPorts[1])
+            logger.info(MSG['Query2port'].format(args.serverPort))
+
+
+
 def updateCherrypyConf(args):
-    
+
     globalConfig = {
                     'global' : {
                                 'server.socket_host': '0.0.0.0',
-                                'server.socket_port' : args['p'],
+                                'server.socket_port' : args.port,
                                 'server.socket_timeout' : 60,  # increase timeout to 60s
                                 'request.show_tracebacks' : False,
                                 'log.screen' : False,  # turn off logging to console 
@@ -520,53 +597,63 @@ def updateCherrypyConf(args):
                                 'tools.encode.encoding' : 'utf-8'}}
     cherrypy.config.update(globalConfig)
 
-    if args['p'] == 8443:
+    if args.port == 8443:
         sslConfig = {
                     'global' : {
                                 'server.ssl_module' : 'builtin',
-                                'server.ssl_certificate' : args['k']+"/cert.pem",
-                                'server.ssl_private_key' : args['k']+"/privkey.pem" }}
+                                'server.ssl_certificate' : args.keyPath + "/cert.pem",
+                                'server.ssl_private_key' : args.keyPath + "/privkey.pem" }}
         cherrypy.config.update(sslConfig)
-        
-        
-    
+
+
+
 def main(argv):
-    
-    serverDefault = ''
+
     # parse input arguments
     parser = argparse.ArgumentParser('python zimonGrafanaIntf.py')
-    parser.add_argument('-s', "-server", action="store", default=serverDefault, help='name or ip address of the ZIMon collector (Required)')
-    parser.add_argument('-P', '-serverPort', action="store", type=int, default=9084, help='ZIMon collector port number (Default: 9084)')
-    parser.add_argument('-l', '-logFile', action="store", default="./zserver.log", help='location of the log file (Default: ./zserver.log')
-    parser.add_argument('-c', '-logLevel', action="store", default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')
-    parser.add_argument('-p', '-port', action="store", type=int, default=4242, help='port number to listen on (Default: 4242)')
-    parser.add_argument('-k', '-keyPath', action="store", help='Directory path of privkey.pem and cert.pem file location(Required only for HTTPS port 8443)');
+    parser.add_argument('-s', '--server', action="store", default='localhost', 
+                help='Host name or ip address of the ZIMon collector (Default: 127.0.0.1) \
+                NOTE: Per default ZIMon does not accept queries from remote machines. \
+                To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
+    parser.add_argument('-P', '--serverPort', action="store", type=int, default=9084, help='ZIMon collector port number (Default: 9084)')
+    parser.add_argument('-l', '--logFile', action="store", default="./zserver.log", help='location of the log file (Default: ./zserver.log')
+    parser.add_argument('-c', '--logLevel', action="store", type=int, default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')
+    parser.add_argument('-p', '--port', action="store", type=int, default=4242, help='port number to listen on (Default: 4242)')
+    parser.add_argument('-k', '--keyPath', action="store", help='Directory path of privkey.pem and cert.pem file location(Required only for HTTPS port 8443)')
 
-    args = vars(parser.parse_args(argv))
-    
+    args = parser.parse_args(argv)
+
+    if args.port == 8443 and not args.keyPath:
+        print(MSG['MissingParm'])
+        return
+
     # prepare the logger
-    logger = configureLogging(args)
-    
-    #check pmcollector ip
-    if args['s'] == serverDefault:
-        logger.error('Server name not specified, quitting')
-        print('Server name not specified, quitting')
-        return
-    
-    # prepare metadata
-    mdHandler = MetadataHandler()
-    if mdHandler.init(logger, args['s'], args['P']) != 0:
-        print('Failed to initialize MetadataHandler, please check log file for reason')
-        return
-    
-    if args['p'] == 8443 and not args['k']:
-            print('Missing mandatory parameters, quitting')
-            return
+    logger = configureLogging(args.logFile, args.logLevel)
+    logger.info('zimonGrafanaItf invoked with parameters:%s', str(args))
+
     #prepare cherrypy server configuration
     updateCherrypyConf(args)
 
-    ph = PostHandler()
-    ph.init(logger, mdHandler, args['s'], args['P'])
+
+
+    # prepare metadata
+    try:
+        validateCollectorConf(args, logger)
+        mdHandler = MetadataHandler(logger, args.server, args.serverPort)
+        print(MSG['MetaSuccess'])
+        print(MSG['ReceivAttrValues'].format('sensors',"\n\n"+ "\t".join(mdHandler.metaData.sensorsSpec.keys())))
+    except (AttributeError, ValueError, TypeError) as e:
+        logger.exception('%s', MSG['IntError'].format(str(e)))
+        print(MSG['MetaError'])
+        return
+    except (Exception, IOError) as e:
+        logger.exception('%s', MSG['IntError'].format(str(e)))
+        print(MSG['CollectorErr'])
+        return
+
+
+
+    ph = PostHandler(logger, mdHandler)
     cherrypy.tree.mount(ph, '/api/query',
                         {'/':
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -574,9 +661,8 @@ def main(argv):
                            }
                          }
                         )
-    
-    gh = GetHandler()
-    gh.init(logger, mdHandler, args['s'], args['P'])
+
+    gh = GetHandler(logger, mdHandler)
     # query for metric name (openTSDB: zimon extension returns keys as well)
     cherrypy.tree.mount(gh, '/api/suggest',
                         {'/':
@@ -608,33 +694,31 @@ def main(argv):
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                          }
                         )
-    
-    
-    print("Your system is running python version: %s and cherryPy version: %s" % ( sys.version, cherrypy.__version__))
-    logger.info("START:Initial cherryPy server engine start have been invoked. Python version: %s, cherryPy version: %s." % ( sys.version, cherrypy.__version__))
-    
+
+    print(MSG['sysStart'].format(sys.version, cherrypy.__version__))
+    logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
+
     try:
         cherrypy.engine.start()
         print("server started")
         cherrypy.engine.block()
-    except (ImportError, IOError, KeyboardInterrupt, Exception):
+    except TypeError:
         #msg = "server stopping, please check logs for more details"
-        #logger.error("STOPPING: Server request could not be proceed. Reason: %s" % e)
+        print("Server request could not be proceed. Reason:")
+        raise cherrypy.HTTPError(500, ERR[500])
+    except IOError:
+        #msg = "server stopping, please check logs for more details"
+        print("STOPPING: Server request could not be proceed. Reason:")
         cherrypy.engine.stop()
         cherrypy.engine.exit()
 
-
-        
-    
     ph = None
     gh = None
 
     print("server stopped")
 
-        
+
+
 if __name__ == '__main__':
     main(sys.argv[1:])
-    
-    
 
-    

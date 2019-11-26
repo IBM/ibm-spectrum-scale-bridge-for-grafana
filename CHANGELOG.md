@@ -1,3 +1,27 @@
+# Version 3 (08/06/2018)
+
+Added python3.6 support 
+
+Source code changes based on [openTSDB datasource](https://github.com/grafana/grafana/tree/master/public/app/plugins/datasource/opentsdb) plugin supported by Grafana
+- Query requests and results in [openTSDB API 2.3 supported format](http://opentsdb.net/docs/build/html/api_http/query/index.html)
+- Fixed [alias tag issue](https://github.com/grafana/grafana/issues/7560)
+
+Source code changes based on latest configuration updates to IBM Spectrum Scale performance monitoring tool (ZIMon):
+- changed '-s --server' option from required to optional. If not specified the server will be automatically set to 'localhost'.
+>> **NOTE**: Since Spectrum Scale version 5.0.0 the ZImon pmcollector allows query requests, per default, only from local host.
+- added vlaidity check for '-P --serverPort'
+- added configuration check for multithreaded serverPort. If configured, this will be automatically used for querying pmcollector.
+
+Source code refactoring(bridge internal optimization)
+- refactoring of GET, POST Handler result objects (bridge internal)
+- metadata retrieval optimizations (time performance)
+
+Improved logging, more options for troubleshooting
+- improved trace messages for logging connection issues
+- improved trace messages for logging wrong input parameters f.e. tag names, tag values
+
+
+
 # Version 2 (05/24/2017)
 
 Added HTTPS(SSL) connection support(via port 8443)
