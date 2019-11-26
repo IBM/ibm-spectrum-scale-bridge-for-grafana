@@ -1,3 +1,28 @@
+# Version 2 (05/24/2017)
+
+Added HTTPS(SSL) connection support(via port 8443)
+- required [CherryPy version 4.0](download from: https://pypi.python.org/pypi/CherryPy/4.0.0) or higher 
+- required [SSL private key and certificate](http://cherrypy.readthedocs.io/en/latest/deploy.html#ssl-support) to be generated
+- start the bridge with '-k' option (followed by the SSLkey location path) and port 8443 (-p option)
+
+Source code changes based on [openTSDB datasource](https://github.com/grafana/grafana/tree/master/public/app/plugins/datasource/opentsdb) plugin supported by Grafana
+- allowing the multiple filters usage in the [lookup](http://opentsdb.net/docs/build/html/api_http/search/lookup.html?) queries
+- Query requests and results in [openTSDB API 2.3 query format](http://opentsdb.net/docs/build/html/api_http/query/index.html)
+
+Improved logging, more options for troubleshooting 
+- added python version, cherryPy version and the list of enabled sensors to the console message during the bridge start
+- added trace messages for logging received requests from Grafana and processed queries stored in zserver.log(INFO-level)
+- added trace messages for logging process details at different places (DEBUG-level)
+- added HTTPError codes to the error trace messages(if the error cause is known)
+- cherrypy_access.log enabled (automatically created with the bridge start)
+- cherrypy_error.log (automatically created with the bridge start)
+
+Source code refactoring(bridge internal optimization)
+- moved to the new QueryHandler(backend query engine)
+- metadata retrieval simplification (all methods quering metadata moved to the separate module)
+
+
+
 # Version 1 (06/16/2016)
 
 Initial version
