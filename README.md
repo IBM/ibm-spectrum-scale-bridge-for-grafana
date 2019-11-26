@@ -12,7 +12,7 @@ Before installing the IBM Spectrum Scale bridge for Grafana you must install the
 1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.0/com.ibm.spectrum.scale.v4r2.adv.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
 2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.0/com.ibm.spectrum.scale.v4r2.adv.doc/bl1adv_PMToverview.htm) the following software need to be installed:
 - [Python2.7](https://www.python.org/downloads/release/python-2717/)
-- [CerryPy](https://cherrypy.org/)
+- [CherryPy](https://cherrypy.org/)
 
 
 ### Dependencies
