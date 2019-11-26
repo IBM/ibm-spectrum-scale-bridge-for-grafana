@@ -75,7 +75,7 @@ Download and install [Grafana](https://grafana.com/get) according to the given i
 
 Define a new data source (Data Sources -> Add New)
 
-![](Add_DataSource_2.3.png)
+![](Add_Datasource_2.3.png)
 
 **NOTE**: The IBM Spectrum Scale bridge listens on port 4242 for HTTP connections, and on port 8443 for HTTPS connections
 
