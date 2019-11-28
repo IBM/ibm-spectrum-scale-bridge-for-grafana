@@ -1,13 +1,13 @@
 ### Importing dashboards from Example Dashboards bundle
 
-With the bridge version 4, the new collection of example dashboards ("Example Dashboards bundle") has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the "default dashboards set" and  "Advanced Dashboards set"  have been merged into this download package.
+With the bridge version 4, the new collection of example dashboards (["Example Dashboards bundle"](example_dashboards_bundle.zip)) has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the ["default dashboards set"](default dashboards set.zip) and  ["Advanced Dashboards set"](Advanced dashboard set.zip)  have been merged into this download package.
 
 
 
 The package content consists of several folders:
 
-- Predefined Basic Dashboards - including all dashboard examples from "default dashboards set" package
-- Advanced Dashboards -  including all dashboard examples from "Advanced Dashboards set" package
+- Predefined Basic Dashboards - including all dashboard examples from ["default dashboards set"](default dashboards set.zip) package
+- Advanced Dashboards -  including all dashboard examples from ["Advanced Dashboards set"](Advanced dashboard set.zip) package
 - HOWTO - including dashboard examples with learning effect, f.e. Grafana's helpful features
 - NamedQueries - including dashboard examples for monitoring Linux(Network) metrics
 - Protocols - including dashboard examples for monitoring SMB and NFS metrics
