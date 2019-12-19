@@ -45,10 +45,10 @@ Check the SUPPORT_MATRIX file for the recommended version.
 
 #### Step 3. Set up IBM Spectrum Scale Performance Monitoring Bridge
 
-Download the zip package and unpack it in your favorite directory on the collector node :
+Clone the repository using git in your favorite directory on the collector node. Alternatively download the zip package and unpack it :
 
 ```shell
-# unzip zimonGrafanaIntf.zip
+# unzip ibm-spectrum-scale-bridge-for-grafana.zip
 ```
 
 Start the bridge application by issuing:
