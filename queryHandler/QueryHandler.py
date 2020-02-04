@@ -343,7 +343,7 @@ class QueryResult:
         else:
             data = (row.values[idx] for row in self.rows)
         try:
-            return fn(list(filter(None, data)))  # list is needed for py 3
+            return fn(list(filter(lambda x: x is not None, data)))
         except Exception:
             return None
 
@@ -361,7 +361,7 @@ class QueryResult:
                     if len(column_values) == column_values.count(None):
                         aggr_value = None
                     else:
-                        aggr_value = fn(list(filter(None, column_values)))
+                        aggr_value = fn(list(filter(lambda x: x is not None, column_values)))
                 except Exception:
                     aggr_value = None
                 aggr_values[idx] = aggr_value
