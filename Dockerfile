@@ -14,4 +14,10 @@ ENV ZSERVER=$zserver
 
 EXPOSE 4242/tcp
 
+RUN groupadd -g 63719 grafanabridge
+RUN useradd -g 63719 -l -M -s /bin/false -u 63719 grafanabridge
+USER grafanabridge
+
+WORKDIR /tmp
+
 CMD ["sh", "-c", "/usr/bin/python3 /opt/grafanabridge/zimonGrafanaIntf.py -s $ZSERVER"]
