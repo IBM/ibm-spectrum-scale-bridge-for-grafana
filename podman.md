@@ -35,3 +35,39 @@ To run a full "POD" with the grafana-bridge and grafana, with persistent storage
 
 
 Then you can log into http://host:3000 as admin/admin to configure your data source (http://10.33.23.176:4242/), and upload the dashboards. Grafana configuration changes are persisted to the graphana-storage volume (/var/lib/containers/storage/volumes/grafana-storage/).
+
+
+# Systemd service
+
+The grafana-bridge container can be run as a systemd service by first starting it with:
+
+
+```shell
+# podman run -d --net host --name grafana-bridge -it janfrode/grafana-bridge:latest
+```
+
+Then kill it:
+
+```shell
+# podman kill grafana-bridge
+```
+
+Create the service unit file, enable and start it:
+
+```shell
+# cat <<'EOF' > /etc/systemd/system/grafana-bridge.service
+[Unit]
+Description=Grafana Bridge container
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman start -a grafana-bridge
+ExecStop=/usr/bin/podman stop -t 2 grafana-bridge
+
+[Install]
+WantedBy=local.target
+EOF
+
+# systemctl enable grafana-bridge.service
+# systemctl start grafana-bridge.service
+```
+
