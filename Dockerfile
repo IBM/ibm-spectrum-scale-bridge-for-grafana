@@ -9,7 +9,7 @@ RUN mkdir /opt/grafanabridge
 COPY zimonGrafanaIntf.py /opt/grafanabridge/zimonGrafanaIntf.py
 COPY queryHandler /opt/grafanabridge/queryHandler
 
-ENV SERVER=127.0.0.1
+ENV SERVER=zimoncollector
 ENV SERVERPORT=9084
 ENV LOGFILE=/tmp/zserver.log
 ENV LOGLEVEL=20

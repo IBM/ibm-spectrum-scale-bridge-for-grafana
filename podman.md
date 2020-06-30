@@ -7,13 +7,13 @@ The ***IBM Spectrum Scale bridge for Grafana*** can be built as a podman contain
 I've pushed x86_64 and ppc64le images to the dockerhub. The "lastest" tag is for x86_64, and "ppc64le" for, eh.. ppc64le. To launch the container on the same node as is running the ZimonCollector, I would suggest using "host" networking. Then it will have access to the ZimonCollector which is by default only listening on 127.0.0.1:
 
 ```shell
-# podman run --net host -it janfrode/grafana-bridge:latest
+# podman run --net host --add-host=zimoncollector:127.0.0.1 -it janfrode/grafana-bridge:latest
 ```
 
 Or on POWER (f.ex. on the ESS EMS):
 
 ```shell
-# podman run --net host -it janfrode/grafana-bridge:ppc64le
+# podman run --net host --add-host=zimoncollector:127.0.0.1 -it janfrode/grafana-bridge:ppc64le
 ```
 
 If running somewhere else than on the ZimonCollector host, you need to tell it the IP-address to connect to using SERVER environment setting, and also expose the bridge ports:
@@ -43,7 +43,7 @@ The grafana-bridge container can be run as a systemd service by first starting i
 
 
 ```shell
-# podman run -d --net host --name grafana-bridge -it janfrode/grafana-bridge:latest
+# podman run -d --net host --add-host=zimoncollector:127.0.0.1 --name grafana-bridge -it janfrode/grafana-bridge:latest
 ```
 
 Then kill it:
