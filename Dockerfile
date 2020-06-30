@@ -9,8 +9,11 @@ RUN mkdir /opt/grafanabridge
 COPY zimonGrafanaIntf.py /opt/grafanabridge/zimonGrafanaIntf.py
 COPY queryHandler /opt/grafanabridge/queryHandler
 
-ARG ZSERVER
-ENV ZSERVER=$zserver
+ENV SERVER=127.0.0.1
+ENV SERVERPORT=9084
+ENV LOGFILE=/tmp/zserver.log
+ENV LOGLEVEL=20
+ENV PORT=4242
 
 EXPOSE 4242/tcp
 
@@ -20,4 +23,4 @@ USER grafanabridge
 
 WORKDIR /tmp
 
-CMD ["sh", "-c", "/usr/bin/python3 /opt/grafanabridge/zimonGrafanaIntf.py -s $ZSERVER"]
+CMD ["sh", "-c", "/usr/bin/python3 /opt/grafanabridge/zimonGrafanaIntf.py -s $SERVER -l $LOGFILE -c $LOGLEVEL -p $PORT"]
