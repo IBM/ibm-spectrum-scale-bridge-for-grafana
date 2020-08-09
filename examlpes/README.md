@@ -1,13 +1,27 @@
-### Importing dashboards from Example Dashboards bundle
+# Importing example dashboards
 
-With the bridge version 4, the new collection of example dashboards (["Example Dashboards bundle"](../examples/example_dashboards_bundle)) has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the ["default dashboards set"](examples/example_dashboards_bundle/Predefined Basic Dashboards/) and  ["Advanced Dashboards set"](examples/example_dashboards_bundle/Advanced Dashboards/)  have been merged into this download package.
+Example dashboards can easily be imported in a running Grafana environment.
+Follow these [instructions](https://grafana.com/docs/grafana/latest/reference/export_import/)  to import your preferred dashboard into your Grafana installation.
 
 
+## Default Dashboards set
+
+This directory contains such dashboards that could form the basis of a performance analysis for an IBM Spectrum Scale cluster. 
+
+
+## Advanced Dashboards set
+
+This directory summarizes those dashboards that allow a deeper analysis of individual components, such as GPFSWaiters or Filesets Capacity Utilization
+
+
+## Example Dashboards bundle
+
+With the bridge version 4, the new collection of example dashboards "Example Dashbords bundle" has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the "Default Dashboards set" and  "Advanced Dashboards set"  have been merged into this download package.
 
 The package content consists of several folders:
 
-- Predefined Basic Dashboards - including all dashboard examples from ["default dashboards set"](default_dashboards_set.zip) package
-- Advanced Dashboards -  including all dashboard examples from ["Advanced Dashboards set"](Advanced_dashboard_set.zip) package
+- Predefined Basic Dashboards - including all dashboard examples from "Default Dashboard set" package
+- Advanced Dashboards -  including all dashboard examples from "Advanced Dashboards set" package
 - HOWTO - including dashboard examples with learning effect, f.e. Grafana's helpful features
 - NamedQueries - including dashboard examples for monitoring Linux(Network) metrics
 - Protocols - including dashboard examples for monitoring SMB and NFS metrics
