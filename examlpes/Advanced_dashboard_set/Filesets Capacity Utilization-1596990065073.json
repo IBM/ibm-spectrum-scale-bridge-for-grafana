@@ -1,0 +1,1090 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 17,
+  "iteration": 1596989951664,
+  "links": [
+    {
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "main"
+      ],
+      "targetBlank": true,
+      "title": "update metadata",
+      "tooltip": "Click on this button to pick up the metadata changes, for example, if new sensors or nodes have been added.",
+      "type": "link",
+      "url": "http://9.1XX.XXX.XX:4242/api/update"
+    },
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "Knowledge Center",
+      "tooltip": "Read more about filesets in the knowledge center",
+      "type": "link",
+      "url": "https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_filesets.htm"
+    },
+    {
+      "icon": "external link",
+      "tags": [
+        "home"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "content": "You can create, edit, or delete filesets. Filesets allows to partition a file system for administrative operations at a finer granularity than the entire file system.\nYou can create the following two types of filesets:\n\n    Independent filesets\n    Dependent filesets\n\nAn independent fileset has a separate inode space, but shares physical storage with the remainder of the file system. Maximum number and preallocation of inodes for an independent fileset can be specified while creating fileset.\n\nA dependent fileset shares the inode space and snapshot capability of the containing independent fileset. Inodes allocation for independent fileset is independent of the inode quota limit set for the containing file system. That is, an independent fileset has its own separate quota limits. User and group quotas can be created for any independent or dependent fileset if they are enabled for the containing file system.  Dependent filesets can also reside directly within the root file system, which is sometimes called the global fileset. When an independent fileset is deleted, any dependent filesets  are also deleted. If a dependent fileset is defined within an independent fileset, it can be linked only inside of its own inode space.\n\nWhen quotas are managed at the fileset level, those quotas have a higher priority than those set at the file system level.\n\n",
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 12,
+      "links": [],
+      "mode": "markdown",
+      "options": {
+        "content": "You can create, edit, or delete filesets. Filesets allows to partition a file system for administrative operations at a finer granularity than the entire file system.\nYou can create the following two types of filesets:\n\n    Independent filesets\n    Dependent filesets\n\nAn independent fileset has a separate inode space, but shares physical storage with the remainder of the file system. Maximum number and preallocation of inodes for an independent fileset can be specified while creating fileset.\n\nA dependent fileset shares the inode space and snapshot capability of the containing independent fileset. Inodes allocation for independent fileset is independent of the inode quota limit set for the containing file system. That is, an independent fileset has its own separate quota limits. User and group quotas can be created for any independent or dependent fileset if they are enabled for the containing file system.  Dependent filesets can also reside directly within the root file system, which is sometimes called the global fileset. When an independent fileset is deleted, any dependent filesets  are also deleted. If a dependent fileset is defined within an independent fileset, it can be linked only inside of its own inode space.\n\nWhen quotas are managed at the fileset level, those quotas have a higher priority than those set at the file system level.\n\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "7.1.0",
+      "title": "Notice about Filesets !",
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 14,
+        "x": 4,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 7,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_gpfs_fset_name",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byFsName",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "$mFileset",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "\"$mFileset\" per fileset in \"$byFsName\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:345",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:346",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "On this graph you can monitor filesystem inodes allocation and usage",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {}
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fs_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "$byFsName",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [],
+          "metric": "gpfs_fset_allocInodes",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fs_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "$byFsName",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "hide": false,
+          "metric": "gpfs_fset_freeInodes",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fs_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "$byFsName",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "hide": false,
+          "metric": "gpfs_fset_maxInodes",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Filesets capacity utilization aggregated in \"$byFsName\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "On this graph you can monitor  inodes allocation and usage for selected fileset",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 13,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 3,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {}
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$byFsName",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fset_allocInodes",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byFsName",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fset_freeInodes",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byFsName",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fset_maxInodes",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "\"$byFileset\" capacity utilization",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This chart contains metrics values telling you about :\n \tUsed capacity in a fileset, as reported by the quota mechanism. Soft and hard quota limit for capacity in a fileset.",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 6,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 12,
+        "y": 10
+      },
+      "height": "",
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 6,
+      "links": [],
+      "maxPerRow": 6,
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fset_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "$byFileset",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "12h",
+          "filters": [],
+          "metric": "gpfs_rq_blk_hard_limit",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fset_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "$byFileset",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "12h",
+          "filters": [],
+          "metric": "gpfs_rq_blk_soft_limit",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "12h",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_current",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "12h",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_in_doubt",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Block quotas for \"$byFileset\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This chart shows you 'used inodes in a fileset', as reported by the quota mechanism. Soft and hard inodes limits set for this fileset.",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 6,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 18,
+        "y": 10
+      },
+      "height": "",
+      "hiddenSeries": false,
+      "id": 11,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 6,
+      "links": [],
+      "maxPerRow": 6,
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_hard_limit",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_soft_limit",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_current",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_in_doubt",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "File quotas for \"$byFileset\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "capacity",
+    "advanced"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "gpfs_fset_allocInodes",
+          "value": "gpfs_fset_allocInodes"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "metrics(gpfs_fset_)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "GPFSfileset metrics",
+        "multi": false,
+        "name": "mFileset",
+        "options": [],
+        "query": "metrics(gpfs_fset_)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "testfs",
+          "value": "testfs"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "byFsName",
+        "options": [],
+        "query": "tag_values($mFileset, gpfs_fs_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "gpfs_cluster_name",
+          "value": "gpfs_cluster_name"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "filterBy",
+        "multi": false,
+        "name": "filterBy",
+        "options": [],
+        "query": "tag_names($gpfsMetrics)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "apps.",
+        "tags": [],
+        "tagsQuery": "tag_names($gpfsMetrics)",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "gpfsgui-cluster-2.novalocal",
+          "value": "gpfsgui-cluster-2.novalocal"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "values",
+        "multi": false,
+        "name": "values",
+        "options": [],
+        "query": "tag_values($gpfsMetrics, $filterBy)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "gpfs_disk_disksize",
+          "value": "gpfs_disk_disksize"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "metrics(gpfs_)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "metric1",
+        "multi": false,
+        "name": "gpfsMetrics",
+        "options": [],
+        "query": "metrics(gpfs_)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "data",
+          "value": "data"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "byPoolName",
+        "options": [],
+        "query": "tag_values($gpfsMetrics, gpfs_diskpool_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "testres",
+          "value": "testres"
+        },
+        "datasource": "OpenTSDB",
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "byFileset",
+        "options": [],
+        "query": "tag_values($mFileset,gpfs_fset_name, gpfs_fs_name=$byFsName)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "Filesets Capacity Utilization",
+  "uid": "2auHJSCmz",
+  "version": 1
+}

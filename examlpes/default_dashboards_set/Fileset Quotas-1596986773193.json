@@ -1,0 +1,920 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_OPENTSDB",
+      "label": "OpenTSDB",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.1.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": "7.1.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1596986756763,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [
+        "main"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "content": "The quota report lists:\n\n    Number of files used\n    Amount of disk space used\n    Current quota limits\n    In doubt quotas (disk space allocated but currently unaccounted for)\n\n",
+      "datasource": "${DS_OPENTSDB}",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 20,
+        "x": 0,
+        "y": 0
+      },
+      "height": "50px",
+      "id": 2,
+      "isNew": true,
+      "links": [
+        {
+          "url": "/"
+        }
+      ],
+      "maxPerRow": 3,
+      "mode": "markdown",
+      "options": {
+        "content": "The quota report lists:\n\n    Number of files used\n    Amount of disk space used\n    Current quota limits\n    In doubt quotas (disk space allocated but currently unaccounted for)\n\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "7.1.0",
+      "repeat": null,
+      "style": {
+        "font-size": "36pt"
+      },
+      "title": "",
+      "type": "text"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$byCluster",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 14,
+        "x": 0,
+        "y": 5
+      },
+      "hiddenSeries": false,
+      "id": 7,
+      "isNew": true,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "$gpfsMetrics_quota",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "FILESETS \"$gpfsMetrics_quota\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$byCluster",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 14,
+        "y": 5
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "isNew": true,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {}
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "gpfs_fs_name",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [],
+          "metric": "$gpfsMetrics_quota",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "FILESYSTEMS \"$gpfsMetrics_quota\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$byCluster",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 6,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 0,
+        "y": 12
+      },
+      "height": "",
+      "hiddenSeries": false,
+      "id": 5,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 6,
+      "links": [],
+      "maxPerRow": 6,
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_hard_limit",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_soft_limit",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_current",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_in_doubt",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Block quotas for \"$byFileset\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_OPENTSDB}",
+      "editable": true,
+      "error": false,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 6,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 10,
+        "y": 12
+      },
+      "height": "",
+      "hiddenSeries": false,
+      "id": 11,
+      "isNew": true,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 6,
+      "links": [],
+      "maxPerRow": 6,
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_hard_limit",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_soft_limit",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_current",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": true,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_in_doubt",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "File quotas for \"$byFileset\"",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": 0,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "default",
+    "capacity"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "OpenTSDB",
+          "value": "OpenTSDB"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "select cluster",
+        "multi": false,
+        "name": "byCluster",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "metrics(gpfs_fs.*)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "metric1",
+        "multi": false,
+        "name": "gpfsMetrics",
+        "options": [],
+        "query": "metrics(gpfs_fs.*)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "metrics(gpfs_rq_)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "select quota metric",
+        "multi": false,
+        "name": "gpfsMetrics_quota1",
+        "options": [],
+        "query": "metrics(gpfs_rq_)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values($gpfsMetrics, gpfs_fs_name)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "select filesystem",
+        "multi": false,
+        "name": "byFsName",
+        "options": [],
+        "query": "tag_values($gpfsMetrics, gpfs_fs_name)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values($gpfsMetrics_quota1, gpfs_fset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "select fileset",
+        "multi": false,
+        "name": "byFileset",
+        "options": [],
+        "query": "tag_values($gpfsMetrics_quota1, gpfs_fset_name)",
+        "refresh": 2,
+        "regex": "/.*[^root]/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "metrics(gpfs_rq_)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "select quota metric",
+        "multi": false,
+        "name": "gpfsMetrics_quota",
+        "options": [],
+        "query": "metrics(gpfs_rq_)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_names($gpfsMetrics)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "filterBy",
+        "multi": false,
+        "name": "filterBy",
+        "options": [],
+        "query": "tag_names($gpfsMetrics)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "apps.",
+        "tags": [],
+        "tagsQuery": "tag_names($gpfsMetrics)",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values($gpfsMetrics, $filterBy)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "values",
+        "multi": false,
+        "name": "values",
+        "options": [],
+        "query": "tag_values($gpfsMetrics, $filterBy)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values($gpfsMetrics, gpfs_diskpool_name)",
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "byPoolName",
+        "options": [],
+        "query": "tag_values($gpfsMetrics, gpfs_diskpool_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "Fileset Quotas",
+  "uid": "azHhTIjik",
+  "version": 34
+}

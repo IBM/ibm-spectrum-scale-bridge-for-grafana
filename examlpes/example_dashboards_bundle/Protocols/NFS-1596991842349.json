@@ -1,0 +1,682 @@
+{
+  "__inputs": [],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.1.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1596991835304,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [
+        "home"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$system",
+      "description": "get the NFS error count for read and write operations",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "read_err: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_read_err",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "write_err: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_write_err",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "NFS Errors",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$system",
+      "description": "get the NFS read and write queue size in bytes",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "read_queue: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_read_queue",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "write_queue: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_write_queue",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "NFS Queue",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$system",
+      "description": "Display the NFS Throughput in bytes per second.\nCompare to the mmperfmon NamedQuery 'nfsThroughput' F.e. try on the command line:\n\n# mmperfmon query nfsThroughput 3600 -b 60",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "read: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "write: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_write",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "NFS Throughput",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$system",
+      "description": "get the NFS IOps per second",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "readOPS: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_read_ops",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "writeOPS: $tag_export",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byExport",
+              "groupBy": true,
+              "tagk": "export",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "nfs_write_ops",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "NFS IO Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "NamedQueries",
+    "protocols"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "OpenTSDB",
+          "value": "OpenTSDB"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "cluster selection",
+        "multi": false,
+        "name": "system",
+        "options": [],
+        "query": "opentsdb",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$system",
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "filter byNode",
+        "multi": false,
+        "name": "byNode",
+        "options": [],
+        "query": "tag_values(nfs_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$system",
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "filter byExport",
+        "multi": false,
+        "name": "byExport",
+        "options": [],
+        "query": "tag_values(nfs_read, export)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "NFS",
+  "uid": "coETsrWmk",
+  "version": 1
+}

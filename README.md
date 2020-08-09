@@ -48,13 +48,15 @@ Check the SUPPORT_MATRIX file for the recommended version.
 Clone the repository using git in your favorite directory on the collector node. Alternatively download the zip package and unpack it :
 
 ```shell
-# unzip ibm-spectrum-scale-bridge-for-grafana.zip
+# git clone https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana.git
 ```
 
 Start the bridge application by issuing:
 
 ```shell
-# python zimonGrafanaIntf.py 
+# cd source/
+
+# python3 zimonGrafanaIntf.py 
 ```
 
 If the bridge did establish the connection to the specified pmcollector and the initialization of the metadata was performed successfully, you should get the message "server started" at the end of line. Otherwise check the zserver.log stored in the zimonGrafanaIntf  directory.  Additionally, check the pmcollector service running properly by issuing:
@@ -75,7 +77,7 @@ Download and install [Grafana](https://grafana.com/get) according to the given i
 
 Define a new data source (Data Sources -> Add New)
 
-![](Example_Add_DataSource.png)
+![](/docs/Example_Add_DataSource.png)
 
 **NOTE**: The IBM Spectrum Scale bridge listens on port 4242 for HTTP connections, and on port 8443 for HTTPS connections
 

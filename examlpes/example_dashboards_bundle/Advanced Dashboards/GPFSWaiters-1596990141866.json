@@ -1,0 +1,360 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_OPENTSDB",
+      "label": "OpenTSDB",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.1.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": "7.1.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1596990087191,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [],
+      "targetBlank": true,
+      "title": "update metadata",
+      "type": "link",
+      "url": "http://myBridge_ip_address:4242/api/update"
+    },
+    {
+      "icon": "external link",
+      "tags": [
+        "home"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_OPENTSDB}",
+      "description": "help",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 16,
+        "x": 0,
+        "y": 0
+      },
+      "height": "630px",
+      "hiddenSeries": false,
+      "id": 1,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "maxPerRow": 6,
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "gpfs_wt_count_all",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$nodes",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$threshold",
+              "groupBy": true,
+              "tagk": "waiters_time_threshold",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_wt_count_all",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "gpfs_wt_count_network_io",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$nodes",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$threshold",
+              "groupBy": true,
+              "tagk": "waiters_time_threshold",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_wt_count_network_io",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "gpfs_wt_count_local_io",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "5m",
+          "filters": [
+            {
+              "filter": "$nodes",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$threshold",
+              "groupBy": true,
+              "tagk": "waiters_time_threshold",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_wt_count_local_io",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "GPFSWaiters for $nodes ($threshold)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "content": "For each independent fileset in the file system: Node- GPFSWaiters- waiters_time_threshold (all, 0.1s, 0.2s,0.5s, 1.0s, 30.0s, 60.0s).\n > Note: Here  _'all'_ implies a waiting time greater than or equal to 0 seconds. \n > For example:  _myNode|GPFSWaiters|all|gpfs_wt_count_all._\n\n\n* gpfs_wt_count_all  : \nCount of all threads with waiting time greater than or equal towaiters_time_threshold seconds.\n\n\n* gpfs_wt_count_local_io: \nCount of threads waiting for local I/O with waiting time greater than orequal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_network_io: \nCount of threads waiting for network I/O with waiting time greater thanor equal to \nwaiters_time_threshold seconds.\n\n* gpfs_wt_count_thcond: Count of threads waiting for a GPFS condition variable to be signaled with\nwaiting time greater than or equal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_thmutex: Count of threads waiting to lock a GPFS mutex with waiting time greater than or equal to \nwaiters_time_threshold seconds.\n\n* gpfs_wt_count_delay: Count of threads waiting for delay interval expiration with waiting time greater\nthan or equal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_syscall: Count of threads waiting for system call completion with waiting time greater\nthan or equal to waiters_time_threshold seconds.\n\n",
+      "datasource": "${DS_OPENTSDB}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 16,
+        "y": 0
+      },
+      "height": "50px",
+      "id": 2,
+      "links": [],
+      "mode": "markdown",
+      "options": {
+        "content": "For each independent fileset in the file system: Node- GPFSWaiters- waiters_time_threshold (all, 0.1s, 0.2s,0.5s, 1.0s, 30.0s, 60.0s).\n > Note: Here  _'all'_ implies a waiting time greater than or equal to 0 seconds. \n > For example:  _myNode|GPFSWaiters|all|gpfs_wt_count_all._\n\n\n* gpfs_wt_count_all  : \nCount of all threads with waiting time greater than or equal towaiters_time_threshold seconds.\n\n\n* gpfs_wt_count_local_io: \nCount of threads waiting for local I/O with waiting time greater than orequal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_network_io: \nCount of threads waiting for network I/O with waiting time greater thanor equal to \nwaiters_time_threshold seconds.\n\n* gpfs_wt_count_thcond: Count of threads waiting for a GPFS condition variable to be signaled with\nwaiting time greater than or equal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_thmutex: Count of threads waiting to lock a GPFS mutex with waiting time greater than or equal to \nwaiters_time_threshold seconds.\n\n* gpfs_wt_count_delay: Count of threads waiting for delay interval expiration with waiting time greater\nthan or equal to waiters_time_threshold seconds.\n\n* gpfs_wt_count_syscall: Count of threads waiting for system call completion with waiting time greater\nthan or equal to waiters_time_threshold seconds.\n\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "7.1.0",
+      "title": "GPFSWaiters",
+      "type": "text"
+    }
+  ],
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "advanced"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_OPENTSDB}",
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "byNode",
+        "multi": false,
+        "name": "nodes",
+        "options": [],
+        "query": "tag_values(gpfs_wt_count_all, node)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_OPENTSDB}",
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "t_threshold",
+        "multi": false,
+        "name": "threshold",
+        "options": [],
+        "query": "tag_values(gpfs_wt_count_all, waiters_time_threshold)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 3,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "GPFSWaiters",
+  "uid": "DH8dJSjik",
+  "version": 1
+}

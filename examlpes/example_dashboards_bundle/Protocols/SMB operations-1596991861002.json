@@ -1,0 +1,605 @@
+{
+  "__inputs": [],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.1.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table-old",
+      "name": "Table (old)",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1596991851371,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [
+        "home"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$byCluster",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "op_count",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "op_time",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "disableDownsampling": true,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "$tInterval",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$operation",
+              "groupBy": false,
+              "tagk": "operation",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "op_time",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "op_count",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "disableDownsampling": true,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "$tInterval",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$operation",
+              "groupBy": false,
+              "tagk": "operation",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "op_count",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "SMB latency",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "µs",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "datasource": "$byCluster",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fontSize": "100%",
+      "gridPos": {
+        "h": 18,
+        "w": 11,
+        "x": 12,
+        "y": 0
+      },
+      "id": 7,
+      "links": [],
+      "pageSize": 15,
+      "scroll": false,
+      "showHeader": true,
+      "sort": {
+        "col": 16,
+        "desc": false
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "align": "auto",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "align": "auto",
+          "colorMode": "value",
+          "colors": [
+            "#73BF69",
+            "#FADE2A",
+            "#F2495C"
+          ],
+          "decimals": 0,
+          "pattern": "/.*/",
+          "thresholds": [
+            "80",
+            "100"
+          ],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "$tag_operation",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": null,
+          "currentFilterValue": "",
+          "disableDownsampling": true,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "null",
+          "downsampleInterval": "$tInterval",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$operation",
+              "groupBy": true,
+              "tagk": "operation",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "op_count",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "SMB 'op_count'   for node: $byNode",
+      "transform": "timeseries_to_columns",
+      "type": "table-old"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$byCluster",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 3,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": true,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": true,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "op_inbytes",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "op_inbytes",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "alias": "op_outbytes",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "op_outbytes",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Total SMB IO throughput",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "smb ",
+    "protocols"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "OpenTSDB",
+          "value": "OpenTSDB"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "select cluster",
+        "multi": false,
+        "name": "byCluster",
+        "options": [],
+        "query": "opentsdb",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values(connect_count, node)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "select protocol node",
+        "multi": true,
+        "name": "byNode",
+        "options": [],
+        "query": "tag_values(connect_count, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "$byCluster",
+        "definition": "tag_values(op_count, operation)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "select operation",
+        "multi": true,
+        "name": "operation",
+        "options": [],
+        "query": "tag_values(op_count, operation)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": false,
+          "text": "1m",
+          "value": "1m"
+        },
+        "hide": 0,
+        "label": "t_interval",
+        "name": "tInterval",
+        "options": [
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10s"
+          },
+          {
+            "selected": true,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "12h",
+            "value": "12h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "14d",
+            "value": "14d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ],
+        "query": "10s,1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "SMB operations",
+  "uid": "PCgjWOCmk",
+  "version": 1
+}
