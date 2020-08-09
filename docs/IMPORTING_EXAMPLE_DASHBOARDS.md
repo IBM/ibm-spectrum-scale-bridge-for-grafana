@@ -1,6 +1,6 @@
 ### Importing dashboards from Example Dashboards bundle
 
-With the bridge version 4, the new collection of example dashboards (["Example Dashboards bundle"](examples/example_dashboards_bundle)) has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the ["default dashboards set"](examples/example_dashboards_bundle/Predefined Basic Dashboards/) and  ["Advanced Dashboards set"](examples/example_dashboards_bundle/Advanced Dashboards/)  have been merged into this download package.
+With the bridge version 4, the new collection of example dashboards (["Example Dashboards bundle"](../examples/example_dashboards_bundle)) has been added to the available for free download resources. These new dashboards could be used for managing a multi-cluster environment. Also the ["default dashboards set"](examples/example_dashboards_bundle/Predefined Basic Dashboards/) and  ["Advanced Dashboards set"](examples/example_dashboards_bundle/Advanced Dashboards/)  have been merged into this download package.
 
 
 
