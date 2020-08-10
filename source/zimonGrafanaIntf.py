@@ -442,6 +442,8 @@ class PostHandler(object):
             raise cherrypy.HTTPError(404, MSG['MetricErr'].format(metric))
         elif sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
             sensor = 'GPFSDiskCap'
+        elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
+            sensor = 'GPFSNSDDisk'
 
         for sensorAttr in self.sensorsConf:
             if sensorAttr['name'] == str('\"%s\"' % sensor):
