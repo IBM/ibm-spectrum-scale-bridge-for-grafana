@@ -616,6 +616,12 @@ def validateCollectorConf(args, logger):
 
 def updateCherrypyConf(args):
 
+    path, folder = os.path.split(args.logFile)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    accesslog = os.path.join(path, 'cherrypy_access.log')
+    errorlog = os.path.join(path, 'cherrypy_error.log')
+
     globalConfig = {
                     'global' : {
                                 'server.socket_host': '0.0.0.0',
@@ -623,8 +629,8 @@ def updateCherrypyConf(args):
                                 'server.socket_timeout' : 60,  # increase timeout to 60s
                                 'request.show_tracebacks' : False,
                                 'log.screen' : False,  # turn off logging to console 
-                                'log.access_file': "cherrypy_access.log",
-                                'log.error_file': "cherrypy_error.log",
+                                'log.access_file': accesslog,
+                                'log.error_file': errorlog,
                                 'tools.encode.on' : True,
                                 'tools.encode.encoding' : 'utf-8'}}
     cherrypy.config.update(globalConfig)
