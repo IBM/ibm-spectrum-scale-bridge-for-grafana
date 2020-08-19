@@ -27,6 +27,7 @@ import argparse
 import logging.handlers
 import sys
 import socket
+import os
 
 from queryHandler.Query import Query
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
@@ -574,6 +575,11 @@ def processFormJSON(entity):
 
 
 def configureLogging(logfile, loglevel):
+    # create the logfile path if needed
+    path, folder = os.path.split(logfile)
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     # prepare the logger
     logger = logging.getLogger('zimonGrafanaIntf')
     rfhandler = logging.handlers.RotatingFileHandler(logfile, 'a', 1000000, 5)  # 5 x 1M files
@@ -642,7 +648,7 @@ def main(argv):
                 NOTE: Per default ZIMon does not accept queries from remote machines. \
                 To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
     parser.add_argument('-P', '--serverPort', action="store", type=int, default=9084, help='ZIMon collector port number (Default: 9084)')
-    parser.add_argument('-l', '--logFile', action="store", default="./zserver.log", help='location of the log file (Default: ./zserver.log')
+    parser.add_argument('-l', '--logFile', action="store", default="./logs/zserver.log", help='location of the log file (Default: ./logs/zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')
     parser.add_argument('-p', '--port', action="store", type=int, default=4242, help='port number to listen on (Default: 4242)')
     parser.add_argument('-k', '--keyPath', action="store", help='Directory path of privkey.pem and cert.pem file location(Required only for HTTPS port 8443)')
