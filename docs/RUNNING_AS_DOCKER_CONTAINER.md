@@ -1,9 +1,10 @@
-## Running the IBM Spectrum Scale Performance Monitoring Bridge as Docker Container
+## Running the IBM Spectrum Scale Performance Monitoring Bridge in a docker container
 
-The IBM Spectrum Scale system must run 5.0.5 or above.
+IMPORTANT The IBM Spectrum Scale system must run 5.0.5 or above.
 
 
-### On the IBM Spectrum Scale cluster node running pmcollector, enable data query remote connection
+
+### On the IBM Spectrum Scale cluster node running pmcollector, enable query remote connection:
 
 
 ```shell
@@ -18,16 +19,9 @@ The IBM Spectrum Scale system must run 5.0.5 or above.
 ```
 
 
-1. On the host, where you are running the bridge, generate a private key. For example, you can use openssl command and follow the OpenSSL ‘howto’ instructions:
-
-```shell
-# openssl genrsa -out privkey.pem 2048
-```
-
-
 ### On the host running docker/podman perform the following steps:
 
-1. Clone this repository using git in your favourite directory :
+1. Clone this repository using git in your favourite directory
 
 ```shell
 # git clone https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana.git grafana_bridge
