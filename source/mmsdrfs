@@ -1,0 +1,307 @@
+%%9999%%:00_VERSION_LINE::2301:3:46::lc:gpfsgui-21.novalocal::0:/usr/bin/ssh:/usr/bin/scp:12114047760675622762:lc2:1596968817::gpfsgui-cluster-2.novalocal:2:1:1:2:A:::central:0.0:
+%%home%%:03_COMMENT::1:
+%%home%%:03_COMMENT::2:    This is a machine generated file.  Do not edit!         
+%%home%%:03_COMMENT::3:
+%%home%%:03_COMMENT::4:2020.08.09.12.26.59:2:1:mmcrcluster -N /usr/lpp/mmfs/NodesDesc -r /usr/bin/ssh -R /usr/bin/scp -C gpfsgui-cluster-2.novalocal --profile gpfsprotocoldefaults
+%%home%%:03_COMMENT::5:2020.08.09.12.27.01:3:1:mmchlicense client --accept -N gpfsgui-24.novalocal,gpfsgui-25.novalocal
+%%home%%:03_COMMENT::6:2020.08.09.12.27.05:4:1:mmchlicense server --accept -N managernodes
+%%home%%:03_COMMENT::7:2020.08.09.12.27.12:5:1:mmchlicense server --accept -N quorumnodes
+%%home%%:03_COMMENT::8:2020.08.09.12.27.34:6:1:mmchlicense server --accept -N gpfsgui-21.novalocal,gpfsgui-22.novalocal,gpfsgui-23.novalocal
+%%home%%:03_COMMENT::9:2020.08.09.12.27.38:7:1:mmchconfig tscCmdPortRange=60000-61000
+%%home%%:03_COMMENT::10:2020.08.09.12.30.19:8:1:mmchlicense server --accept -N gpfsgui-21.novalocal,gpfsgui-23.novalocal
+%%home%%:03_COMMENT::11:2020.08.09.12.30.28:9:1:mmcrnsd -F /usr/lpp/mmfs/StanzaFile
+%%home%%:03_COMMENT::12:2020.08.09.12.30.32:10:1:mmchnsd -F /usr/lpp/mmfs/StanzaFile
+%%home%%:03_COMMENT::13:2020.08.09.12.31.48:11:1:mmperfmon config generate --collectors gpfsgui-21.novalocal,gpfsgui-23.novalocal
+%%home%%:03_COMMENT::14:2020.08.09.12.31.50:12:1:mmperfmon config update GPFSDiskCap.restrict=gpfsgui-21.novalocal GPFSDiskCap.period=86400 GPFSFilesetQuota.restrict=gpfsgui-21.novalocal GPFSFilesetQuota.period=3600
+%%home%%:03_COMMENT::15:2020.08.09.12.32.06:13:1:mmchnode --perfmon -N 10.0.100.33,10.0.100.34,10.0.100.35,10.0.100.36,10.0.100.37
+%%home%%:03_COMMENT::16:2020.08.09.12.36.03:14:1:mmchconfig cipherlist=AUTHONLY
+%%home%%:03_COMMENT::17:2020.08.09.12.36.08:15:1:mmauth genkey new
+%%home%%:03_COMMENT::18:2020.08.09.12.36.14:16:1:mmauth update . -l AUTHONLY
+%%home%%:03_COMMENT::19:2020.08.09.12.36.40:17:1:mmchconfig autoload=yes -N all
+%%home%%:03_COMMENT::20:2020.08.09.12.36.44:18:1:mmchconfig maxblocksize=16384K
+%%home%%:03_COMMENT::21:2020.08.09.12.36.47:19:1:mmchconfig maxfilestocache=100010
+%%home%%:03_COMMENT::22:2020.08.09.12.36.51:20:1:mmchconfig maxStatCache=0
+%%home%%:03_COMMENT::23:2020.08.09.12.37.05:21:1:mmchconfig trace=all 4 tm 2 thread 1 mutex 1 vnode 2 ksvfs 3 klockl 2 io 3 pgalloc 1 mb 1 lock 2 fsck 3,traceRecycle=global -i
+%%home%%:03_COMMENT::24:2020.08.09.12.38.34:22:1:mmcrfs /mnt/gpfs0 gpfs0 disk1:::metadataOnly:1::system:;disk2:::dataOnly:1::data: --metadata-block-size 128K -A yes -B 262144 -n 32 -v yes
+%%home%%:03_COMMENT::25:2020.08.09.12.40.03:23:1:mmcrnodeclass GUI_MGMT_SERVERS -N gpfsgui-21
+%%home%%:03_COMMENT::26:2020.08.09.12.40.07:24:1:mmcrnodeclass GUI_SERVERS -N gpfsgui-21,gpfsgui-23,gpfsgui-22
+%%home%%:03_COMMENT::27:2020.08.09.12.40.26:25:1:mmaddcallback GUI_CCR_CHANGE --command /usr/lpp/mmfs/gui/callbacks/global/ccrChangedCallback_421.sh --event ccrFileChange --async -N GUI_MGMT_SERVERS --parms root --object gui_master_node,_gui.user.repo,_gui.snapshots,_gui.notification,_gui.settings,_gui.dashboards,_gui.keystore,_gui.keystore_settings,_gui.ldap_settings,_gui.policysettings,gui_jobs,mmsdrfs,spectrum-scale-object-policies.conf --parms %eventName %ccrObjectName %ccrObjectVersion
+%%home%%:03_COMMENT::28:2020.08.09.12.40.31:26:1:mmaddcallback GUI_CM_TAKEOVER --command /usr/lpp/mmfs/gui/callbacks/global/cmTakeOverCallback_421.sh --event clusterManagerTakeover --async -N GUI_MGMT_SERVERS --parms root --parms %eventName %eventNode %clusterManager
+%%home%%:03_COMMENT::29:2020.08.09.12.40.36:27:1:mmaddcallback GPFS_STARTUP_SHUTDOWN --command /usr/lpp/mmfs/gui/callbacks/global/startupShutdownCallback_421.sh --event shutdown,startup --async -N GUI_MGMT_SERVERS --parms root --parms %eventName %eventNode
+%%home%%:03_COMMENT::30:2020.08.09.12.40.45:28:1:mmaddcallback GUI_NODES --command /usr/lpp/mmfs/gui/callbacks/global/NodeQuorumCallback_421.sh --event nodeJoin,nodeLeave,quorumLoss,quorumNodeJoin,quorumNodeLeave,quorumReached --async -N GUI_MGMT_SERVERS --parms root --parms %eventName %eventNode %quorumNodes %downNodes %upNodes %clusterName
+%%home%%:03_COMMENT::31:2020.08.09.12.40.51:29:1:mmaddcallback GUI_DISK_SPACE --command /usr/lpp/mmfs/lib/gui_enablement/diskSpaceCallback --event lowDiskSpace,noDiskSpace --async -N GUI_SERVERS --parms root --parms %eventName %eventNode %reason %fsName %filesetName %storagePool
+%%home%%:03_COMMENT::32:2020.08.09.12.40.55:30:1:mmaddcallback GUI_MOUNT_ACTION --command /usr/lpp/mmfs/lib/gui_enablement/mountActionCallback --event mount,unmount --async -N GUI_SERVERS --parms root --parms %eventName %eventNode %fsName
+%%home%%:03_COMMENT::33:2020.08.09.12.43.34:31:2:mmchnodeclass GUI_MGMT_SERVERS replace -N gpfsgui-21,gpfsgui-22 --class-mode vdisk
+%%home%%:03_COMMENT::34:2020.08.09.12.44.19:32:3:mmcrfs /mnt/objfs objfs disk3:::metadataOnly:1::system:;disk4:::dataOnly:1::data: --metadata-block-size 128K -A yes -B 262144 -n 32 -v yes
+%%home%%:03_COMMENT::35:2020.08.09.12.46.51:33:1:mmchconfig cesSharedRoot=/mnt/objfs
+%%home%%:03_COMMENT::36:2020.08.09.12.50.09:34:1:mmchlicense server --accept -N 10.0.100.35,10.0.100.36,10.0.100.37
+%%home%%:03_COMMENT::37:2020.08.09.12.50.48:35:1:mmchnode -N 10.0.100.35,10.0.100.36,10.0.100.37 --ces-enable
+%%home%%:03_COMMENT::38:2020.08.09.12.50.55:36:1:mmchnodeclass GUI_SERVERS replace -N gpfsgui-21,gpfsgui-23,gpfsgui-22,gpfsgui-24,gpfsgui-25 --class-mode vdisk
+%%home%%:03_COMMENT::39:2020.08.09.12.52.20:37:1:mmchconfig cesCidrPool=<IP=192.168.0.160><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.161><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.162><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.163><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.164><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.165><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.166><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.167><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.168><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.169><ATTRIBUTE=><GROUP=><PREFIX=>,cesAddressPool=192.168.0.160/regular,192.168.0.161/regular,192.168.0.162/regular,192.168.0.163/regular,192.168.0.164/regular,192.168.0.165/regular,192.168.0.166/regular,192.168.0.167/regular,192.168.0.168/regular,192.168.0.169/regular
+%%home%%:03_COMMENT::40:2020.08.09.12.54.36:38:5:mmchconfig cifsBypassTraversalChecking=yes,syncSambaMetadataOps=yes,cifsBypassShareLocksOnRename=yes -i
+%%home%%:03_COMMENT::41:2020.08.09.12.54.41:39:4:mmchconfig cifsBypassTraversalChecking=yes,syncSambaMetadataOps=yes,cifsBypassShareLocksOnRename=yes -i
+%%home%%:03_COMMENT::42:2020.08.09.12.54.52:40:3:mmchconfig cifsBypassTraversalChecking=yes,syncSambaMetadataOps=yes,cifsBypassShareLocksOnRename=yes -i
+%%home%%:03_COMMENT::43:2020.08.09.12.55.23:41:3:mmchconfig cesServices=SMB
+%%home%%:03_COMMENT::44:2020.08.09.12.56.16:42:3:mmchconfig cesServices=SMB,NFS
+%%home%%:03_COMMENT::45:2020.08.09.13.20.38:43:1:mmcrfs /gpfs/myfs myfs -F /var/lib/mmfs/gui/tmp/8346000533611413504stanza -A yes -D nfs4 -k nfs4 -B 4194304 -E yes -m 1 -M 2 -n 32 -i 4096 --inode-limit 50000:10000 -Q yes -r 1 -R 2 -S relatime -v yes -z no -j scatter --striped-logs --noperfileset-quota --metadata-block-size 4194304 --version 5.0.5.1
+%%home%%:03_COMMENT::46:2020.08.09.13.21.02:44:1:mmchfs myfs -o nfssync,nodev
+%%home%%:03_COMMENT::47:2020.08.09.13.25.27:45:1:mmcrfs /gpfs/testfs testfs -F /var/lib/mmfs/gui/tmp/8346004473992249344stanza -A yes -D nfs4 -k nfs4 -B 4194304 -E yes -m 1 -M 2 -n 32 -i 4096 --inode-limit 50000:10000 -Q yes -r 1 -R 2 -S relatime -v yes -z no -j scatter --striped-logs --noperfileset-quota --metadata-block-size 4194304 --version 5.0.5.1
+%%home%%:03_COMMENT::48:2020.08.09.13.25.55:46:1:mmchfs testfs -o nfssync,nodev
+%%home%%:10_NODESET_HDR:::5:TCP:AUTHONLY:1191:::11:2301:2301:L:4:::20:20::5:::::::
+%%home%%:15_NODE_CLASS::1:1:GUI_MGMT_SERVERS::::::::::::::::::::::
+%%home%%:15_NODE_CLASS::2:2:GUI_SERVERS::::::::::::::::::::::
+%%home%%:20_MEMBER_NODE::1:1:gpfsgui-21:10.0.100.33:gpfsgui-21.novalocal:manager:Z:1,2::::gpfsgui-21.novalocal:gpfsgui-21:2301:5.0.5.1:Linux:Q::::::server::
+%%home%%:20_MEMBER_NODE::2:3:gpfsgui-23:10.0.100.35:gpfsgui-23.novalocal:manager:Z,X:2::::gpfsgui-23.novalocal:gpfsgui-23:2301:5.0.5.1:Linux:Q::::::server::
+%%home%%:20_MEMBER_NODE::3:2:gpfsgui-22:10.0.100.34:gpfsgui-22.novalocal:client:Z:2,1::::gpfsgui-22.novalocal:gpfsgui-22:2301:5.0.5.1:Linux:Q::::::server::
+%%home%%:20_MEMBER_NODE::4:4:gpfsgui-24:10.0.100.36:gpfsgui-24.novalocal:client:Z,X:2::::gpfsgui-24.novalocal:gpfsgui-24:2301:5.0.5.1:Linux:N::::::server::
+%%home%%:20_MEMBER_NODE::5:5:gpfsgui-25:10.0.100.37:gpfsgui-25.novalocal:client:Z,X:2::::gpfsgui-25.novalocal:gpfsgui-25:2301:5.0.5.1:Linux:N::::::server::
+%%home%%:70_MMFSCFG::1:clusterName:gpfsgui-cluster-2.novalocal::::::::::::::::::::::
+%%home%%:70_MMFSCFG::2:clusterId:12114047760675622762::::::::::::::::::::::
+%%home%%:70_MMFSCFG::3:profile:gpfsProtocolDefaults::::::::::::::::::::::
+%%home%%:70_MMFSCFG::4:dmapiFileHandleSize:32::::::::::::::::::::::
+%%home%%:70_MMFSCFG::5:minReleaseLevel:2301 5.0.5.1::::::::::::::::::::::
+%%home%%:70_MMFSCFG::6:ccrEnabled:yes::::::::::::::::::::::
+%%home%%:70_MMFSCFG::7:maxMBpS:5000:cesNodes:::::::::::::::::::::
+%%home%%:70_MMFSCFG::8:numaMemoryInterleave:yes:cesNodes:::::::::::::::::::::
+%%home%%:70_MMFSCFG::9:enforceFilesetQuotaOnRoot:yes:cesNodes:::::::::::::::::::::
+%%home%%:70_MMFSCFG::10:workerThreads:512:cesNodes:::::::::::::::::::::
+%%home%%:70_MMFSCFG::11:tscCmdPortRange:60000-61000::::::::::::::::::::::
+%%home%%:70_MMFSCFG::12:cipherList:AUTHONLY::::::::::::::::::::::
+%%home%%:70_MMFSCFG::13:autoload:yes::::::::::::::::::::::
+%%home%%:70_MMFSCFG::14:maxblocksize:16384K::::::::::::::::::::::
+%%home%%:70_MMFSCFG::15:maxFilesToCache:100010::::::::::::::::::::::
+%%home%%:70_MMFSCFG::16:maxStatCache:0::::::::::::::::::::::
+%%home%%:70_MMFSCFG::17:trace:all 4 tm 2 thread 1 mutex 1 vnode 2 ksvfs 3 klockl 2 io 3 pgalloc 1 mb 1 lock 2 fsck 3::::::::::::::::::::::
+%%home%%:70_MMFSCFG::18:traceRecycle:global::::::::::::::::::::::
+%%home%%:70_MMFSCFG::19:cesSharedRoot:/mnt/objfs::::::::::::::::::::::
+%%home%%:70_MMFSCFG::20:cesCidrPool:<IP=192.168.0.160><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.161><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.162><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.163><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.164><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.165><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.166><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.167><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.168><ATTRIBUTE=><GROUP=><PREFIX=>+<IP=192.168.0.169><ATTRIBUTE=><GROUP=><PREFIX=>::::::::::::::::::::::
+%%home%%:70_MMFSCFG::21:cesAddressPool:192.168.0.160/regular,192.168.0.161/regular,192.168.0.162/regular,192.168.0.163/regular,192.168.0.164/regular,192.168.0.165/regular,192.168.0.166/regular,192.168.0.167/regular,192.168.0.168/regular,192.168.0.169/regular::::::::::::::::::::::
+%%home%%:70_MMFSCFG::22:cifsBypassTraversalChecking:yes::::::::::::::::::::::
+%%home%%:70_MMFSCFG::23:syncSambaMetadataOps:yes::::::::::::::::::::::
+%%home%%:70_MMFSCFG::24:cifsBypassShareLocksOnRename:yes::::::::::::::::::::::
+%%home%%:70_MMFSCFG::25:cesServices:SMB,NFS::::::::::::::::::::::
+%%home%%:75_USEREXIT::1:GUI_CCR_CHANGE:/usr/lpp/mmfs/gui/callbacks/global/ccrChangedCallback_421.sh::false::ccrFileChange:GUI_MGMT_SERVERS:root %25eventName %25ccrObjectName %25ccrObjectVersion::gui_master_node,_gui.user.repo,_gui.snapshots,_gui.notification,_gui.settings,_gui.dashboards,_gui.keystore,_gui.keystore_settings,_gui.ldap_settings,_gui.policysettings,gui_jobs,mmsdrfs,spectrum-scale-object-policies.conf::::::::::::::
+%%home%%:75_USEREXIT::2:GUI_CM_TAKEOVER:/usr/lpp/mmfs/gui/callbacks/global/cmTakeOverCallback_421.sh::false::clusterManagerTakeover:GUI_MGMT_SERVERS:root %25eventName %25eventNode %25clusterManager::::::::::::::::
+%%home%%:75_USEREXIT::3:GPFS_STARTUP_SHUTDOWN:/usr/lpp/mmfs/gui/callbacks/global/startupShutdownCallback_421.sh::false::shutdown,startup:GUI_MGMT_SERVERS:root %25eventName %25eventNode::::::::::::::::
+%%home%%:75_USEREXIT::4:GUI_NODES:/usr/lpp/mmfs/gui/callbacks/global/NodeQuorumCallback_421.sh::false::nodeJoin,nodeLeave,quorumLoss,quorumNodeJoin,quorumNodeLeave,quorumReached:GUI_MGMT_SERVERS:root %25eventName %25eventNode %25quorumNodes %25downNodes %25upNodes %25clusterName::::::::::::::::
+%%home%%:75_USEREXIT::5:GUI_DISK_SPACE:/usr/lpp/mmfs/lib/gui_enablement/diskSpaceCallback::false::lowDiskSpace,noDiskSpace:GUI_SERVERS:root %25eventName %25eventNode %25reason %25fsName %25filesetName %25storagePool::::::::::::::::
+%%home%%:75_USEREXIT::6:GUI_MOUNT_ACTION:/usr/lpp/mmfs/lib/gui_enablement/mountActionCallback::false::mount,unmount:GUI_SERVERS:root %25eventName %25eventNode %25fsName::::::::::::::::
+%%home%%:30_SG_HEADR:gpfs0::150::::0::::no::no:::::::::::::
+%%home%%:40_SG_ETCFS:gpfs0:1:%2Fmnt%2Fgpfs0:
+%%home%%:40_SG_ETCFS:gpfs0:2:	dev		= /dev/gpfs0
+%%home%%:40_SG_ETCFS:gpfs0:3:	vfs		= mmfs
+%%home%%:40_SG_ETCFS:gpfs0:4:	nodename	= -
+%%home%%:40_SG_ETCFS:gpfs0:5:	mount		= mmfs
+%%home%%:40_SG_ETCFS:gpfs0:6:	type		= mmfs
+%%home%%:40_SG_ETCFS:gpfs0:7:	account		= false
+%%home%%:50_SG_MOUNT:gpfs0::rw:mtime:relatime:::::::::::::::::::::
+%%home%%:60_SG_DISKS:gpfs0:1:disk1:10737418240:1:metadataOnly:0A0064215F2FD03C:nsd:gpfsgui-21.novalocal::other::generic:user::::::system:gpfsgui-21.novalocal:::::
+%%home%%:60_SG_DISKS:gpfs0:2:disk2:10737418240:1:dataOnly:0A0064215F2FD03E:nsd:gpfsgui-21.novalocal::other::generic:user::::::data:gpfsgui-21.novalocal:::::
+%%home%%:30_SG_HEADR:myfs::152::::0:::scatter:no::no:::::::::::::
+%%home%%:40_SG_ETCFS:myfs:1:%2Fgpfs%2Fmyfs:
+%%home%%:40_SG_ETCFS:myfs:2:	dev		= /dev/myfs
+%%home%%:40_SG_ETCFS:myfs:3:	vfs		= mmfs
+%%home%%:40_SG_ETCFS:myfs:4:	nodename	= -
+%%home%%:40_SG_ETCFS:myfs:5:	mount		= mmfs
+%%home%%:40_SG_ETCFS:myfs:6:	type		= mmfs
+%%home%%:40_SG_ETCFS:myfs:7:	account		= false
+%%home%%:50_SG_MOUNT:myfs::rw:mtime:relatime:userquota;groupquota;filesetquota:nfssync,nodev:::::::::::::::::::
+%%home%%:60_SG_DISKS:myfs:1:disk5:10737418240:1:dataAndMetadata:0A0064215F2FD041:nsd:gpfsgui-21.novalocal::other::generic:user::::::system:gpfsgui-21.novalocal:::::
+%%home%%:60_SG_DISKS:myfs:2:disk6:10737418240:1:dataOnly:0A0064235F2FD03F:nsd:gpfsgui-23.novalocal::other::generic:user::::::mydata:gpfsgui-23.novalocal:::::
+%%home%%:60_SG_DISKS:myfs:3:disk7:10737418240:1:dataOnly:0A0064235F2FD040:nsd:gpfsgui-23.novalocal::other::generic:user::::::mydata1:gpfsgui-23.novalocal:::::
+%%home%%:30_SG_HEADR:objfs::151::::0::::no::no:::::::::::::
+%%home%%:40_SG_ETCFS:objfs:1:%2Fmnt%2Fobjfs:
+%%home%%:40_SG_ETCFS:objfs:2:	dev		= /dev/objfs
+%%home%%:40_SG_ETCFS:objfs:3:	vfs		= mmfs
+%%home%%:40_SG_ETCFS:objfs:4:	nodename	= -
+%%home%%:40_SG_ETCFS:objfs:5:	mount		= mmfs
+%%home%%:40_SG_ETCFS:objfs:6:	type		= mmfs
+%%home%%:40_SG_ETCFS:objfs:7:	account		= false
+%%home%%:50_SG_MOUNT:objfs::rw:mtime:relatime:::::::::::::::::::::
+%%home%%:60_SG_DISKS:objfs:1:disk3:10737418240:1:metadataOnly:0A0064215F2FD03F:nsd:gpfsgui-21.novalocal::other::generic:user::::::system:gpfsgui-21.novalocal:::::
+%%home%%:60_SG_DISKS:objfs:2:disk4:10737418240:1:dataOnly:0A0064215F2FD040:nsd:gpfsgui-21.novalocal::other::generic:user::::::data:gpfsgui-21.novalocal:::::
+%%home%%:30_SG_HEADR:testfs::153::::0:::scatter:no::no:::::::::::::
+%%home%%:40_SG_ETCFS:testfs:1:%2Fgpfs%2Ftestfs:
+%%home%%:40_SG_ETCFS:testfs:2:	dev		= /dev/testfs
+%%home%%:40_SG_ETCFS:testfs:3:	vfs		= mmfs
+%%home%%:40_SG_ETCFS:testfs:4:	nodename	= -
+%%home%%:40_SG_ETCFS:testfs:5:	mount		= mmfs
+%%home%%:40_SG_ETCFS:testfs:6:	type		= mmfs
+%%home%%:40_SG_ETCFS:testfs:7:	account		= false
+%%home%%:50_SG_MOUNT:testfs::rw:mtime:relatime:userquota;groupquota;filesetquota:nfssync,nodev:::::::::::::::::::
+%%home%%:60_SG_DISKS:testfs:1:disk9:10737418240:1:dataAndMetadata:0A0064235F2FD042:nsd:gpfsgui-23.novalocal::other::generic:user::::::system:gpfsgui-23.novalocal:::::
+%%home%%:60_SG_DISKS:testfs:2:disk10:10737418240:1:dataOnly:0A0064235F2FD043:nsd:gpfsgui-23.novalocal::other::generic:user::::::testdata:gpfsgui-23.novalocal:::::
+%%home%%:60_SG_DISKS:testfs:3:disk8:10737418240:1:dataOnly:0A0064235F2FD041:nsd:gpfsgui-23.novalocal::other::generic:user::::::testdata:gpfsgui-23.novalocal:::::
+~%MON%%:20_PERFMONCFG::1:# This file has been generated automatically and SHOULD NOT:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::2:# be edited manually.  It may be overwritten at any point:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::3:# in time.:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::4::::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::5:cephMon = "/opt/IBM/zimon/CephMonProxy":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::6:cephRados = "/opt/IBM/zimon/CephRadosProxy":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::7:colCandidates = "gpfsgui-21.novalocal", "gpfsgui-23.novalocal":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::8:colRedundancy = 2:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::9:collectors = {:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::10:	host = "":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::11:	port = "4739":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::12:}:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::13:config = "/opt/IBM/zimon/ZIMonSensors.cfg":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::14:ctdbstat = "":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::15:daemonize = T:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::16:hostname = "":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::17:ipfixinterface = "0.0.0.0":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::18:logfile = "/var/log/zimon/ZIMonSensors.log":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::19:loglevel = "info":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::20:mmcmd = "/opt/IBM/zimon/MMCmdProxy":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::21:mmdfcmd = "/opt/IBM/zimon/MMDFProxy":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::22:mmpmon = "/opt/IBM/zimon/MmpmonSockProxy":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::23:piddir = "/var/run":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::24:release = "5.0.5-1":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::25:sensors = {:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::26:	name = "CPU":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::27:	period = 1:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::28:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::29:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::30:	name = "Load":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::31:	period = 1:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::32:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::33:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::34:	name = "Memory":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::35:	period = 1:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::36:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::37:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::38:	filter = "netdev_name=veth.*":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::39:	name = "Network":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::40:	period = 1:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::41:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::42:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::43:	name = "Netstat":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::44:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::45:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::46:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::47:	name = "Diskstat":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::48:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::49:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::50:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::51:	filter = "mountPoint=/var/lib/docker.*":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::52:	name = "DiskFree":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::53:	period = 600:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::54:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::55:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::56:	name = "Infiniband":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::57:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::58:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::59:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::60:	name = "GPFSDisk":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::61:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::62:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::63:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::64:	name = "GPFSFilesystem":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::65:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::66:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::67:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::68:	name = "GPFSNSDDisk":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::69:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::70:	restrict = "nsdNodes":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::71:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::72:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::73:	name = "GPFSPoolIO":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::74:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::75:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::76:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::77:	name = "GPFSVFS":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::78:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::79:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::80:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::81:	name = "GPFSIOC":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::82:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::83:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::84:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::85:	name = "GPFSVIO64":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::86:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::87:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::88:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::89:	name = "GPFSPDDisk":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::90:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::91:	restrict = "nsdNodes":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::92:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::93:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::94:	name = "GPFSvFLUSH":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::95:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::96:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::97:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::98:	name = "GPFSNode":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::99:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::100:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::101:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::102:	name = "GPFSNodeAPI":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::103:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::104:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::105:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::106:	name = "GPFSFilesystemAPI":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::107:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::108:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::109:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::110:	name = "GPFSLROC":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::111:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::112:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::113:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::114:	name = "GPFSCHMS":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::115:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::116:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::117:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::118:	name = "GPFSAFM":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::119:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::120:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::121:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::122:	name = "GPFSAFMFS":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::123:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::124:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::125:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::126:	name = "GPFSAFMFSET":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::127:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::128:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::129:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::130:	name = "GPFSRPCS":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::131:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::132:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::133:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::134:	name = "GPFSWaiters":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::135:	period = 10:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::136:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::137:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::138:	name = "GPFSFilesetQuota":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::139:	period = 3600:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::140:	restrict = "gpfsgui-21.novalocal":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::141:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::142:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::143:	name = "GPFSFileset":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::144:	period = 300:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::145:	restrict = "@CLUSTER_PERF_SENSOR":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::146:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::147:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::148:	name = "GPFSPool":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::149:	period = 300:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::150:	restrict = "@CLUSTER_PERF_SENSOR":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::151:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::152:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::153:	name = "GPFSDiskCap":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::154:	period = 86400:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::155:	restrict = "gpfsgui-21.novalocal":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::156:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::157:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::158:	name = "GPFSEventProducer":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::159:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::160:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::161:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::162:	name = "GPFSMutex":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::163:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::164:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::165:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::166:	name = "GPFSCondvar":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::167:	period = 0:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::168:}, :::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::169:{:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::170:	name = "TopProc":::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::171:	period = 60:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::172:}:::::::::::::::::::::::
+~%MON%%:20_PERFMONCFG::173:smbstat = "":::::::::::::::::::::::

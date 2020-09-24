@@ -1,0 +1,216 @@
+# ZIMonSensors configuration file
+#
+# Comments start with # and extend to the end of the line.  Each
+# parameter definition must start on a separate line.  Parameters can
+# be of the different types:
+# - flags  boolean values specified as T or Y for true and F or N or
+#     false
+# - strings  must be quoted
+# - numbers  must be integers
+# - complex parameters  must be enclosed in braces { } and contain
+#     parameter assignments.
+
+# The hostname used to report this sensor's data as coming from
+# (default: hostname of the machine).  This option should only be used
+# for debugging and testing, use at your own risk.
+#hostname = "efsNodeXYZ"
+
+# Run as daemon in the background (default: N).
+daemonize = Y
+
+# Interface over which IPFIX data is sent (default: 0.0.0.0).
+#ipfixinterface = "0.0.0.0"
+
+# Path and filename of the logfile (default: stdout if running in
+# non-daemon mode, "collector.cfg" if running in daemon mode).  Use
+# "syslog" to send logging data to the syslog daemon.
+logfile = "/var/log/zimon/ZIMonSensors.log"
+
+# Log levels are: debug, info, warning, error (default: info).
+loglevel = "info"
+
+# Directory that is used to store the pid file (default: /var/run).
+piddir = "/var/run"
+
+# Specifies the path and filename of the MmpmonSockProxy.
+mmpmon = "/opt/IBM/zimon/MmpmonSockProxy"
+
+# Specifies the path to the MM command proxy.
+mmcmd = "/opt/IBM/zimon/MMCmdProxy"
+
+# Specifies the path to the MMDF command proxy
+mmdfcmd = "/opt/IBM/zimon/MMDFProxy"
+
+# The list of sensors and their configuration.  Sensors that are not
+# listed here or assigned a zero reporting period are ignored.
+sensors = {
+	name = "CPU"
+	period = 1
+}, {
+	name = "Load"
+	period = 1
+}, {
+	name = "Memory"
+	period = 1
+}, {
+	name = "Network"
+	period = 1
+	filter = "netdev_name=veth.*"
+}, {
+	name = "Netstat"
+	period = 10
+}, {
+	name = "Diskstat"
+	period = 0
+}, {
+	name = "DiskFree"
+	period = 600
+	filter = "mountPoint=/var/lib/docker.*"
+}, {
+	name = "Infiniband"
+	period = 0
+}, {
+	name = "GPFSDisk"
+	period = 0
+}, {
+	name = "GPFSFilesystem"
+	period = 10
+}, {
+	name = "GPFSNSDDisk"
+	period = 10
+	# restrict is only available for GPFS-based configurations
+	restrict = "nsdNodes"
+}, {
+	name = "GPFSPoolIO"
+	period = 0
+}, {
+	name = "GPFSVFS"
+	period = 10
+}, {
+	name = "GPFSIOC"
+	period = 0
+}, {
+	name = "GPFSVIO64"
+	# GPFSVIO64 uses 64-bit counters and replaces GPFSVIO
+	# new metric names are gpfs_vio64_.. instead of gpfs_vio_..
+	period = 0
+}, {
+	name = "GPFSPDDisk"
+	period = 10
+	# restrict is only available for GPFS-based configurations
+	restrict = "nsdNodes"
+}, {
+	name = "GPFSvFLUSH"
+	period = 0
+}, {
+	name = "GPFSNode"
+	period = 10
+}, {
+	name = "GPFSNodeAPI"
+	period = 10
+}, {
+	name = "GPFSFilesystemAPI"
+	period = 10
+}, {
+	name = "GPFSLROC"
+	period = 0
+}, {
+	name = "GPFSCHMS"
+	period = 0
+}, {
+	name = "GPFSAFM"
+	period = 0
+}, {
+	name = "GPFSAFMFS"
+	period = 0
+}, {
+	name = "GPFSAFMFSET"
+	period = 0
+}, {
+	name = "GPFSRPCS"
+	period = 10
+}, {
+	name = "GPFSWaiters"
+	period = 10
+}, {
+	name = "GPFSFilesetQuota"
+	# This sensor should be activated only on a single node in a
+	# cluster (restrict = ...) and SHOULD not be run more often than
+	# once per hour (3600).
+	period = 3600
+	restrict = "@CLUSTER_PERF_SENSOR"
+}, {
+	name = "GPFSFileset"
+	# This sensor should be activated only on a single node in a
+	# cluster (restrict = ...) and SHOULD not be run more often
+	# than every 300s, typically this sensor is activated by the
+	# Spectrum Scale Health component.
+	period = 300
+	restrict = "@CLUSTER_PERF_SENSOR"
+}, {
+	name = "GPFSPool"
+	# This sensor should be activated only on a single node in a
+	# cluster (restrict = ...) and SHOULD not be run more often
+	# than every 300s, typically this sensor is activated by the
+	# Spectrum Scale Health component.
+	period = 300
+	restrict = "@CLUSTER_PERF_SENSOR"
+}, {
+	name = "GPFSDiskCap"
+	# This sensor should be activated only on a single node in a
+	# cluster (restrict = ...) and SHOULD not be run more often
+	# than once per day (86400).
+	period = 86400
+	restrict = "@CLUSTER_PERF_SENSOR"
+}, {
+	name = "GPFSEventProducer"
+	# This sensor should be activated only when a policy is in place
+	# with rules containing ... ACTION(lweSEND(...))...
+	# Suggested frequency is every 10 seconds
+	period = 0
+}, {
+	name = "GPFSMutex"
+	# This sensor should be activated only when determining
+	# resource contention for GPFS mutexes
+	# Suggested frequency is every 10 seconds
+	period = 0
+}, {
+	name = "GPFSCondvar"
+	# This sensor should be activated only when determining
+	# resource contention for GPFS condition variables
+	# Suggested frequency is every 10 seconds
+	period = 0
+}, {
+	name = "TopProc"
+	# This sensor should be activated only when determining
+	# resource consumption of the top-k processes
+	# Suggested frequency is every 10 seconds
+	period = 60
+}
+
+# This is an entry for a generic proxy such as the GaneshaProxy:
+#,  {
+#	NSF Ganesha statistics
+#	name = "NFSIO"
+#    	period = 0
+#    	type = "Generic"
+#    	proxyCmd ="/opt/IBM/zimon/GaneshaProxy"
+#	restrict is only available for GPFS-based configurations
+#	restrict = "cesNodes"
+#}
+
+# The number of collectors to which ZIMonSensors will connect.  This
+# parameter is used only in conjunction with the GPFS mmperfmon tool
+# when creating a GPFS-managed sensor configuration.
+colRedundancy = 2
+
+# Specifies the ZIMon backend (collectors) to which these sensors are
+# reporting.  Each collector is specified by a hostname or IP address
+# and a port number.  Initially, no collector is specified.
+# When using mmperfmon to configure ZIMon in a GPFS cluster, then the
+# collectors are chosen based on the colRedundancy setting and the
+# given set of collector nodes passed to mmperfmon.
+collectors = {
+	host = ""
+	port = "4739"
+}

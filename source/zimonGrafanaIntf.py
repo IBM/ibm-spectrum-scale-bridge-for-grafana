@@ -66,7 +66,8 @@ MSG = {
 'AllowedAttrValues': 'For attribute {} applicable values:{}',
 'ReceivAttrValues': 'Received {}:{}',
 'TimerInfo':'Processing {} took {} seconds',
-'Query2port':'For better bridge performance multithreaded port {} will be used'
+'Query2port':'For better bridge performance multithreaded port {} will be used',
+'CollectorConnInfo':'Connection to the collector server established successfully'
 }
 
 
@@ -600,7 +601,8 @@ def validateCollectorConf(args, logger):
     if not (args.server == 'localhost') and not (args.server == '127.0.0.1'):
         try:
             s = socket.socket()
-            s.connect((args.server, args.serverPort)) 
+            s.connect((args.server, args.serverPort))
+            print(MSG['CollectorConnInfo'])
         finally:
             s.close()
     else:
@@ -687,6 +689,9 @@ def main(argv):
     except (Exception, IOError) as e:
         logger.exception('%s', MSG['IntError'].format(str(e)))
         print(MSG['CollectorErr'])
+        return
+    except (OSError) as e:
+        print("ZiMon sensor configuration file not found")
         return
 
 

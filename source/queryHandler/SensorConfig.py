@@ -42,7 +42,7 @@ def readSensorsConfigFromMMSDRFS(logger=None):
 
     if not os.path.isfile(mmsdrfsFile):
         logger.info("MMSDRFS file not found (%s) ", mmsdrfsFile)
-        return []
+        return readSensorsConfig(logger)
 
     data=""
     logger.debug("readSensorsConfigFromMMSDRFS attempt to read %s", mmsdrfsFile)
@@ -72,8 +72,9 @@ def readSensorsConfig(logger=None):
         logger = SysmonLogger.getLogger(__name__)
 
     if not os.path.isfile(zimonFile):
-        logger.info("ZiMon sensor configuration file not found (%s) ", zimonFile)
-        return []
+        logger.error("ZiMon sensor configuration file not found (%s) ", zimonFile)
+        print("ZiMon sensor configuration file not found")
+        raise OSError(2, 'No such file or directory', zimonFile)
 
     data=""
     logger.debug("readSensorsConfig attempt to read %s", zimonFile)

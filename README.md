@@ -6,6 +6,8 @@ Grafana Bridge is a standalone Python application. It translates the IBM Spectru
 
 ## Setup
 
+If you want run the ***IBM Spectrum Scale bridge for Grafana*** in a docker container please follow this [link](/docs/RUNNING_AS_DOCKER_CONTAINER.md)
+
 ### Prerequisites
 
 Before installing the IBM Spectrum Scale bridge for Grafana you must install the software prerequisites. Those are:
@@ -20,7 +22,7 @@ This package could be used for:
 - IBM Spectrum Scale devices having mimimum release level 5.0.3 FP2 and above
 - Grafana 6.0.0 and above
 
-To use this tool on the older IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](SUPPORT_MATRIX.md) file.
+To use this tool on the older IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](/docs/SUPPORT_MATRIX.md) file.
 
 
 
