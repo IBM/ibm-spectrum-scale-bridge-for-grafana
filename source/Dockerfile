@@ -1,61 +1,44 @@
-FROM registry.access.redhat.com/ubi8/ubi as pmcollector
+FROM registry.access.redhat.com/ubi8/python-36
+
+RUN pip3 install --upgrade pip
+RUN pip3 install setuptools
+RUN pip3 install cherrypy
+
+CMD python3 -V
+CMD pip3 list
+
+USER root
+
+RUN mkdir -p /opt/IBM/bridge
+ADD . /opt/IBM/bridge
 
 
-#
-# Installing tools required by pmcollector.
-#
-
-RUN yum install -y libicu gdbm-devel boost-devel python27
-
-#RUN yum install -y libicu
-
-#RUN yum install -y boost-regex 
-
-#RUN yum list all
-
-#
-# Installing few tools in the image that help to debug it easier.
-#
-RUN yum install -y gcc gcc-c++ make net-tools m4 libaio ksh which iproute procps-ng util-linux openssh-clients openssh-server setup elfutils-libelf-devel hostname kmod pciutils iputils bind-utils
-
-#RUN yum list all
+RUN mkdir -p /var/mmfs/gen
+RUN mkdir -p /opt/IBM/zimon
+COPY ./gpfsConfig/mmsdrfs* /var/mmfs/gen/
+COPY ./gpfsConfig/ZIMon* /opt/IBM/zimon/
 
 
 
-#
-# Installing Spectrum Scale pmcollector
-#
-ARG ARTIKEY
-RUN curl --fail -H "X-Jfrog-Art-Api: $ARTIKEY" -O https://na.artifactory.swg-devops.com/artifactory/res-fsaas-generic-local/ScaleRPMs/gpfs.gss.pmcollector-5.0.4-2.el8.x86_64.rpm
-RUN mkdir -p /opt/IBM/zimon/config
-RUN mkdir -p /opt/IBM/zimon/zdata
-RUN rpm -ivh gpfs.gss.pmcollector-5.0.4-2.el8.x86_64.rpm
+ARG PMCOLLECTORIP=0.0.0.0
+ENV SERVER=$PMCOLLECTORIP
+RUN echo "the pmcollector server ip is set to $SERVER"
 
 
-COPY ZIMonCollector.cfg /opt/IBM/zimon/config/ZIMonCollector.cfg
+WORKDIR /opt/IBM/bridge
 
-#
-# Create a user 'scalepm' under 'root' group
-#
-RUN groupadd -g 1099 scalepm
-RUN useradd -rm -d /home/1001 -s /bin/bash -g 1099 -u 1001 scalepm
+ARG DEFAULTLOGPATH='./logs/zserver.log'
+ENV LOGPATH=$DEFAULTLOGPATH
+RUN mkdir -p $(dirname $LOGPATH)
+RUN echo "the log will use $(dirname $LOGPATH)"
+RUN echo "$(pwd)"
 
-#
-# Chown all the files to the zimon 'scalepm' user.
-#
-RUN chown -R 1001:1099 /opt/IBM/zimon
-RUN chown -R 1001:1099 /var/log/zimon
-RUN chown -R 1001:1099 /var/run/perfmon
+RUN touch $LOGPATH
+RUN echo "log path: $(dirname $LOGPATH)" >> $LOGPATH
+RUN echo "pmcollector_server: $SERVER" >> $LOGPATH
 
-#
-# Switch to user 'scalepm'
-#
-USER 1001
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER"]
 
-CMD ["/opt/IBM/zimon/sbin/pmcollector", "-C", "/opt/IBM/zimon/config/ZIMonCollector.cfg", "-R", "/var/run/perfmon"]
+EXPOSE 4242
 
-# helpful for debugging
 #CMD ["tail", "-f", "/dev/null"]
-
-
-EXPOSE 4739 9085 9084 9094
