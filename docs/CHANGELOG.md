@@ -1,3 +1,18 @@
+# Version 6 (11/01/2020)
+
+Removed python2 support
+
+Added Dockerfile which can be used to run the bridge in a docker container.
+Added instructions describing how to build the bridge image and run it in a container 
+
+Set default location of the log file: './logs/zserver.log' 
+
+Source code refactoring(moved source code and example dashboards to the separate sub-directories)
+
+Fixed the issue "GPFSNSDFS/GPFSNSDPool sensor metrics are not found by the bridge"
+
+
+
 # Version 5 (12/01/2019)
 
 Moved the source code & documentation to the IBM GITHUB

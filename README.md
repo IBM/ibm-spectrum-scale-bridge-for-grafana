@@ -11,18 +11,18 @@ If you want run the ***IBM Spectrum Scale bridge for Grafana*** in a docker cont
 ### Prerequisites
 
 Before installing the IBM Spectrum Scale bridge for Grafana you must install the software prerequisites. Those are:
-1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
-2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_5.0.4/com.ibm.spectrum.scale.v5r04.doc/bl1adv_configurecollector.htm) the following software need to be installed:
-- [Python2.7](https://www.python.org/downloads/release/python-2717/)/ [Python3.6](https://www.python.org/downloads/release/python-369/)
+1. [Performance Monitoring tool](https://www.ibm.com/support/knowledgecenter/en/STXKQY_5.0.5/com.ibm.spectrum.scale.v5r05.doc/bl1adv_PMToverview.htm) installed and configured on your IBM Spectrum Scale device
+2. On the [collector node](https://www.ibm.com/support/knowledgecenter/en/STXKQY_5.0.5/com.ibm.spectrum.scale.v5r05.doc/bl1adv_configurecollector.htm) the following software need to be installed:
+- [Python3.6](https://www.python.org/downloads/release/python-369/)
 - [CherryPy](https://cherrypy.org/)
 
 
 ### Dependencies
 This package could be used for: 
-- IBM Spectrum Scale devices having mimimum release level 5.0.3 FP2 and above
-- Grafana 6.0.0 and above
+- IBM Spectrum Scale devices having minimum release level 5.0.5 FP2 and above
+- Grafana 7.1.0 and above
 
-To use this tool on the older IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](/docs/SUPPORT_MATRIX.md) file.
+To use this tool on the **older** IBM Spectrum Scale devices please refer to the [SUPPORT_MATRIX](/docs/SUPPORT_MATRIX.md) file.
 
 
 
@@ -30,7 +30,7 @@ To use this tool on the older IBM Spectrum Scale devices please refer to the [SU
 
 #### Step 1. Ensure that IBM Spectrum Scale meets prerequisite conditions
 
-The IBM Spectrum Scale system must run 4.2.1. or above. Run mmlsconfig to view the current configuration data of a GPFS™ cluster).
+The IBM Spectrum Scale system must run 5.0.5.2 or above. Run mmlsconfig to view the current configuration data of a GPFS™ cluster).
 
 The bridge works in permanent communication with the pmcollector. Therefore it is recommended to install and run this tool directly on a pmcollector node.
 

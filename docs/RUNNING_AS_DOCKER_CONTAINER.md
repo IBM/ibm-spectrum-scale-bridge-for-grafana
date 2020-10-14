@@ -1,6 +1,6 @@
 ## Running the IBM Spectrum Scale Performance Monitoring Bridge in a docker container
 
-IMPORTANT The IBM Spectrum Scale system must run 5.0.5 or above.
+IMPORTANT The IBM Spectrum Scale system must run 5.0.5.2 or above.
 
 
 
