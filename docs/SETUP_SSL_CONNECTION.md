@@ -29,5 +29,9 @@ Note: If you are using python3, please check which cherryPy version is compatibl
 4. Start the bridge listening on the socket port 8443. Don't forget to provide the location of ‘privkey.pem’ and ‘cert.pem’ (-k option), otherwise you will get the error message:
 
 ```shell
-# python zimonGrafanaIntf.py -p 8443
+# python3 zimonGrafanaIntf.py -p 8443 -k /opt/registry/certs
 ```
+
+
+#### Read more about HTTPS(SSL) connection
+ [CherryPy openSSL documentation](https://docs.cherrypy.org/en/latest/deploy.html#ssl-support)

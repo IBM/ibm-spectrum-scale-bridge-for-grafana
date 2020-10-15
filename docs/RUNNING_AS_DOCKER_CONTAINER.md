@@ -19,7 +19,9 @@ IMPORTANT The IBM Spectrum Scale system must run 5.0.5.2 or above.
 ```
 
 
+
 ### On the host running docker/podman perform the following steps:
+
 
 1. Clone this repository using git in your favourite directory
 
@@ -55,5 +57,27 @@ cp grafana_bridge/source/gpfsConfig
 
 ```
 
-
 Now you can add the host running the bridge container to the Grafana monitoring Datasource list.
+
+
+
+### Using HTTPS(SSL) connection for the IBM Spectrum Scale Performance Monitoring Bridge running in a container
+
+
+1. Follow the instructions [How to setup HTTPS(SSL)](./SETUP_SSL_CONNECTION.md) to generate a private key and certificate for 
+
+2. Start the bridge running in a container:
+
+```shell
+# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "PORT=8443" -e "KEYPATH=/opt/registry/certs" \ -v /tmp:/opt/IBM/bridge/logs -v /opt/registry/certs:/opt/registry/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_ssl_test:grafana 
+
+# podman logs bridge-ssl-test
+Connection to the collector server established successfully
+Successfully retrieved MetaData
+Received sensors:
+
+CPU     DiskFree        GPFSFilesystem  GPFSFilesystemAPI       GPFSNSDDisk     GPFSNSDFS       GPFSNSDPool     GPFSNode        GPFSNodeAPI     GPFSRPCS        GPFSVFS GPFSWaiters     Load    Memory  Netstat Network GPFSDiskCap     GPFSFileset GPFSFilesetQuota        GPFSInodeCap    GPFSPool        GPFSPoolCap
+Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Dec  5 2019, 15:45:45)
+[GCC 8.3.1 20191121 (Red Hat 8.3.1-5)], cherryPy version: 18.6.0.
+server started
+```
