@@ -46,6 +46,8 @@ MSG = {
 'IntError':'Server internal error occurred. Reason: {}',
 'sysStart':'Initial cherryPy server engine start have been invoked. Python version: {}, cherryPy version: {}.',
 'MissingParm':'Missing mandatory parameters, quitting',
+'KeyPathError':'KeyPath directory not found, quitting',
+'CertError':'Missing certificates in tht specified keyPath directory, quitting',
 'CollectorErr':'Failed to initialize connection to pmcollector, quitting',
 'MetaError':'Metadata could not be retrieved. Check log file for more details, quitting',
 'MetaSuccess': 'Successfully retrieved MetaData',
@@ -615,6 +617,21 @@ def validateCollectorConf(args, logger):
             logger.info(MSG['Query2port'].format(args.serverPort))
 
 
+def findKeyFile(path):
+    for name in ["privkey.pem","tls.key"]:
+        for root, dirs, files in os.walk(path):
+            if name in files:
+                return name
+    return None
+
+def findCertFile(path):
+    for name in ["cert.pem","tls.crt"]:
+        for root, dirs, files in os.walk(path):
+            if name in files:
+                return name
+    return None
+
+
 
 def updateCherrypyConf(args):
 
@@ -637,13 +654,15 @@ def updateCherrypyConf(args):
                                 'tools.encode.encoding' : 'utf-8'}}
     cherrypy.config.update(globalConfig)
 
-    if args.port == 8443:
-        sslConfig = {
-                    'global' : {
-                                'server.ssl_module' : 'builtin',
-                                'server.ssl_certificate' : args.keyPath + "/cert.pem",
-                                'server.ssl_private_key' : args.keyPath + "/privkey.pem" }}
-        cherrypy.config.update(sslConfig)
+def updateCherrypySslConf(args, certFile, keyFile):
+    certPath = os.path.join(args.keyPath, certFile)
+    keyPath = os.path.join(args.keyPath, keyFile)
+    sslConfig = {
+                'global' : {
+                            'server.ssl_module' : 'builtin',
+                            'server.ssl_certificate' : certPath,
+                            'server.ssl_private_key' : keyPath }}
+    cherrypy.config.update(sslConfig)
 
 
 
@@ -666,6 +685,15 @@ def main(argv):
     if args.port == 8443 and not args.keyPath:
         print(MSG['MissingParm'])
         return
+    elif not os.path.exists(args.keyPath):
+        print(MSG['KeyPathError'])
+        return
+    else:
+        certFile = findCertFile(args.keyPath)
+        keyFile = findKeyFile(args.keyPath)
+        if (not certFile) or (not keyFile):
+            print(MSG['CertError'])
+            return
 
     # prepare the logger
     logger = configureLogging(args.logFile, args.logLevel)
@@ -673,6 +701,8 @@ def main(argv):
 
     #prepare cherrypy server configuration
     updateCherrypyConf(args)
+    if args.port == 8443:
+        updateCherrypySslConf(args, certFile, keyFile)
 
 
 
