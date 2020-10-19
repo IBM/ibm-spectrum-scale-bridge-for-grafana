@@ -1,4 +1,4 @@
-# Version 6 (11/01/2020)
+# Version 6 (10/20/2020)
 
 Removed python2 support
 
