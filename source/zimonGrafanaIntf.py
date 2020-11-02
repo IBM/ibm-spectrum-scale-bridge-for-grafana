@@ -685,10 +685,10 @@ def main(argv):
     if args.port == 8443 and not args.keyPath:
         print(MSG['MissingParm'])
         return
-    elif not os.path.exists(args.keyPath):
+    elif args.port == 8443 and not os.path.exists(args.keyPath):
         print(MSG['KeyPathError'])
         return
-    else:
+    elif args.port == 8443:
         certFile = findCertFile(args.keyPath)
         keyFile = findKeyFile(args.keyPath)
         if (not certFile) or (not keyFile):
