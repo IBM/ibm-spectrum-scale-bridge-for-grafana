@@ -1,0 +1,8 @@
+nose
+pytest
+coverage
+coveralls
+PyYAML
+github3.py
+flake8
+six
