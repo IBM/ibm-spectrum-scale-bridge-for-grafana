@@ -39,7 +39,6 @@ if sys.version < '3':
     range = xrange
 
 
-
 EMPTY = json.loads('{"header" : {"bcount" : 0, "bsize" : 0, "t_start" : 0, "t_end" : 0 }, "legend" : [], "rows" : [], "rangeData": [] }')
 
 HeaderData = namedtuple('HeaderData', 'bcount, bsize, t_start, t_end')
@@ -119,7 +118,7 @@ class Key(namedtuple('_Key', 'parent, sensor, identifier, metric, domains')):
         return Key(items[0], items[1], tuple(items[2:-1]), items[-1], domains)
 
     def __str__(self):
-        return '|'.join([self.parent, self.sensor, '|'.join(self.identifier), self.metric]).replace('||','|')
+        return '|'.join([self.parent, self.sensor, '|'.join(self.identifier), self.metric]).replace('||', '|')
 
     def shortKey_str(self):
         return '|'.join([self.parent, self.sensor, '|'.join(self.identifier)])
@@ -150,6 +149,7 @@ class Domain(namedtuple('_domain', 'domainID, start, end, bucketSize')):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(self.end))
 
 DEFAULT_DOMAIN = Domain(99, 0, 6666666666, 666)
+
 
 class QueryResult:
     '''Wrapper for the data returned by a Zimon query'''
@@ -347,14 +347,14 @@ class QueryResult:
         except Exception:
             return None
 
-    def __downsample(self, fn, interval, column = 'all'):
+    def __downsample(self, fn, interval, column='all'):
 
         aggrRows = []
 
         for i in range(0, len(self.rows), interval):
-            rows_chunk=self.rows[i:i+interval]
+            rows_chunk = self.rows[i:i + interval]
             chunk_values = [row.values for row in rows_chunk]
-            aggr_values = [None]*len(self.columnInfos)
+            aggr_values = [None] * len(self.columnInfos)
             # iterate through each column of the time interval data chunk
             for idx, column_values in enumerate(zip(*chunk_values)):
                 try:
@@ -526,10 +526,10 @@ class QueryHandler2:
         Executes the delete command for the given key
         Returns result dictionary
         '''
-        #delete pre-check option
+        # delete pre-check option
         check = '-n' if precheck == True else ''
 
-        deleteString = 'delete %s key %s \n' %(check, keyStr)
+        deleteString = 'delete %s key %s \n' % (check, keyStr)
 
         response = self.__do_query(deleteString)
 

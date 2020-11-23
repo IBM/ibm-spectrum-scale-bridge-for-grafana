@@ -44,7 +44,7 @@ def readSensorsConfigFromMMSDRFS(logger=None):
         logger.info("MMSDRFS file not found (%s) ", mmsdrfsFile)
         return readSensorsConfig(logger)
 
-    data=""
+    data = ""
     logger.debug("readSensorsConfigFromMMSDRFS attempt to read %s", mmsdrfsFile)
     try:
         with open(mmsdrfsFile) as f:
@@ -64,6 +64,7 @@ def readSensorsConfigFromMMSDRFS(logger=None):
         sensors.append(d)
     return sensors
 
+
 def readSensorsConfig(logger=None):
     '''
     :return: list of dictionaries with sensorsName as key and the values of the sensors in the ZimonSensors.cfg
@@ -76,7 +77,7 @@ def readSensorsConfig(logger=None):
         print("ZiMon sensor configuration file not found")
         raise OSError(2, 'No such file or directory', zimonFile)
 
-    data=""
+    data = ""
     logger.debug("readSensorsConfig attempt to read %s", zimonFile)
     try:
         with open(zimonFile) as myfile:
@@ -95,6 +96,7 @@ def readSensorsConfig(logger=None):
             d[attr[0]] = attr[1]
         sensors.append(d)
     return sensors
+
 
 def getCollectorPorts(logger=None):
     '''

@@ -21,7 +21,6 @@ Created on Apr 4, 2017
 '''
 
 
-
 from collections import defaultdict
 
 
@@ -44,8 +43,6 @@ class Topo(object):
         if self.topo:
             self._processMetadata(self.topo)
 
-
-
     def _processMetadata(self, metadata):
         '''
         For each component of the highest level (cluster or cluster_node) splits metadata in
@@ -55,7 +52,7 @@ class Topo(object):
         for metaStr in metadata:
 
             # sub components dictionary of the highest level component (cluster or cluster_node)
-            _components=defaultdict(list)
+            _components = defaultdict(list)
             # filters dictionary, per sensor, per (cluster or cluster_node) component
             _filters = defaultdict(list)
             # name of the  (cluster or cluster_node) component
@@ -70,10 +67,8 @@ class Topo(object):
             tree_entry['componentsMap'] = _components
             tree_entry['filtersMap'] = _filters
 
-            #comp_tree[label] = tree_entry
+            # comp_tree[label] = tree_entry
             self.__compTree[label] = tree_entry
-
-
 
     def _parse_topoJSONStr(self, metrics, levels, ids, groupKeys, components, filters, metaStr):
         '''
@@ -103,7 +98,6 @@ class Topo(object):
             partKey = groupKey.split('|')
             sensor = partKey.pop(1)
 
-
             if field_name not in iterval(metrics[sensor]):
                 metrics[sensor][field_id] = field_name
 
@@ -111,7 +105,7 @@ class Topo(object):
             counter = groupKeys.get(groupKey, None)
 
             if not counter:
-                #parse sensor relevant data f.e. groupKey, filters, levels
+                # parse sensor relevant data f.e. groupKey, filters, levels
                 counter = len(groupKeys) + 1
                 groupKeys[groupKey] = counter
                 tags = {}
@@ -119,18 +113,16 @@ class Topo(object):
                 for i, compValue in enumerate(partKey):
                     for compLabel in components:
                         if compValue in components[compLabel]:
-                            levTree[i+1] = compLabel
+                            levTree[i + 1] = compLabel
                             tags[compLabel] = compValue
                 if tags not in filters[sensor]:
                     filters[sensor].append(tags)
                 if sensor not in levels:
                     levels[sensor] = levTree
 
-            #parse key id
+            # parse key id
             key = '|'.join([groupKey, field_name])
             ids[key] = ':'.join([str(counter), field_id])
-
-
 
     @property
     def allFiltersMaps(self):
@@ -209,8 +201,8 @@ class Topo(object):
         return list(set(tagvlist))
 
     def getSensorForMetric(self, searchMetric):
-        if (searchMetric.find("(")>=0):
-            searchMetric = searchMetric[searchMetric.find("(")+1:-1]
+        if (searchMetric.find("(") >= 0):
+            searchMetric = searchMetric[searchMetric.find("(") + 1:-1]
         for sensor, metrics in self.__metricsDef.items():
             if searchMetric in metrics.values():
                 return sensor
@@ -219,15 +211,15 @@ class Topo(object):
     def getSensorsForMeasurementMetrics(self, searchMetrics):
         sensorsList = []
         for metric in searchMetrics:
-            if (metric.find("(")>=0):
-                metric = metric[metric.find("(")+1:-1]
+            if (metric.find("(") >= 0):
+                metric = metric[metric.find("(") + 1:-1]
             sensorsList.append(self.getSensorForMetric(metric))
-        if len(sensorsList)>1:
+        if len(sensorsList) > 1:
             return list(set(sensorsList))
         return sensorsList
 
     def getAllValuesForTagName(self, searchTag):
-        return self.allAvailableComponents.get(searchTag,[])
+        return self.allAvailableComponents.get(searchTag, [])
 
     def getAllKeysForTagValue(self, searchValue):
         tagklist = []
@@ -343,14 +335,12 @@ class Topo(object):
 
         return filtersMap
 
-
-
     def calculateQueryPriority(self, metric, filterBy):
 
         priority = -1
 
-        if (metric.find("(")>=0):
-            metric = metric[metric.find("(")+1:-1]
+        if (metric.find("(") >= 0):
+            metric = metric[metric.find("(") + 1:-1]
         levels = self.getKeyGranularitylistForMetric(metric)
         if not levels:
             return priority
@@ -374,10 +364,10 @@ class Topo(object):
                 if filterKey == tag:
                     foundLevels.append(level)
 
-        #for node-wide metrics use the filter count ranking the priority
+        # for node-wide metrics use the filter count ranking the priority
         if 'node' in levels[1]:
             filter_level = (len(foundLevels) - 1)
-        #for cluster-wide metrics use the filter order ranking the priority
+        # for cluster-wide metrics use the filter order ranking the priority
         else:
             filter_level = max(foundLevels)
 
