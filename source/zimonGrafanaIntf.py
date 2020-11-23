@@ -704,6 +704,7 @@ def main(argv):
         print(MSG['CollectorErr'])
         return
     except (OSError) as e:
+        logger.exception('%s', MSG['IntError'].format(str(e)))
         print("ZiMon sensor configuration file not found")
         return
 
@@ -770,7 +771,5 @@ def main(argv):
     print("server stopped")
 
 
-
 if __name__ == '__main__':
     main(sys.argv[1:])
-

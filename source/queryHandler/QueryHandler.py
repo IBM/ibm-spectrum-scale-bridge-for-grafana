@@ -366,7 +366,7 @@ class QueryResult:
                     aggr_value = None
                 aggr_values[idx] = aggr_value
 
-            tIdx = (i + len(chunk_values)) -1
+            tIdx = (i + len(chunk_values)) - 1
             aggrRows.append({"tstamp": self.rows[tIdx].tstamp, "values": aggr_values, "nsamples": len(rows_chunk)})
 
         return [Row(**item) for item in aggrRows]
@@ -390,8 +390,8 @@ def div(a, b):  # defined anew because of py 2/3 difference
 class Calculator(object):
     '''simple UPN calculator'''
 
-    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div,\
- ">=":  operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq }
+    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div,
+           ">=": operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq}
 
     def __init__(self):
         self.stack = []

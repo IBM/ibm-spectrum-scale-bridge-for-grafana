@@ -1,5 +1,5 @@
-import sys
 import os
+
 
 def test_case01():
     result = os.system("python ./source/zimonGrafanaIntf.py")
