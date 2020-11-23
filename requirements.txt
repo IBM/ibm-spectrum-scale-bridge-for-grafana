@@ -6,3 +6,4 @@ PyYAML
 github3.py
 flake8
 six
+cherrypy
