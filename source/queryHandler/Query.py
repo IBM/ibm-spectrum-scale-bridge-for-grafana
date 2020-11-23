@@ -20,14 +20,10 @@ Created on Feb 4, 2017
 @author: NSCHULD
 '''
 #
-import sys
 
 
 def isString(val):
-    if sys.version < '3':
-        return isinstance(val, basestring)
-    else:
-        return isinstance(val, str)
+    return isinstance(val, str)
 
 
 class Query(object):

@@ -279,8 +279,7 @@ class PostHandler(object):
             'd': 86400,
             'w': 604800,
             'n': 2628000,
-            'y': 31536000,
-            }.get(timeunit, -1)
+            'y': 31536000, }.get(timeunit, -1)
 
     def _retrieveData(self, query, dsOp=None, dsInterval=None):
         '''Executes zimon query and returns results'''
@@ -409,7 +408,7 @@ class PostHandler(object):
         bstr = downsample
 
         if '-' in bstr:
-            x = re.split('(\d+)', bstr[:bstr.find('-')])
+            x = re.split(r'(\d+)', bstr[:bstr.find('-')])
             if len(x) == 3:  # if not 3, then split failed
                 if x[1]:  # there is a time value
                     if x[1].isdigit():

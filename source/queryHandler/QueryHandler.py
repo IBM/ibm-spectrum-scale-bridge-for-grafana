@@ -35,8 +35,6 @@ try:
     import SysmonLogger
 except Exception:
     pass
-if sys.version < '3':
-    range = xrange
 
 
 EMPTY = json.loads('{"header" : {"bcount" : 0, "bsize" : 0, "t_start" : 0, "t_end" : 0 }, "legend" : [], "rows" : [], "rangeData": [] }')
@@ -147,6 +145,7 @@ class Domain(namedtuple('_domain', 'domainID, start, end, bucketSize')):
     @property
     def end_str(self):
         return time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime(self.end))
+
 
 DEFAULT_DOMAIN = Domain(99, 0, 6666666666, 666)
 
@@ -331,7 +330,7 @@ class QueryResult:
         l = len(valList)
         if l == 0:
             return None
-        return int(round(s/l))
+        return int(round(s / l))
 
     def __colstat(self, column, fn, reverse=False):
         if isinstance(column, ColumnInfo):
