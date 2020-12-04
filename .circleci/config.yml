@@ -24,6 +24,12 @@ jobs:
             . venv/bin/activate
             flake8 --max-line-length=999 --ignore=E731,E741,E712,E722 --exclude=venv* --statistics
             nosetests tests/
+      - run:
+          name: Build Docker image
+          command: |
+            . venv/bin/activate
+            cd source
+            docker build -t bridge_image:gpfs505 .
 
 
 workflows:
