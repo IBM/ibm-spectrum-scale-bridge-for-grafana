@@ -629,16 +629,12 @@ def updateCherrypyConf(args):
     accesslog = os.path.join(path, 'cherrypy_access.log')
     errorlog = os.path.join(path, 'cherrypy_error.log')
 
-    globalConfig = {'global': {'server.socket_host': '0.0.0.0',
-                               'server.socket_port': args.port,
-                               'server.socket_timeout': 60,  # increase timeout to 60s
-                               'request.show_tracebacks': False,
-                               'log.screen': False,  # turn off logging to console
+    globalConfig = {'global': {'server.socket_port': args.port,
                                'log.access_file': accesslog,
-                               'log.error_file': errorlog,
-                               'tools.encode.on': True,
-                               'tools.encode.encoding': 'utf-8'}}
+                               'log.error_file': errorlog}}
+
     cherrypy.config.update(globalConfig)
+    cherrypy.config.update('./mycherrypy.conf')
 
 
 def updateCherrypySslConf(args, certFile, keyFile):
