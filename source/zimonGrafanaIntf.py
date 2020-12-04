@@ -634,7 +634,10 @@ def updateCherrypyConf(args):
                                'log.error_file': errorlog}}
 
     cherrypy.config.update(globalConfig)
-    cherrypy.config.update('./mycherrypy.conf')
+
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    customconf = os.path.join(dirname, 'mycherrypy.conf')
+    cherrypy.config.update(customconf)
 
 
 def updateCherrypySslConf(args, certFile, keyFile):
