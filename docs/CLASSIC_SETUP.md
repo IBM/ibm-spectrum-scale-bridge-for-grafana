@@ -1,4 +1,4 @@
-## Setup
+## Setup the IBM Spectrum Scale bridge for Grafana on a classic IBM Spectrum Scale cluster
 
 
 ### Prerequisites

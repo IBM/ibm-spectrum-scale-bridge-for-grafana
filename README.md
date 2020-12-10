@@ -14,13 +14,13 @@ Grafana Bridge is a standalone Python application. It translates the IBM Spectru
 
 ## Getting started
 
-### Installation guids:
+### Installation guides:
 
-* [Setup on a classic IBM Spectrum Scale cluster](/docs/CLASSIC_SETUP.md)
+* [Setup the grafana bridge on a classic IBM Spectrum Scale cluster](/docs/CLASSIC_SETUP.md)
 * [Run the grafana bridge in a docker container](/docs/RUNNING_AS_DOCKER_CONTAINER.md)
-* [Deploying Grafana instance for the IBM Spectrum Scale cloud native project in a k8s/OCP environment](/docs/grafana_deployment_ocp.md)
+* [Deploying a Grafana instance for the IBM Spectrum Scale cloud native project in a k8s/OCP environment](/docs/grafana_deployment_ocp.md)
 * [Connecting the grafana-bridge datasource to the Grafana instance in a k8s/OCP environment](/docs/connect_bridge_to_grafana_ocp.md)
-* [Explore Grafana WEB interface for CNSS project in a k8s/OCP environment](/docs/explore_grafana_ocp.md)
+* [Explore the Grafana WEB interface for the CNSS project in a k8s/OCP environment](/docs/explore_grafana_ocp.md)
 
 
 
