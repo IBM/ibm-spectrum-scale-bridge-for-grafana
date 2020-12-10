@@ -18,7 +18,7 @@
         Install Plugins (panels)
 
 
-    The Grafana operator image could be found at [quay.io/integreatly/grafana-operator:v3.6.0](quay.io/integreatly/grafana-operator:v3.6.0)
+    The Grafana operator image could be found at [quay.io/integreatly/grafana-operator:v3.6.0](https://quay.io/integreatly/grafana-operator:v3.6.0)
 
 
 
