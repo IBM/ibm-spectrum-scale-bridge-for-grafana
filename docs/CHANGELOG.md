@@ -1,3 +1,17 @@
+# Version 6.1 (12/10/2020)
+
+Added example yaml files which can be used to run the bridge in a cloud native environment.
+Added example yaml files which can be used to connect the bridge to a Grafana instance running in a cloud native environment.
+Added instructions describing how to deploy the bridge in a container running in a k8s/Openshift environment
+Added instructions describing how to deploy a Grafana instance via grafana-operator powered by RedHad community in a k8s/Openshift environment
+
+Make cherryPy server settings editable for a user
+
+Added test module for a basic parameter verification with the pytest framework
+Enabled source code changes verification using circleCi CI/CD pipeline 
+
+
+
 # Version 6 (10/20/2020)
 
 Removed python2 support
