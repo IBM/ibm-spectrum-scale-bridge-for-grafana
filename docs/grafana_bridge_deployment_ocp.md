@@ -11,7 +11,7 @@ This instructions could be used for:
 
 
 2. Make sure you have deployed the IBM Spectrum Scale cloud native (CNSS) cluster including the ibm-spectrum-scale-pmcollector pods.
-For more information about how to deploy a CNSS cluster please refer to the [IBM Spectrum Scale Knowledge Center]()
+For more information about how to deploy a CNSS cluster please refer to the [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
 
 ```
 [root@mycluster-inf ~]# oc get po -o wide
