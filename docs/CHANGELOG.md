@@ -1,9 +1,10 @@
 # Version 6.1 (12/10/2020)
 
-Added example yaml files which can be used to run the bridge in a cloud native environment.
-Added example yaml files which can be used to connect the bridge to a Grafana instance running in a cloud native environment.
-Added instructions describing how to deploy the bridge in a container running in a k8s/Openshift environment
-Added instructions describing how to deploy a Grafana instance via grafana-operator powered by RedHad community in a k8s/Openshift environment
+Added suppor for [IBM Spectrum Scale Container Native Storage Access 5.1.0.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+- added example yaml files which can be used to run the bridge in a cloud native environment.
+- added example yaml files which can be used to connect the bridge to a Grafana instance running in a cloud native environment.
+- added instructions describing how to deploy the bridge in a container running in a k8s/Openshift environment
+- added instructions describing how to deploy a Grafana instance via grafana-operator powered by RedHad community in a k8s/Openshift environment
 
 Make cherryPy server settings editable for a user
 
@@ -56,8 +57,8 @@ Source code changes based on [openTSDB datasource](https://github.com/grafana/gr
 - Fixed [alias tag issue](https://github.com/grafana/grafana/issues/7560)
 
 Source code changes based on latest configuration updates to IBM Spectrum Scale performance monitoring tool (ZIMon):
-- changed '-s --server' option from required to optional. If not specified the server will be automatically set to 'localhost'.
->> **NOTE**: Since Spectrum Scale version 5.0.0 the ZImon pmcollector allows query requests, per default, only from local host.
+- changed '-s --server' option from required to optional. If not specified the server will be automatically set to 'localhost'. \
+   **NOTE**: Since Spectrum Scale version 5.0.0 the ZImon pmcollector allows query requests, per default, only from local host.
 - added vlaidity check for '-P --serverPort'
 - added configuration check for multithreaded serverPort. If configured, this will be automatically used for querying pmcollector.
 
