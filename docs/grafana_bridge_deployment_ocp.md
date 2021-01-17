@@ -7,7 +7,7 @@ This instructions could be used for:
 - IBM Spectrum Scale cloud native (CNSS) devices having minimum release level 5.1.0.1 and above
 
 
-1. Follow the [instructions](/docs/RUNNING_AS_DOCKER_CONTAINER.md) and create the IBM Spectrum Scale bridge for Grafana image
+1. Follow the [instructions](/docs/BUILDING_DOCKER_IMAGE.md) and create the IBM Spectrum Scale bridge for Grafana image
 
 
 2. Make sure you have deployed the IBM Spectrum Scale cloud native (CNSS) cluster including the ibm-spectrum-scale-pmcollector pods.
