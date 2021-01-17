@@ -1,0 +1,37 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: Helene
+
+---
+
+**Describe the bug**
+A clear and concise description of what the bug is.
+
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
+
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
+
+**Desktop (please complete the following information):**
+ - IBM Spectrum Scale system type:
+    - [ ] IBM Spectrum Scale classic cluster.
+    - [ ] IBM Spectrum Scale Container Native Storage Access (CNSA).
+    - [ ] IBM Elastic Storage Server (ESS).
+ - IBM Spectrum Scale cluster version:
+ - IBM Spectrum Scale bridge for Grafana version:
+ - Grafana version:
+ - OS Grafana is installed on:
+
+**Additional context**
+Add any other context about the problem here.
