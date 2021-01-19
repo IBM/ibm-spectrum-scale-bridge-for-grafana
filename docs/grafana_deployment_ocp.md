@@ -42,7 +42,7 @@ to build a new example application in Python. Or use kubectl to deploy a simple 
 ```
 
 
-2. Update the 'namespace:' field in the example_deployment_scripts/bridge_deployment/bridge-service.yaml script with the new created project name.
+2. Update the 'namespace:' field in the example_deployment_scripts/grafana_deployment/grafana-instance-for-cnss.yaml script with the new created project name.
 
 
 3. Navigate to OperatorHub and select the community-powered Grafana Operator. Press Continue to accept the disclaimer, press Install, and press Subscribe to accept the default configuration values and deploy to the my-grafana namespace.
