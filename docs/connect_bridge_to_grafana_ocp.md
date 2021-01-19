@@ -42,6 +42,9 @@ eyJhbGciOiJSUzI1NiIsImtpZCI6IlFIV0dLT1ZITlpqQ1lXc05TNUNkVjZ2MDFJVUp2SjFnR3lkR2Iz
 
 Substituite ${BEARER_TOKEN} with the output of the command above in the grafana-bridge-datasource.yaml
 Also 'TLS cert ${TLS_CERT}', 'TLS key ${TLS_KEY}' need to be replaced with TLS key and certificate, we have generated for the grafana-bridge.
+Replace ${namespace-name of the CNSS project} in the grafana-bridge service URL with the namespace name of your CNSS cluster project.
+
+Finally modify the 'namespace: <grafana-instance namespace>' field to point to your Grafana instance project name.
 
 The GrafanaDataSource deployment script for the grafana-bridge datasource will look as below:
 
