@@ -1,4 +1,4 @@
-# Explore Grafana WEB interface for CNSS project in a k8s/OCP environment
+# Explore Grafana WEB interface for CNSA project in a k8s/OCP environment
 
 
 
@@ -39,4 +39,9 @@ Click on Configuration > Data Sources in the side menu and you’ll be taken to 
 ![](/docs/grafana_ui_datasource_view.png)
 
 
-Now, an editable Grafana interface appears and you can view your custom Grafana dashboards or create your own.
+In the grafana-bridge datasource settings make sure the OpenTSDB version 2.3 is selected. Finally click on 'Save & Test' button.
+
+![](/docs/grafana_ui_datasource_editor.png)
+
+
+Now you can import some predefined Grafana dashboards or create your own.

@@ -22,7 +22,7 @@
 
 
 
-## Deploying Grafana instance for the IBM Spectrum Scale cloud native (CNSS) project in a k8s/OCP environment
+## Deploying Grafana instance for the IBM Spectrum Scale Container Native Storage Access(CNSA) project in a k8s/OCP environment
 
 
 1. create a new project, for example: my-grafana

@@ -4,14 +4,14 @@
 
 ### Dependencies
 This instructions could be used for: 
-- IBM Spectrum Scale cloud native (CNSS) devices having minimum release level 5.1.0.1 and above
+- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minimum release level 5.1.0.1 and above
 
 
 1. Follow the [instructions](/docs/BUILDING_DOCKER_IMAGE.md) and create the IBM Spectrum Scale bridge for Grafana image
 
 
-2. Make sure you have deployed the IBM Spectrum Scale cloud native (CNSS) cluster including the ibm-spectrum-scale-pmcollector pods.
-For more information about how to deploy a CNSS cluster please refer to the [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+2. Make sure you have deployed the IBM Spectrum Scale Container Native Storage Access(CNSA) cluster including the ibm-spectrum-scale-pmcollector pods.
+For more information about how to deploy a CNSA cluster please refer to the [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
 
 ```
 [root@mycluster-inf ~]# oc get po -o wide
@@ -40,8 +40,11 @@ ibm-spectrum-scale-pmcollector    ClusterIP   None            <none>        9085
 
 3. Copy the content of the example_deployment_scripts directory to your favourite directory on the master node.
 Additionally perform the following modifications in the files before you start with the deployment:
-    - Open the example_deployment_scripts/bridge_deployment/bridge-service.yaml file with an editor and set the namespace name of your CNSS cluster project.
+    - Open the example_deployment_scripts/bridge_deployment/bridge-service.yaml file with an editor and set the namespace name of your CNSA cluster project.
     - Edit the example_deployment_scripts/bridge_deployment/bridge-deployment.yaml and modify the image: field to point to the bridge image location, you created before.
+    - In case you are pulling the image from a private Docker registry or repository you need to create a Secret based on existing Docker credentials and 
+      put the secret name under imagePullSecrets settings in the example_deployment_scripts/bridge_deployment/bridge-deployment.yaml
+      For more Information please refer to the Kubernetes documentation about [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
 
 
 4. Create the TLS certificate and the private key

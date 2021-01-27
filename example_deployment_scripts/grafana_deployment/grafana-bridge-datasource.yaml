@@ -19,6 +19,6 @@ spec:
         tlsClientCert: 'TLS cert ${TLS_CERT}'
         tlsClientKey: 'TLS key ${TLS_KEY}'
         httpHeaderValue1: 'Bearer ${BEARER_TOKEN}'
-      url: 'https://grafana-bridge.${namespace-name of the CNSS project}.svc.cluster.local:8443'
+      url: 'https://grafana-bridge.${namespace-name of the CNSA project}.svc.cluster.local:8443'
       version: 1
   name: grafana-bridge-datasource.yaml

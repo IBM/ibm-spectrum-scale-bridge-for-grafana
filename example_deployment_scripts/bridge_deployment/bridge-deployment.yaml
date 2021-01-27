@@ -78,8 +78,14 @@ spec:
       - name: init-scale-perf-query-service
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup ibm-spectrum-scale-perf-query.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ibm-spectrum-scale-perf-query service; sleep 2; done"]
-      imagePullSecrets:
-        - name: spectrumscale-registrykey
+      #######################################################################################################################
+      #
+      # in case you are pulling the image from a private Docker registry or repository
+      # you need to create a Secret based on existing Docker credentials and put the secret name under imagePullSecrets settings
+      #
+      #######################################################################################################################
+      #imagePullSecrets:
+      #  - name: spectrumscale-registrykey
       volumes:
         - name: logfiles
           emptyDir: {}
