@@ -21,4 +21,3 @@ Created on Feb 17, 2021
 '''
 
 __version__ = '7.0'
-
