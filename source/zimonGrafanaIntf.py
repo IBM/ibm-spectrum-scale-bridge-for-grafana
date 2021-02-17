@@ -33,6 +33,7 @@ from queryHandler.Query import Query
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
+from __version__ import __version__
 from collections import defaultdict
 from timeit import default_timer as timer
 
@@ -67,7 +68,8 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'ReceivAttrValues': 'Received {}:{}',
        'TimerInfo': 'Processing {} took {} seconds',
        'Query2port': 'For better bridge performance multithreaded port {} will be used',
-       'CollectorConnInfo': 'Connection to the collector server established successfully'
+       'CollectorConnInfo': 'Connection to the collector server established successfully',
+       'BridgeVersionInfo': 'IBM Spectrum Scale bridge for Grafana - Version: {}'
        }
 
 
@@ -689,6 +691,8 @@ def main(argv):
 
     # prepare metadata
     try:
+        print("\n" + MSG['BridgeVersionInfo'].format(__version__))
+        logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         validateCollectorConf(args, logger)
         mdHandler = MetadataHandler(logger, args.server, args.serverPort)
         print(MSG['MetaSuccess'])
