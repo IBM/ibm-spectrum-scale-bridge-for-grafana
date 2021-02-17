@@ -40,4 +40,4 @@ workflows:
       - build-and-test:
           filters:
             branches:
-              only: master
+              only: v6.1
