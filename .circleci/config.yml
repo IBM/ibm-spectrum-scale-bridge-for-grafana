@@ -31,13 +31,10 @@ jobs:
           command: |
             . venv/bin/activate
             cd source
-            docker build -t bridge_image:gpfs505 .
+            docker build -t bridge_image:latest .
 
 
 workflows:
   main:
     jobs:
-      - build-and-test:
-          filters:
-            branches:
-              only: v6.1
+      - build-and-test
