@@ -22,7 +22,7 @@
 
 
 
-## Deploying Grafana instance for the IBM Spectrum Scale cloud native (CNSS) project in a k8s/OCP environment
+## Deploying Grafana instance for the IBM Spectrum Scale Container Native Storage Access(CNSA) project in a k8s/OCP environment
 
 
 1. create a new project, for example: my-grafana
@@ -42,7 +42,10 @@ to build a new example application in Python. Or use kubectl to deploy a simple 
 ```
 
 
-2. Navigate to OperatorHub and select the community-powered Grafana Operator. Press Continue to accept the disclaimer, press Install, and press Subscribe to accept the default configuration values and deploy to the my-grafana namespace.
+2. Update the 'namespace:' field in the example_deployment_scripts/grafana_deployment/grafana-instance-for-cnss.yaml script with the new created project name.
+
+
+3. Navigate to OperatorHub and select the community-powered Grafana Operator. Press Continue to accept the disclaimer, press Install, and press Subscribe to accept the default configuration values and deploy to the my-grafana namespace.
 
 ![](/docs/operator_hub.png)
 
@@ -62,7 +65,7 @@ grafana-operator-857c86c65d-62t7m   1/1     Running   0          78s
 ```
 
 
-3. Change to the directory example_deployment_scripts/grafana_deployment/ and apply the grafana-instance-for-cnss.yaml file
+4. Change to the directory example_deployment_scripts/grafana_deployment/ and apply the grafana-instance-for-cnss.yaml file
 
 ```
 [root@mycluster-inf ~]# cd /opt/example_deployment_scripts/grafana_deployment

@@ -20,4 +20,5 @@ Created on Feb 17, 2021
 @author: HWASSMAN
 '''
 
-__version__ = '6.1.1'
+__version__ = '7.0'
+

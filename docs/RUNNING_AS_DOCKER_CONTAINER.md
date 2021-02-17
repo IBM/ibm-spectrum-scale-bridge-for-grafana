@@ -20,7 +20,7 @@ IMPORTANT The IBM Spectrum Scale system must run 5.0.5.2 or above.
 
 
 
-### On the host running docker/podman perform the following steps:
+### On a host running docker/podman perform the following steps:
 
 
 1. Clone this repository using git in your favourite directory

@@ -4,7 +4,7 @@ The following matrix gives a quick overview of the supported software for the IB
 - Python 3.6
 - CherryPy 18.0.0
 - IBM Spectrum Scale system must run 5.0.5 FP2 and above or
-- IBM Spectrum Scale cloud native (CNSS) devices having minReleaseLevel 5.1.0.1
+- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.0.1
 - Grafana 7.1.0 and above
 
 # Version 6 (11/01/2020)
