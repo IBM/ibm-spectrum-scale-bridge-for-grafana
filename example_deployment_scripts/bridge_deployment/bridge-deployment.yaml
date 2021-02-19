@@ -55,7 +55,7 @@ spec:
           env:
           - name: SERVER
             value: $(IBM_SPECTRUM_SCALE_PERF_QUERY_SERVICE_HOST)
-          - name: KEYPATH
+          - name: TLSKEYPATH
             value: /opt/registry/certs
           - name: PORT
             value: "8443"

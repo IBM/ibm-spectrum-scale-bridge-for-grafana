@@ -22,7 +22,7 @@ def test_case04():
 
 
 def test_case05():
-    result = os.system('python ./source/zimonGrafanaIntf.py --port 8443 --keyPath "/tmp"')
+    result = os.system('python ./source/zimonGrafanaIntf.py --port 8443 --tlsKeyPath "/tmp"')
     assert result == 0
 
 

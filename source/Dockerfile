@@ -24,9 +24,9 @@ ENV PORT=$HTTPPORT
 RUN echo "the HTTP/S port is set to $PORT" 
 
 ARG CERTPATH
-ENV KEYPATH=$CERTPATH
-RUN if [ -z "$KEYPATH" ] && [ "$PORT" -eq 8443 ]; then echo "KEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
-RUN echo "the ssl certificates path is set to $KEYPATH" 
+ENV TLSKEYPATH=$CERTPATH
+RUN if [ -z "$TLSKEYPATH" ] && [ "$PORT" -eq 8443 ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
+RUN echo "the ssl certificates path is set to $TLSKEYPATH" 
 
 ARG PMCOLLECTORIP=0.0.0.0
 ENV SERVER=$PMCOLLECTORIP
@@ -44,10 +44,10 @@ RUN echo "$(pwd)"
 RUN touch $LOGPATH
 RUN echo "log path: $(dirname $LOGPATH)" >> $LOGPATH
 RUN echo "pmcollector_server: $SERVER" >> $LOGPATH
-RUN echo "ssl certificates location: $KEYPATH" >> $LOGPATH
+RUN echo "ssl certificates location: $TLSKEYPATH" >> $LOGPATH
 RUN echo "HTTP/S port: $PORT" >> $LOGPATH
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -p $PORT -k $KEYPATH"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -p $PORT -t $TLSKEYPATH"]
 
 EXPOSE 4242 8443
 
