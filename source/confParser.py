@@ -23,7 +23,7 @@ Created on Feb 15, 2021
 import argparse
 import os
 import logging.handlers
-from messages import ERR, MSG
+from messages import MSG
 
 
 def findKeyFile(path):
@@ -32,6 +32,7 @@ def findKeyFile(path):
             if name in files:
                 return name
     return None
+
 
 def findCertFile(path):
     for name in ["cert.pem", "tls.crt"]:

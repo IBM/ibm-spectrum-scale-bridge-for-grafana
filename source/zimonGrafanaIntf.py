@@ -39,7 +39,6 @@ from collections import defaultdict
 from timeit import default_timer as timer
 
 
-
 class MetadataHandler():
 
     def __init__(self, logger, server, port=9084):
