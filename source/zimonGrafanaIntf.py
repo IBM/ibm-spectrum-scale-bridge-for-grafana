@@ -23,7 +23,6 @@ Created on Apr 4, 2017
 import cherrypy
 import json
 import re
-import argparse
 import logging.handlers
 import sys
 import socket
@@ -34,43 +33,10 @@ from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from __version__ import __version__
+from messages import ERR, MSG
+from confParser import parse_cmd_args, findCertFile, findKeyFile
 from collections import defaultdict
 from timeit import default_timer as timer
-
-
-ERR = {400: 'Bad Request',
-       404: 'Not Found',
-       500: 'Internal Server Error. Please check logs for more details.'}
-
-MSG = {'IntError': 'Server internal error occurred. Reason: {}',
-       'sysStart': 'Initial cherryPy server engine start have been invoked. Python version: {}, cherryPy version: {}.',
-       'MissingParm': 'Missing mandatory parameters, quitting',
-       'KeyPathError': 'KeyPath directory not found, quitting',
-       'CertError': 'Missing certificates in tht specified keyPath directory, quitting',
-       'CollectorErr': 'Failed to initialize connection to pmcollector, quitting',
-       'MetaError': 'Metadata could not be retrieved. Check log file for more details, quitting',
-       'MetaSuccess': 'Successfully retrieved MetaData',
-       'QueryError': 'Query request could not be proceed. Reason: {}',
-       'SearchErr': 'Search for {} did cause exception: {}',
-       'LookupErr': 'Lookup for metric {} did not return any results',
-       'FilterByErr': 'No component entry found for the specified \'filterby\' attribute',
-       'GroupByErr': 'In the current setup the group aggregation \'groupby\' is not possible.',
-       'MetricErr': 'Metric {0} cannot be found. Please check if the corresponding sensor is configured',
-       'InconsistentParams': 'Received parameters {} inconsistent with request parameters {}',
-       'SensorDisabled': 'Sensor for metric {} is disabled',
-       'NoData': 'Empty results received',  # Please check the pmcollector is properly configured and running.
-       'BucketsizeChange': 'Based on requested downsample value: {} the bucketsize will be set: {}',
-       'BucketsizeToPeriod': 'Bucketsize will be set to sensors period: {}',
-       'ReceivedQuery': 'Received query request for query:{}, start:{}, end:{}',
-       'RunQuery': 'Execute zimon query: {}',
-       'AttrNotValid': 'Invalid attribute:{}',
-       'AllowedAttrValues': 'For attribute {} applicable values:{}',
-       'ReceivAttrValues': 'Received {}:{}',
-       'TimerInfo': 'Processing {} took {} seconds',
-       'Query2port': 'For better bridge performance multithreaded port {} will be used',
-       'CollectorConnInfo': 'Connection to the collector server established successfully',
-       'BridgeVersionInfo': 'IBM Spectrum Scale bridge for Grafana - Version: {}'
-       }
 
 
 class MetadataHandler():
@@ -607,22 +573,6 @@ def validateCollectorConf(args, logger):
             logger.info(MSG['Query2port'].format(args.serverPort))
 
 
-def findKeyFile(path):
-    for name in ["privkey.pem", "tls.key"]:
-        for root, dirs, files in os.walk(path):
-            if name in files:
-                return name
-    return None
-
-
-def findCertFile(path):
-    for name in ["cert.pem", "tls.crt"]:
-        for root, dirs, files in os.walk(path):
-            if name in files:
-                return name
-    return None
-
-
 def updateCherrypyConf(args):
 
     path, folder = os.path.split(args.logFile)
@@ -642,9 +592,9 @@ def updateCherrypyConf(args):
     cherrypy.config.update(customconf)
 
 
-def updateCherrypySslConf(args, certFile, keyFile):
-    certPath = os.path.join(args.keyPath, certFile)
-    keyPath = os.path.join(args.keyPath, keyFile)
+def updateCherrypySslConf(args):
+    certPath = os.path.join(args.tlsKeyPath, findCertFile(args.tlsKeyPath))
+    keyPath = os.path.join(args.tlsKeyPath, findKeyFile(args.tlsKeyPath))
     sslConfig = {'global': {'server.ssl_module': 'builtin',
                             'server.ssl_certificate': certPath,
                             'server.ssl_private_key': keyPath}}
@@ -654,31 +604,9 @@ def updateCherrypySslConf(args, certFile, keyFile):
 def main(argv):
 
     # parse input arguments
-    parser = argparse.ArgumentParser('python zimonGrafanaIntf.py')
-    parser.add_argument('-s', '--server', action="store", default='localhost',
-                        help='Host name or ip address of the ZIMon collector (Default: 127.0.0.1) \
-                        NOTE: Per default ZIMon does not accept queries from remote machines. \
-                        To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-P', '--serverPort', action="store", type=int, default=9084, help='ZIMon collector port number (Default: 9084)')
-    parser.add_argument('-l', '--logFile', action="store", default="./logs/zserver.log", help='location of the log file (Default: ./logs/zserver.log')
-    parser.add_argument('-c', '--logLevel', action="store", type=int, default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')
-    parser.add_argument('-p', '--port', action="store", type=int, default=4242, help='port number to listen on (Default: 4242)')
-    parser.add_argument('-k', '--keyPath', action="store", help='Directory path of privkey.pem and cert.pem file location(Required only for HTTPS port 8443)')
-
-    args = parser.parse_args(argv)
-
-    if args.port == 8443 and not args.keyPath:
-        print(MSG['MissingParm'])
-        return
-    elif args.port == 8443 and not os.path.exists(args.keyPath):
-        print(MSG['KeyPathError'])
-        return
-    elif args.port == 8443:
-        certFile = findCertFile(args.keyPath)
-        keyFile = findKeyFile(args.keyPath)
-        if (not certFile) or (not keyFile):
-            print(MSG['CertError'])
-            return
+    args, msg = parse_cmd_args(argv)
+    if not args:
+        print(msg)
 
     # prepare the logger
     logger = configureLogging(args.logFile, args.logLevel)
@@ -687,7 +615,7 @@ def main(argv):
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
     if args.port == 8443:
-        updateCherrypySslConf(args, certFile, keyFile)
+        updateCherrypySslConf(args)
 
     # prepare metadata
     try:

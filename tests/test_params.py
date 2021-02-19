@@ -18,12 +18,12 @@ def test_case03():
 
 def test_case04():
     result = os.system("python ./source/zimonGrafanaIntf.py --port 8443")
-    assert result == 0
+    assert result > 0
 
 
 def test_case05():
-    result = os.system('python ./source/zimonGrafanaIntf.py --port 8443 --keyPath "/tmp"')
-    assert result == 0
+    result = os.system('python ./source/zimonGrafanaIntf.py --port 8443 --tlsKeyPath "/tmp"')
+    assert result > 0
 
 
 def test_case06():
