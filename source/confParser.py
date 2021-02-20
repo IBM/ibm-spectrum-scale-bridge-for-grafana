@@ -24,6 +24,7 @@ import argparse
 import os
 import logging.handlers
 from messages import MSG
+import configparser
 
 
 def findKeyFile(path):
@@ -40,6 +41,19 @@ def findCertFile(path):
             if name in files:
                 return name
     return None
+
+
+def parse_defaults_from_config_file(fileName='config.ini'):
+    defaults = {}
+    dirname, filename = os.path.split(os.path.abspath(__file__))
+    conf_file = os.path.join(dirname, fileName)
+    if os.path.isfile(conf_file):
+        config = configparser.ConfigParser()
+        config.read(conf_file)
+        for sect in config.sections():
+            for name, value in config.items(sect):
+                defaults[name] = value
+    return defaults
 
 
 def parse_cmd_args(argv):
