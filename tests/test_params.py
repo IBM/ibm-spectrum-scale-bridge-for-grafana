@@ -27,4 +27,3 @@ def test_case04():
 def test_case05():
     result = parse_defaults_from_config_file()
     assert int(result['port']) == 4242 and int(result['serverport']) == 9084
-
