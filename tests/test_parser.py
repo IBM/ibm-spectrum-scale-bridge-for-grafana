@@ -29,4 +29,3 @@ def test_case05():
 def test_case06():
     result = os.system('python ./source/zimonGrafanaIntf.py -a 2')
     assert result > 0
-
