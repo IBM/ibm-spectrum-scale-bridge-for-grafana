@@ -42,8 +42,17 @@ def findCertFile(path):
                 return name
     return None
 
+def merge_defaults_and_args(defaults, args):
+    '''merge default config parameters with input parameters from the command line'''
+    brConfig = {}
+    brConfig = dict(defaults)
+    args = vars(args)
+    brConfig.update({k: v for k, v in args.items() if v is not None})
+    return brConfig
+
 
 def parse_defaults_from_config_file(fileName='config.ini'):
+    '''parse default parameters from a config file'''
     defaults = {}
     dirname, filename = os.path.split(os.path.abspath(__file__))
     conf_file = os.path.join(dirname, fileName)

@@ -1,4 +1,11 @@
-from source.confParser import parse_defaults_from_config_file
+from source.confParser import parse_defaults_from_config_file, merge_defaults_and_args, parse_cmd_args
+from nose.tools import with_setup
+
+
+def my_setup(): 
+    global a,b,c
+    a = parse_defaults_from_config_file()
+    b,c = parse_cmd_args([])
 
 
 def test_case01():
@@ -27,3 +34,11 @@ def test_case04():
 def test_case05():
     result = parse_defaults_from_config_file()
     assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
+
+
+@with_setup(my_setup)
+def test_case06():
+    result = merge_defaults_and_args(a, b)
+    assert len(result.keys()) > 0
+    assert 'port' in result.keys()
+    assert 'serverPort' in result.keys()
