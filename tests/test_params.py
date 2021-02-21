@@ -2,10 +2,10 @@ from source.confParser import parse_defaults_from_config_file, merge_defaults_an
 from nose.tools import with_setup
 
 
-def my_setup(): 
-    global a,b,c
+def my_setup():
+    global a, b, c
     a = parse_defaults_from_config_file()
-    b,c = parse_cmd_args([])
+    b, c = parse_cmd_args([])
 
 
 def test_case01():

@@ -42,6 +42,7 @@ def findCertFile(path):
                 return name
     return None
 
+
 def merge_defaults_and_args(defaults, args):
     '''merge default config parameters with input parameters from the command line'''
     brConfig = {}
