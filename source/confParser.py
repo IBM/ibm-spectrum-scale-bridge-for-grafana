@@ -49,6 +49,7 @@ def parse_defaults_from_config_file(fileName='config.ini'):
     conf_file = os.path.join(dirname, fileName)
     if os.path.isfile(conf_file):
         config = configparser.ConfigParser()
+        config.optionxform = str
         config.read(conf_file)
         for sect in config.sections():
             for name, value in config.items(sect):

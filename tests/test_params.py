@@ -14,7 +14,7 @@ def test_case02():
 def test_case03():
     result = parse_defaults_from_config_file()
     elements = list(result.keys())
-    mandatoryItems = ['port', 'serverport']
+    mandatoryItems = ['port', 'serverPort']
     assert all(item in elements for item in mandatoryItems)
 
 
@@ -26,4 +26,4 @@ def test_case04():
 
 def test_case05():
     result = parse_defaults_from_config_file()
-    assert int(result['port']) == 4242 and int(result['serverport']) == 9084
+    assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
