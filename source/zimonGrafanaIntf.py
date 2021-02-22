@@ -34,7 +34,7 @@ from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from __version__ import __version__
 from messages import ERR, MSG
-from confParser import parse_cmd_args, findCertFile, findKeyFile
+from confParser import getSettings
 from collections import defaultdict
 from timeit import default_timer as timer
 
@@ -534,11 +534,11 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads('{}')
 
 
-def configureLogging(logfile, loglevel):
+def configureLogging(logPath, logfile, loglevel):
     # create the logfile path if needed
-    path, folder = os.path.split(logfile)
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(logPath):
+        os.makedirs(logPath)
+    logfile = os.path.join(logPath, logfile)
 
     # prepare the logger
     logger = logging.getLogger('zimonGrafanaIntf')
@@ -556,32 +556,32 @@ def configureLogging(logfile, loglevel):
 
 def validateCollectorConf(args, logger):
 
-    if not (args.server == 'localhost') and not (args.server == '127.0.0.1'):
+    if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
         try:
             s = socket.socket()
-            s.connect((args.server, args.serverPort))
+            s.connect((args.get('server'), args.get('serverPort')))
             print(MSG['CollectorConnInfo'])
         finally:
             s.close()
     else:
         # get queryport
         foundPorts = SensorConfig.getCollectorPorts(logger)
-        if foundPorts and str(args.serverPort) not in foundPorts:
+        if foundPorts and str(args.get('serverPort')) not in foundPorts:
             raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
-        elif foundPorts[1] and not (args.serverPort == int(foundPorts[1])):
-            args.serverPort = int(foundPorts[1])
-            logger.info(MSG['Query2port'].format(args.serverPort))
+        elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
+            args['serverPort'] = int(foundPorts[1])
+            logger.info(MSG['Query2port'].format(args['serverPort']))
 
 
 def updateCherrypyConf(args):
 
-    path, folder = os.path.split(args.logFile)
+    path = args.get('logPath')
     if not os.path.exists(path):
         os.makedirs(path)
     accesslog = os.path.join(path, 'cherrypy_access.log')
     errorlog = os.path.join(path, 'cherrypy_error.log')
 
-    globalConfig = {'global': {'server.socket_port': args.port,
+    globalConfig = {'global': {'server.socket_port': args.get('port'),
                                'log.access_file': accesslog,
                                'log.error_file': errorlog}}
 
@@ -593,8 +593,8 @@ def updateCherrypyConf(args):
 
 
 def updateCherrypySslConf(args):
-    certPath = os.path.join(args.tlsKeyPath, findCertFile(args.tlsKeyPath))
-    keyPath = os.path.join(args.tlsKeyPath, findKeyFile(args.tlsKeyPath))
+    certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
+    keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
     sslConfig = {'global': {'server.ssl_module': 'builtin',
                             'server.ssl_certificate': certPath,
                             'server.ssl_private_key': keyPath}}
@@ -604,25 +604,26 @@ def updateCherrypySslConf(args):
 def main(argv):
 
     # parse input arguments
-    args, msg = parse_cmd_args(argv)
+    args, msg = getSettings(argv)
     if not args:
         print(msg)
+        return
 
     # prepare the logger
-    logger = configureLogging(args.logFile, args.logLevel)
-    logger.info('zimonGrafanaItf invoked with parameters:%s', str(args))
+    logger = configureLogging(args.get('logPath'), args.get('logFile'), args.get('logLevel'))
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
-    if args.port == 8443:
+    if args.get('port') == 8443:
         updateCherrypySslConf(args)
 
     # prepare metadata
     try:
         print("\n" + MSG['BridgeVersionInfo'].format(__version__))
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
+        logger.info('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
         validateCollectorConf(args, logger)
-        mdHandler = MetadataHandler(logger, args.server, args.serverPort)
+        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'))
         print(MSG['MetaSuccess'])
         print(MSG['ReceivAttrValues'].format('sensors', "\n\n" + "\t".join(mdHandler.metaData.sensorsSpec.keys())))
     except (AttributeError, ValueError, TypeError) as e:

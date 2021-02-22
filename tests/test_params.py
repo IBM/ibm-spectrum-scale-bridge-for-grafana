@@ -3,9 +3,10 @@ from nose.tools import with_setup
 
 
 def my_setup():
-    global a, b, c
+    global a, b, c, d, e
     a = parse_defaults_from_config_file()
     b, c = parse_cmd_args([])
+    d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
 
 
 def test_case01():
@@ -42,3 +43,11 @@ def test_case06():
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
     assert 'serverPort' in result.keys()
+
+
+@with_setup(my_setup)
+def test_case07():
+    result = merge_defaults_and_args(a, d)
+    assert len(result.keys()) > 0
+    assert 'port' in result.keys()
+    assert result.get('port') == 8443
