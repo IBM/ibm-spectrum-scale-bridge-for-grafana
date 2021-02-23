@@ -52,5 +52,6 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'TimerInfo': 'Processing {} took {} seconds',
        'Query2port': 'For better bridge performance multithreaded port {} will be used',
        'CollectorConnInfo': 'Connection to the collector server established successfully',
-       'BridgeVersionInfo': ' *** IBM Spectrum Scale bridge for Grafana - Version: {} ***'
+       'BridgeVersionInfo': ' *** IBM Spectrum Scale bridge for Grafana - Version: {} ***',
+       'FileNotFound': 'The file {} not found.'
        }

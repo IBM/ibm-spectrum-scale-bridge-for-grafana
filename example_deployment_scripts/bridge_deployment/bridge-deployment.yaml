@@ -56,7 +56,11 @@ spec:
           - name: SERVER
             value: $(IBM_SPECTRUM_SCALE_PERF_QUERY_SERVICE_HOST)
           - name: TLSKEYPATH
-            value: /opt/registry/certs
+            value: /etc/bridge_ssl/certs
+          - name: TLSKEYFILE
+            value: "tls.key"
+          - name: TLSCERTFILE
+            value: "tls.crt"
           - name: PORT
             value: "8443"
           imagePullPolicy: Always
@@ -67,16 +71,17 @@ spec:
               containerPort: 8443
           volumeMounts:
             - name: logfiles
-              mountPath: /opt/IBM/bridge/logs
+              mountPath: /var/log/ibm_bridge_for_grafana/
             - name: config
               mountPath: /opt/IBM/zimon/
               readOnly: true
               optional: true
             - name: secret-volume
-              mountPath: /opt/registry/certs
+              mountPath: /etc/bridge_ssl/certs
+              type: DirectoryOrCreate
       initContainers:
       - name: init-scale-perf-query-service
-        image: busybox:1.28
+        image: busybox:latest
         command: ['sh', '-c', "until nslookup ibm-spectrum-scale-perf-query.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ibm-spectrum-scale-perf-query service; sleep 2; done"]
       #######################################################################################################################
       #

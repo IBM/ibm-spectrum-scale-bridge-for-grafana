@@ -23,9 +23,16 @@ ARG HTTPPORT=4242
 ENV PORT=$HTTPPORT
 RUN echo "the HTTP/S port is set to $PORT" 
 
-ARG CERTPATH
+ARG CERTPATH=None
 ENV TLSKEYPATH=$CERTPATH
-RUN if [ -z "$TLSKEYPATH" ] && [ "$PORT" -eq 8443 ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
+
+ARG KEYFILE=None
+ENV TLSKEYFILE=$KEYFILE
+
+ARG CERTFILE=None
+ENV TLSCERTFILE=$CERTFILE
+
+RUN if [ -z "$TLSKEYPATH" ] || [ -z "$TLSCERTFILE" ] || [ -z "$TLSKEYFILE" ] && [ "$PORT" -eq 8443 ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
 RUN echo "the ssl certificates path is set to $TLSKEYPATH" 
 
 ARG PMCOLLECTORIP=0.0.0.0
@@ -35,7 +42,7 @@ RUN echo "the pmcollector server ip is set to $SERVER"
 
 WORKDIR /opt/IBM/bridge
 
-ARG DEFAULTLOGPATH='./logs/zserver.log'
+ARG DEFAULTLOGPATH='/var/log/ibm_bridge_for_grafanalogs/install.log'
 ENV LOGPATH=$DEFAULTLOGPATH
 RUN mkdir -p $(dirname $LOGPATH)
 RUN echo "the log will use $(dirname $LOGPATH)"
@@ -47,7 +54,7 @@ RUN echo "pmcollector_server: $SERVER" >> $LOGPATH
 RUN echo "ssl certificates location: $TLSKEYPATH" >> $LOGPATH
 RUN echo "HTTP/S port: $PORT" >> $LOGPATH
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -p $PORT -t $TLSKEYPATH"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -p $PORT -t $TLSKEYPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE"]
 
 EXPOSE 4242 8443
 
