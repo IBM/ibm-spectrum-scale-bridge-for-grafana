@@ -100,9 +100,9 @@ def parse_cmd_args(argv):
     parser.add_argument('-f', '--logFile', action="store", default="zserver.log", help='Name of the log file (Default: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')
     parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=4242, help='port number listening on for HTTP(S) connections (Default: 4242)')
-    parser.add_argument('-t', '--tlsKeyPath', action="store", help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
-    parser.add_argument('-k', '--tlsKeyFile', action="store", help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
-    parser.add_argument('-m', '--tlsCertFile', action="store", help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
+    parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
+    parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
+    parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
 
     args = parser.parse_args(argv)
     return args, ''
