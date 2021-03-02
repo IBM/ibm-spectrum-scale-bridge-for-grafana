@@ -13,23 +13,18 @@ To set up SSL communication between the bridge and the Grafana complete the foll
 2. Generate a certificate.
 
 ```shell
-# openssl req -new -x509 -days 365 -key privkey.pem -out cert.pem
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/bridge_ssl/certs/privkey.pem -out /etc/bridge_ssl/certs/cert.pem
 ```
 
 Openssl will then ask you a series of questions. You can enter whatever values are applicable, or leave most fields blank. The one field you must fill in is the ‘Common Name’: enter the hostname which will be used to access the bridge (where the Grafana server running).
 
-Note: The file names for key and the certificate should be ‘privkey.pem’ and ‘cert.pem’.
+Note: The file names for the key and the certificate should be ‘privkey.pem’ and ‘cert.pem’.
 
 
-3. Install CherryPy (version 5.0 or above)from the [CherryPy](https://cherrypy.org/) download page.
-
-Note: If you are using python3, please check which cherryPy version is compatible with your setup. In our lab, we have tested python version 3.4.3 with cherryPy version 8.2.0.
-
-
-4. Start the bridge listening on the socket port 8443. Don't forget to provide the location of ‘privkey.pem’ and ‘cert.pem’ (-k option), otherwise you will get the error message:
+3. Start the bridge listening on the socket port 8443. Don't forget to provide the location and the file name of the tls private key and the tls certificate:
 
 ```shell
-# python3 zimonGrafanaIntf.py -p 8443 -k /opt/registry/certs
+# python3 zimonGrafanaIntf.py -p 8443 -t /etc/bridge_ssl/certs -k privkey.pem -m cert.pem
 ```
 
 
