@@ -44,14 +44,14 @@ cp grafana_bridge/source/gpfsConfig
 ```shell
 # cd grafana_bridge/source
 
-# podman build -t bridge_image:gpfs505 .
+# podman build -t bridge_image:latest .
 ```
 
 
 4. Start the bridge running in a container:
 
 ```shell
-# podman run -dt -p 4242:4242 -e "SERVER=9.XXX.XXX.XXX" --pod new:my-pod --name grafana_bridge bridge_image:gpfs505
+# podman run -dt -p 4242:4242 -e "SERVER=9.XXX.XXX.XXX" --pod new:my-pod --name grafana_bridge bridge_image:latest
 
 # podman logs grafana_bridge
 
@@ -64,12 +64,12 @@ Now you can add the host running the bridge container to the Grafana monitoring 
 ### Using HTTPS(SSL) connection for the IBM Spectrum Scale Performance Monitoring Bridge running in a container
 
 
-1. Follow the instructions [How to setup HTTPS(SSL)](./SETUP_SSL_CONNECTION.md) to generate a private key and certificate for 
+1. Follow the instructions [Generate SSL certificates](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-setup-HTTPS%28SSL%29-connection-for-the-IBM-Spectrum-Scale-bridge-for-Grafana#generate-ssl-certificates) to generate a private ssl key and a ssl certificate
 
 2. Start the bridge running in a container:
 
 ```shell
-# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "PORT=8443" -e "KEYPATH=/opt/registry/certs" \ -v /tmp:/opt/IBM/bridge/logs -v /opt/registry/certs:/opt/registry/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_ssl_test:grafana 
+# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "PORT=8443" -e "TLSKEYPATH=/etc/bridge_ssl/certs" -e "TLSKEYFILE=privkey.pem" -e "TLSCERTFILE=cert.pem" \ -v /tmp:/var/log/ibm_bridge_for_grafana -v /etc/bridge_ssl/certs:/etc/bridge_ssl/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_image:latest 
 
 # podman logs bridge-ssl-test
 Connection to the collector server established successfully

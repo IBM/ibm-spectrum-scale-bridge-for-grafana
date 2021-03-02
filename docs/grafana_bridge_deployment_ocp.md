@@ -50,18 +50,18 @@ Additionally perform the following modifications in the files before you start w
 4. Create the TLS certificate and the private key
 
 ```
-[root@mycluster-inf ~]# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/privkey.pem -out /tmp/cert.pem -subj "/CN=grafana-bridge/O=grafana-bridge"
+[root@mycluster-inf ~]# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/bridge_ssl/certs/privkey.pem -out /etc/bridge_ssl/certs/cert.pem -subj "/CN=grafana-bridge/O=grafana-bridge"
 Generating a 2048 bit RSA private key
 ........................+++
 ..............................................+++
-writing new private key to '/tmp/privkey.pem'
+writing new private key to '/etc/bridge_ssl/certs/privkey.pem'
 -----
 ```
 
 Check that the both .pem files are created in the /tmp directory
 
 ```
-[root@mycluster-inf ~]# cd /tmp
+[root@mycluster-inf ~]# cd /etc/bridge_ssl/certs
 [root@mycluster-inf tmp]# cat privkey.pem
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDZ7v0Oq9n9zx8T
