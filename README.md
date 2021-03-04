@@ -23,6 +23,7 @@ Grafana Bridge is a standalone Python application. It translates the IBM Spectru
 * [Connecting the grafana-bridge datasource to the Grafana instance in a k8s/OCP environment](/docs/connect_bridge_to_grafana_ocp.md)
 * [Explore the Grafana WEB interface for the IBM CNSA project in a k8s/OCP environment](/docs/explore_grafana_ocp.md)
 
+Find more helpful information about the bridge usage in the project [Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki)
 
 
 ## Contributing
