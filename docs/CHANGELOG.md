@@ -1,6 +1,25 @@
+# Version 6.1.1 (03/05/2021)
+
+Added version tracking inside the bridge module
+Added "config.ini" file with the default configuration settings, which can be updated, saved away and restored by the user
+Expanded list of the editable command line arguments
+- added argument:'tlsKeyFile'; Name of TLS key file, f.e.: privkey.pem
+- added argument:'tlsCertFile'; Name of TLS certificate file, f.e.: cert.pem
+- splitted the 'logFile' argument in the 'logPath', allowing to modify the location of the log files, and the 'logFile', editable log file name
+Moved the default log location outside the bridge source code
+- default location path of the log file set to: "/var/log/ibm_bridge_for_grafana"
+
+Expanded test module with more unit tests
+
+Added Wiki link to the README
+Improved the documentation about the bridge setup in a cloud native environment(CNSA)
+Updated documentation about the bridge configuration using http(ssl) connection
+
+
+
 # Version 6.1 (12/10/2020)
 
-Added suppor for [IBM Spectrum Scale Container Native Storage Access 5.1.0.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+Added support for [IBM Spectrum Scale Container Native Storage Access 5.1.0.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
 - added example yaml files which can be used to run the bridge in a cloud native environment.
 - added example yaml files which can be used to connect the bridge to a Grafana instance running in a cloud native environment.
 - added instructions describing how to deploy the bridge in a container running in a k8s/Openshift environment
