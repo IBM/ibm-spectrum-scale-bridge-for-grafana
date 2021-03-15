@@ -568,7 +568,7 @@ def validateCollectorConf(args, logger):
         # foundPorts = SensorConfig.getCollectorPorts(logger)
         # if foundPorts and str(args.get('serverPort')) not in foundPorts:
         #    raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
-        #elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
+        # elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
         #    args['serverPort'] = int(foundPorts[1])
         #    logger.info(MSG['Query2port'].format(args['serverPort']))
 
