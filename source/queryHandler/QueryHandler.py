@@ -460,7 +460,7 @@ class QueryHandler2:
             endstr = b'.\n'
         try:
             with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-                sock.settimeout(60)
+                sock.settimeout(30)
                 sock.connect((self.remote_ip, self.port))
                 if sys.version >= '3':
                     data = bytes(data, 'UTF-8')
@@ -482,13 +482,19 @@ class QueryHandler2:
                             chunks.append(chunk)
         except socket.timeout as e:
             self.logger.error(e)
+            msg = None
+        except OSError as e:
+            self.logger.error(e)
+            msg = None
         except Exception as e:
             self.logger.error(e)
-            return None
-        if msg.startswith('Error'):
-            self.logger.error('QueryHandler: query returned no data: {0}'.format(msg))
-            return None
-        return msg
+            msg = None
+        finally:
+            sock.close()
+            if msg and msg.startswith('Error'):
+                self.logger.error('QueryHandler: query returned no data: {0}'.format(msg))
+                msg = None
+            return msg
 
     def getTopology(self, ignoreMetrics=False):
         '''
