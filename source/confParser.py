@@ -95,7 +95,10 @@ def parse_cmd_args(argv):
                         help='Host name or ip address of the ZIMon collector (Default: 127.0.0.1) \
                         NOTE: Per default ZIMon does not accept queries from remote machines. \
                         To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-P', '--serverPort', action="store", type=int, default=9084, help='ZIMon collector port number (Default: 9084)')
+    parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9084, 9094], default=9084, 
+                        help='ZIMon collector port number (Default: 9084) \
+                        NOTE: In some environments, for better bridge performance the usage of the multi-threaded port 9094 could be helpful.\
+                        In this case make sure the \'query2port = \"9094\"\' is enabled in the ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
     parser.add_argument('-l', '--logPath', action="store", default="/var/log/ibm_bridge_for_grafana", help='location path of the log file (Default: /var/log/ibm_bridge_for_grafana')
     parser.add_argument('-f', '--logFile', action="store", default="zserver.log", help='Name of the log file (Default: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=logging.INFO, help='log level 10 (DEBUG), 20 (INFO), 30 (WARN), 40 (ERROR) (Default: 20)')

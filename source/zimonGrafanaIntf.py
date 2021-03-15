@@ -556,21 +556,21 @@ def configureLogging(logPath, logfile, loglevel):
 
 def validateCollectorConf(args, logger):
 
-    if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
-        try:
-            s = socket.socket()
-            s.connect((args.get('server'), args.get('serverPort')))
-            print(MSG['CollectorConnInfo'])
-        finally:
-            s.close()
-    else:
+    # if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
+    try:
+        s = socket.socket()
+        s.connect((args.get('server'), args.get('serverPort')))
+        print(MSG['CollectorConnInfo'])
+    finally:
+        s.close()
+    # else:
         # get queryport
-        foundPorts = SensorConfig.getCollectorPorts(logger)
-        if foundPorts and str(args.get('serverPort')) not in foundPorts:
-            raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
-        elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
-            args['serverPort'] = int(foundPorts[1])
-            logger.info(MSG['Query2port'].format(args['serverPort']))
+        # foundPorts = SensorConfig.getCollectorPorts(logger)
+        # if foundPorts and str(args.get('serverPort')) not in foundPorts:
+        #    raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
+        #elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
+        #    args['serverPort'] = int(foundPorts[1])
+        #    logger.info(MSG['Query2port'].format(args['serverPort']))
 
 
 def updateCherrypyConf(args):
