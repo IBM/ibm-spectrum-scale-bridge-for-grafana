@@ -34,6 +34,7 @@ from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from __version__ import __version__
 from messages import ERR, MSG
+from bridgeLogger import configureLogging
 from confParser import getSettings
 from collections import defaultdict
 from timeit import default_timer as timer
@@ -82,10 +83,10 @@ class MetadataHandler():
         foundItems = len(self.metaData.allParents) - 1
         sensors = self.metaData.sensorsSpec.keys()
         self.logger.info(MSG['MetaSuccess'])
-        self.logger.info(MSG['ReceivAttrValues'].format('parents totally', foundItems))
+        self.logger.details(MSG['ReceivAttrValues'].format('parents totally', foundItems))
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
-        self.logger.info(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
+        self.logger.details(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
 
     def update(self):
         '''Read the topology from ZIMon and update
@@ -98,7 +99,7 @@ class MetadataHandler():
         if not (self.metaData and self.metaData.topo):
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
             raise cherrypy.HTTPError(404, MSG[404])
-        self.logger.info(MSG['MetaSuccess'])
+        self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
         return({'msg': MSG['MetaSuccess']})
@@ -252,14 +253,14 @@ class PostHandler(object):
     def _retrieveData(self, query, dsOp=None, dsInterval=None):
         '''Executes zimon query and returns results'''
 
-        self.logger.info(MSG['RunQuery'].format(query))
+        self.logger.details(MSG['RunQuery'].format(query))
         tstart = timer()
         res = self.qh.runQuery(query)
         tend = timer()
-        self.logger.info(MSG['TimerInfo'].format('runQuery: \"' + str(query) + '\"', str(tend - tstart)))
+        self.logger.details(MSG['TimerInfo'].format('runQuery: \"' + str(query) + '\"', str(tend - tstart)))
         if res is None:
             return
-        self.logger.info("res.rows length: {}".format(len(res.rows)))
+        self.logger.details("res.rows length: {}".format(len(res.rows)))
         rows = res.rows
         if dsOp and dsInterval and len(res.rows) > 1:
             rows = res.downsampleResults(dsInterval, dsOp)
@@ -305,7 +306,7 @@ class PostHandler(object):
             self.logger.error(MSG['MetricErr'].format(inMetric))
             raise cherrypy.HTTPError(404, MSG['MetricErr'].format(inMetric))
         else:
-            self.logger.info(MSG['ReceivedQuery'].format(str(q), str(start), str(end)))
+            self.logger.details(MSG['ReceivedQuery'].format(str(q), str(start), str(end)))
 
         # add tagName or metric using the same method. There is no 'NOOP' option in openTSDB
         query.addMetric(inMetric, q.get('aggregator'))
@@ -342,13 +343,13 @@ class PostHandler(object):
             dsBucketSize = self._calc_bucketSize(q.get('downsample'))
             if not dsOp and dsBucketSize > bucketSize:
                 bucketSize = dsBucketSize
-                self.logger.info(MSG['BucketsizeChange'].format(q.get('downsample'), bucketSize))
+                self.logger.details(MSG['BucketsizeChange'].format(q.get('downsample'), bucketSize))
             elif dsBucketSize <= bucketSize:
                 dsOp = dsInterval = None
             else:
                 dsInterval = int(dsBucketSize / bucketSize)
         else:
-            self.logger.info(MSG['BucketsizeToPeriod'].format(bucketSize))
+            self.logger.details(MSG['BucketsizeToPeriod'].format(bucketSize))
 
         query.setBucketSize(bucketSize)
 
@@ -534,43 +535,23 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads('{}')
 
 
-def configureLogging(logPath, logfile, loglevel):
-    # create the logfile path if needed
-    if not os.path.exists(logPath):
-        os.makedirs(logPath)
-    logfile = os.path.join(logPath, logfile)
-
-    # prepare the logger
-    logger = logging.getLogger('zimonGrafanaIntf')
-    rfhandler = logging.handlers.RotatingFileHandler(logfile, 'a', 1000000, 5)  # 5 x 1M files
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    rfhandler.setFormatter(formatter)
-    logger.addHandler(rfhandler)
-    try:
-        logger.setLevel(loglevel)
-    except (ValueError, TypeError):
-        logger.setLevel(logging.INFO)
-    logger.propagate = False  # prevent propagation to default (console) logger
-    return logger
-
-
 def validateCollectorConf(args, logger):
 
-    if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
-        try:
-            s = socket.socket()
-            s.connect((args.get('server'), args.get('serverPort')))
-            print(MSG['CollectorConnInfo'])
-        finally:
-            s.close()
-    else:
+    # if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
+    try:
+        s = socket.socket()
+        s.connect((args.get('server'), args.get('serverPort')))
+        logger.info(MSG['CollectorConnInfo'])
+    finally:
+        s.close()
+    # else:
         # get queryport
-        foundPorts = SensorConfig.getCollectorPorts(logger)
-        if foundPorts and str(args.get('serverPort')) not in foundPorts:
-            raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
-        elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
-            args['serverPort'] = int(foundPorts[1])
-            logger.info(MSG['Query2port'].format(args['serverPort']))
+        # foundPorts = SensorConfig.getCollectorPorts(logger)
+        # if foundPorts and str(args.get('serverPort')) not in foundPorts:
+        #    raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
+        # elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
+        #    args['serverPort'] = int(foundPorts[1])
+        #    logger.details(MSG['Query2port'].format(args['serverPort']))
 
 
 def updateCherrypyConf(args):
@@ -619,24 +600,21 @@ def main(argv):
 
     # prepare metadata
     try:
-        print("\n" + MSG['BridgeVersionInfo'].format(__version__))
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
-        logger.info('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
+        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
         validateCollectorConf(args, logger)
         mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'))
-        print(MSG['MetaSuccess'])
-        print(MSG['ReceivAttrValues'].format('sensors', "\n\n" + "\t".join(mdHandler.metaData.sensorsSpec.keys())))
     except (AttributeError, ValueError, TypeError) as e:
-        logger.exception('%s', MSG['IntError'].format(str(e)))
-        print(MSG['MetaError'])
+        logger.details('%s', MSG['IntError'].format(str(e)))
+        logger.error(MSG['MetaError'])
         return
     except (Exception, IOError) as e:
-        logger.exception('%s', MSG['IntError'].format(str(e)))
-        print(MSG['CollectorErr'])
+        logger.details('%s', MSG['IntError'].format(str(e)))
+        logger.errort(MSG['CollectorErr'])
         return
     except (OSError) as e:
-        logger.exception('%s', MSG['IntError'].format(str(e)))
-        print("ZiMon sensor configuration file not found")
+        logger.details('%s', MSG['IntError'].format(str(e)))
+        logger.error("ZiMon sensor configuration file not found")
         return
 
     ph = PostHandler(logger, mdHandler)
@@ -681,25 +659,25 @@ def main(argv):
                          }
                         )
 
-    print(MSG['sysStart'].format(sys.version, cherrypy.__version__))
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
         cherrypy.engine.start()
-        print("server started")
+        logger.info("server started")
+        logger.debug("Server started PID: {}".format(os.getpid()))
         cherrypy.engine.block()
-    except TypeError:
-        print("Server request could not be proceed. Reason:")
+    except TypeError as e:
+        logger.error("Server request could not be proceed. Reason: {}".format(e))
         raise cherrypy.HTTPError(500, ERR[500])
-    except IOError:
-        print("STOPPING: Server request could not be proceed. Reason:")
+    except OSError as e:
+        logger.error("STOPPING: Server request could not be proceed. Reason: {}".format(e))
         cherrypy.engine.stop()
         cherrypy.engine.exit()
 
     ph = None
     gh = None
 
-    print("server stopped")
+    logger.warn("server stopped")
 
 
 if __name__ == '__main__':
