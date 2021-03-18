@@ -20,26 +20,26 @@ Created on Mar 15, 2021
 @author: HWASSMAN
 '''
 
-import json
-import re
 import logging
-import sys
 import os
 
 logging.TRACE = 5
 logging.addLevelName(logging.TRACE, 'TRACE')
 
 logging.MOREINFO = 15
-logging.addLevelName(logging.MOREINFO,"MOREINFO")
+logging.addLevelName(logging.MOREINFO, 'MOREINFO')
+
 
 class MyLogger(logging.getLoggerClass()):
 
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
 
+
     def trace(self, msg, *args, **kwargs):
         if self.isEnabledFor(logging.TRACE):
             self._log(logging.TRACE, msg, args, **kwargs)
+
 
     def details(self, msg, *args, **kwargs):
         if self.isEnabledFor(logging.MOREINFO):
@@ -50,7 +50,7 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
 
     try:
         loglevel = logging._checkLevel(loglevel)
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         loglevel = logging.INFO
 
     # create the logfile path if needed
@@ -79,4 +79,3 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
 
     logger.propagate = False  # prevent propagation to default (console) logger
     return logger
-

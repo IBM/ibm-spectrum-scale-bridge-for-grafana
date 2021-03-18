@@ -1,6 +1,6 @@
 import logging
 from source.bridgeLogger import configureLogging
-from nose.tools import assert_raises_regexp, assert_raises
+from nose.tools import assert_raises
 
 
 def test_case01():
@@ -14,5 +14,5 @@ def test_case02():
 
 
 def test_case03():
-    result = configureLogging('/tmp','mylog', 'abc')
+    result = configureLogging('/tmp', 'mylog', 'abc')
     assert isinstance(result, logging.Logger)
