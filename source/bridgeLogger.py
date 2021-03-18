@@ -35,11 +35,9 @@ class MyLogger(logging.getLoggerClass()):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
 
-
     def trace(self, msg, *args, **kwargs):
         if self.isEnabledFor(logging.TRACE):
             self._log(logging.TRACE, msg, args, **kwargs)
-
 
     def details(self, msg, *args, **kwargs):
         if self.isEnabledFor(logging.MOREINFO):
