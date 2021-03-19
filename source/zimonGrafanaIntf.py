@@ -610,7 +610,7 @@ def main(argv):
         return
     except (Exception, IOError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
-        logger.errort(MSG['CollectorErr'])
+        logger.error(MSG['CollectorErr'])
         return
     except (OSError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
