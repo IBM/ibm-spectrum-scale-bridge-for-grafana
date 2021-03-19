@@ -664,7 +664,11 @@ def main(argv):
     try:
         cherrypy.engine.start()
         logger.info("server started")
-        logger.debug("Server started PID: {}".format(os.getpid()))
+        with open("/proc/{}/stat".format(os.getpid())) as f:
+            data = f.read()
+        foreground_pid_of_group = data.rsplit(" ", 45)[1]
+        is_in_foreground = str(os.getpid()) == foreground_pid_of_group
+        logger.debug("Server PID: {}. Process started in the foreground: {}".format(os.getpid(), is_in_foreground))
         cherrypy.engine.block()
     except TypeError as e:
         logger.error("Server request could not be proceed. Reason: {}".format(e))
