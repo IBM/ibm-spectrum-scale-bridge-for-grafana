@@ -1,3 +1,14 @@
+# Version 6.1.2 (03/20/2021)
+
+Removed the "switching to the multi-threaded zimon port automatically" feature
+Added logic closing the socket connection in case the query to the pmcollector ends up in an Exception
+Added new "MOREINFO" level to the logger
+Added log tracing for the cherrypy server process pid
+
+Expanded test module with unit tests for the bridgeLogger module
+
+
+
 # Version 6.1.1 (03/05/2021)
 
 Added version tracking inside the bridge module
