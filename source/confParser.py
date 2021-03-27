@@ -47,8 +47,8 @@ def checkTLSsettings(args):
 def getSettings(argv):
     settings = {}
     msg = ''
+    defaults = ConfigManager().defaults
     args, msg = parse_cmd_args(argv)
-    defaults = parse_defaults_from_config_file()
     if args and defaults:
         settings = merge_defaults_and_args(defaults, args)
     elif args:
@@ -71,19 +71,70 @@ def merge_defaults_and_args(defaults, args):
     return brConfig
 
 
-def parse_defaults_from_config_file(fileName='config.ini'):
-    '''parse default parameters from a config file'''
-    defaults = {}
-    dirname, filename = os.path.split(os.path.abspath(__file__))
-    conf_file = os.path.join(dirname, fileName)
-    if os.path.isfile(conf_file):
-        config = configparser.ConfigParser()
-        config.optionxform = str
-        config.read(conf_file)
-        for sect in config.sections():
-            for name, value in config.items(sect):
+class Singleton(type):
+    _inst = {}
+
+    def __call__(clazz, *args, **kwargs):
+        if clazz not in clazz._inst:
+            clazz._inst[clazz] = super(Singleton, clazz).__call__(*args, **kwargs)
+        return clazz._inst[clazz]
+
+
+class ConfigManager(object, metaclass=Singleton):
+    ''' A singleton class managing the application configuration defaults '''
+
+    def __init__(self):
+        self.__sectOptions = {}
+        self.__defaults = {}
+        self.configFiles = ['config.ini']
+
+    @property
+    def options(self):
+        if not self.__sectOptions:
+            self.__sectOptions = self.reload()
+        return self.__sectOptions
+
+    @property
+    def defaults(self):
+        if not self.__defaults:
+            self.__defaults = self.parse_defaults()
+        return self.__defaults
+
+    def reload(self):
+        options = {}
+        self.__sectOptions = {}
+        if self.configFiles:
+            for config in self.configFiles:
+                options.update(self.readConfigFile(config))
+        return options
+
+    def readConfigFile(self, fileName):
+        '''parse config file and store values in a dict {section:{ key: value}}'''
+        options = {}
+        dirname, filename = os.path.split(os.path.abspath(__file__))
+        conf_file = os.path.join(dirname, fileName)
+        if os.path.isfile(conf_file):
+            try:
+                config = configparser.ConfigParser()
+                config.optionxform = str
+                config.read(conf_file)
+                for sect in config.sections():
+                    options[sect] = {}
+                    for name, value in config.items(sect):
+                        options[sect][name] = value
+            except Exception as e:
+                print(f"cannot read config file {fileName} Exception {e}")
+        else: 
+            print(f"cannot find config file {fileName} in {dirname}")
+        return options
+
+    def parse_defaults(self):
+        '''parse all sections parameters to a simple key:value dict'''
+        defaults = {}
+        for sect_name, sect_values in self.options.items():
+            for name, value in sect_values.items():
                 defaults[name] = value
-    return defaults
+        return defaults
 
 
 def parse_cmd_args(argv):
