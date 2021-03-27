@@ -124,7 +124,7 @@ class ConfigManager(object, metaclass=Singleton):
                         options[sect][name] = value
             except Exception as e:
                 print(f"cannot read config file {fileName} Exception {e}")
-        else: 
+        else:
             print(f"cannot find config file {fileName} in {dirname}")
         return options
 

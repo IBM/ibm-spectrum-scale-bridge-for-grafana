@@ -1,10 +1,4 @@
-from source.confParser import ConfigManager, Singleton
-from nose.tools import with_setup
-
-
-def my_setup():
-    global a
-    a = 1
+from source.confParser import ConfigManager
 
 
 def test_case01():
