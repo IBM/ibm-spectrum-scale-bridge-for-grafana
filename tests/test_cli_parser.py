@@ -4,13 +4,14 @@ from argparse import Namespace
 
 
 def my_setup():
-    global a, b, c, d, e, f
+    global a, b, c, d, e, f, g
     a = ['-p', '8443', '-t', '/etc/my_tls']
     b = ['-a']
     c = ['-a', 'abc']
     d = ['-c', '10', '-v', '/opt/registry/certs']
     e = ['-c', '10', '-t', '/opt/registry/certs']
     f = ['-c', '10', '-s', '9.155.108.199', '-p', '8443', '-t', '/opt/registry/certs', '--tlsKeyFile', 'privkey.pem', '--tlsCertFile', 'cert.pem']
+    g = ['-p', '4242', '-P', '9084']
 
 
 def test_case01():
@@ -34,17 +35,19 @@ def test_case03():
     assert all(item in elements for item in mandatoryItems)
 
 
+@with_setup(my_setup)
 def test_case04():
-    args, msg = parse_cmd_args([])
+    args, msg = parse_cmd_args(g)
     result = vars(args)
-    value = int(result['port'])
-    assert value == 4242
+    assert isinstance(result['port'], int)
+    assert result['port'] == 4242
 
 
+@with_setup(my_setup)
 def test_case05():
-    args, msg = parse_cmd_args([])
+    args, msg = parse_cmd_args(g)
     result = vars(args)
-    assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
+    assert result['port'] == 4242 and result['serverPort'] == 9084
 
 
 @with_setup(my_setup)

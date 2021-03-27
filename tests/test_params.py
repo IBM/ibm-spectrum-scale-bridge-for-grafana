@@ -1,44 +1,16 @@
-from source.confParser import parse_defaults_from_config_file, merge_defaults_and_args, parse_cmd_args
+from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args
 from nose.tools import with_setup
 
 
 def my_setup():
     global a, b, c, d, e
-    a = parse_defaults_from_config_file()
+    a = ConfigManager().defaults
     b, c = parse_cmd_args([])
     d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
 
 
-def test_case01():
-    result = parse_defaults_from_config_file()
-    assert isinstance(result, dict)
-
-
-def test_case02():
-    result = parse_defaults_from_config_file()
-    assert len(result.keys()) > 0
-
-
-def test_case03():
-    result = parse_defaults_from_config_file()
-    elements = list(result.keys())
-    mandatoryItems = ['port', 'serverPort']
-    assert all(item in elements for item in mandatoryItems)
-
-
-def test_case04():
-    result = parse_defaults_from_config_file()
-    value = int(result['port'])
-    assert value == 4242
-
-
-def test_case05():
-    result = parse_defaults_from_config_file()
-    assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
-
-
 @with_setup(my_setup)
-def test_case06():
+def test_case01():
     result = merge_defaults_and_args(a, b)
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
@@ -46,7 +18,16 @@ def test_case06():
 
 
 @with_setup(my_setup)
-def test_case07():
+def test_case02():
+    result = merge_defaults_and_args(a, b)
+    assert len(result.keys()) > 0
+    assert 'logLevel' in result.keys()
+    assert isinstance(result.get('logLevel'), int)
+    assert result.get('logLevel') == 15
+
+
+@with_setup(my_setup)
+def test_case03():
     result = merge_defaults_and_args(a, d)
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
