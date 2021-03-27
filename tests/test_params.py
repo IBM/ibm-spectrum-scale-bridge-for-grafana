@@ -19,6 +19,15 @@ def test_case01():
 
 @with_setup(my_setup)
 def test_case02():
+    result = merge_defaults_and_args(a, b)
+    assert len(result.keys()) > 0
+    assert 'logLevel' in result.keys()
+    assert isinstance(result.get('logLevel'), int)
+    assert result.get('logLevel') == 15
+
+
+@with_setup(my_setup)
+def test_case03():
     result = merge_defaults_and_args(a, d)
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
