@@ -34,12 +34,14 @@ def test_case03():
     mandatoryItems = ['port', 'serverPort']
     assert all(item in elements for item in mandatoryItems)
 
+
 @with_setup(my_setup)
 def test_case04():
     args, msg = parse_cmd_args(g)
     result = vars(args)
     assert isinstance(result['port'], int)
     assert result['port'] == 4242
+
 
 @with_setup(my_setup)
 def test_case05():
