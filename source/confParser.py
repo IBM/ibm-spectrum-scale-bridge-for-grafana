@@ -151,7 +151,7 @@ def parse_cmd_args(argv):
                         help='ZIMon collector port number (Default from config.ini: 9084) \
                         NOTE: In some environments, for better bridge performance the usage of the multi-threaded port 9094 could be helpful.\
                         In this case make sure the \'query2port = \"9094\"\' is enabled in the ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-l', '--logPath', action="store", default= None, help='location path of the log file (Default from config.ini: \'/var/log/ibm_bridge_for_grafana\')')
+    parser.add_argument('-l', '--logPath', action="store", default=None, help='location path of the log file (Default from config.ini: \'/var/log/ibm_bridge_for_grafana\')')
     parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
