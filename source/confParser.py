@@ -143,19 +143,19 @@ def parse_cmd_args(argv):
     '''parse input parameters'''
 
     parser = argparse.ArgumentParser('python zimonGrafanaIntf.py')
-    parser.add_argument('-s', '--server', action="store", default='localhost',
-                        help='Host name or ip address of the ZIMon collector (Default: 127.0.0.1) \
+    parser.add_argument('-s', '--server', action="store", default=None,
+                        help='Host name or ip address of the ZIMon collector (Default from config.ini: 127.0.0.1) \
                         NOTE: Per default ZIMon does not accept queries from remote machines. \
                         To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9084, 9094], default=9084,
-                        help='ZIMon collector port number (Default: 9084) \
+    parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9084, 9094], default=None,
+                        help='ZIMon collector port number (Default from config.ini: 9084) \
                         NOTE: In some environments, for better bridge performance the usage of the multi-threaded port 9094 could be helpful.\
                         In this case make sure the \'query2port = \"9094\"\' is enabled in the ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-l', '--logPath', action="store", default="/var/log/ibm_bridge_for_grafana", help='location path of the log file (Default: /var/log/ibm_bridge_for_grafana')
-    parser.add_argument('-f', '--logFile', action="store", default="zserver.log", help='Name of the log file (Default: zserver.log')
+    parser.add_argument('-l', '--logPath', action="store", default= None, help='location path of the log file (Default from config.ini: /var/log/ibm_bridge_for_grafana')
+    parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
-    parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=4242, help='port number listening on for HTTP(S) connections (Default: 4242)')
+    parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=None, help='port number listening on for HTTP(S) connections (Default from config.ini: 4242)')
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
