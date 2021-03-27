@@ -1,4 +1,4 @@
-from source.confParser import ConfigManager, Singleton, merge_defaults_and_args, parse_cmd_args
+from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args
 from nose.tools import with_setup
 
 
