@@ -67,7 +67,7 @@ def merge_defaults_and_args(defaults, args):
     brConfig = {}
     brConfig = dict(defaults)
     args = vars(args)
-    brConfig.update({k: v for k, v in args.items() if v is not None})
+    brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
     return brConfig
 
 
