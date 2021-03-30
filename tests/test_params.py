@@ -3,10 +3,11 @@ from nose.tools import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e
+    global a, b, c, d, e, f, g
     a = ConfigManager().defaults
     b, c = parse_cmd_args([])
     d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
+    f, g = parse_cmd_args(['-p', '8443', '-t', None, '-k', 'None', '-m', "None"])
 
 
 @with_setup(my_setup)
@@ -31,4 +32,14 @@ def test_case03():
     result = merge_defaults_and_args(a, d)
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
+    assert result.get('port') == 8443
+
+
+@with_setup(my_setup)
+def test_case04():
+    result = merge_defaults_and_args(a, f)
+    assert len(result.keys()) > 0
+    assert 'tlsKeyPath' not in result.keys()
+    assert 'tlsKeyFile' not in result.keys()
+    assert 'tlsCertFile' not in result.keys()
     assert result.get('port') == 8443
