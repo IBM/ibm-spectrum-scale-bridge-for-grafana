@@ -51,7 +51,8 @@ spec:
                 values: [ linux ]
       containers:
         - name: grafana-bridge
-          image: <bridge image location/bridge image name:tag>
+          image: "sys-spectrum-scale-team-cloud-native-docker-local.\
+            artifactory.swg-devops.com/scale-grafana-bridge-7.0:dev"
           env:
           - name: SERVER
             value: $(IBM_SPECTRUM_SCALE_PERF_QUERY_SERVICE_HOST)
@@ -63,6 +64,18 @@ spec:
             value: "tls.crt"
           - name: PORT
             value: "8443"
+          - name: SERVERPORT
+            value: "9981"
+          - name: APIKEYNAME
+            valueFrom:
+              secretKeyRef:
+                name: scale-grafana-api
+                key: api-key-name
+          - name: APIKEYVALUE
+            valueFrom:
+              secretKeyRef:
+                name: scale-grafana-api
+                key: api-key-value
           imagePullPolicy: Always
           ports:
             - name: http
@@ -81,7 +94,8 @@ spec:
               type: DirectoryOrCreate
       initContainers:
       - name: init-scale-perf-query-service
-        image: busybox:latest
+        image: "sys-spectrum-scale-team-cloud-native-docker-local.\
+            artifactory.swg-devops.com/busybox:latest"
         command: ['sh', '-c', "until nslookup ibm-spectrum-scale-perf-query.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ibm-spectrum-scale-perf-query service; sleep 2; done"]
       #######################################################################################################################
       #
@@ -89,8 +103,8 @@ spec:
       # you need to create a Secret based on existing Docker credentials and put the secret name under imagePullSecrets settings
       #
       #######################################################################################################################
-      #imagePullSecrets:
-      #  - name: spectrumscale-registrykey
+      imagePullSecrets:
+        - name: spectrumscale-registrykey
       volumes:
         - name: logfiles
           emptyDir: {}
