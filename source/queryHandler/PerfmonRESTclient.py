@@ -29,9 +29,8 @@ except Exception:
     pass
 
 
-DEFAULT_HEADERS = {
-                    "Accept": "application/json",
-                    "Content-type": "application/json"}
+DEFAULT_HEADERS = {"Accept": "application/json",
+                   "Content-type": "application/json"}
 
 
 def getAuthHandler(keyName, keyValue):
