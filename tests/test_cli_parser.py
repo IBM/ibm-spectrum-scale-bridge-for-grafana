@@ -1,5 +1,7 @@
 from source.confParser import parse_cmd_args
+from source.__version__ import __version__ as version
 from nose.tools import with_setup
+from nose.tools import assert_raises
 from argparse import Namespace
 
 
@@ -37,17 +39,25 @@ def test_case03():
 
 @with_setup(my_setup)
 def test_case04():
-    args, msg = parse_cmd_args(g)
-    result = vars(args)
-    assert isinstance(result['port'], int)
-    assert result['port'] == 4242
+    if float(version) < 7.0:
+        args, msg = parse_cmd_args(g)
+        result = vars(args)
+        assert isinstance(result['port'], int)
+        assert result['port'] == 4242
+    else:
+        with assert_raises(SystemExit):
+            args, msg = parse_cmd_args(g)
 
 
 @with_setup(my_setup)
 def test_case05():
-    args, msg = parse_cmd_args(g)
-    result = vars(args)
-    assert result['port'] == 4242 and result['serverPort'] == 9084
+    if float(version) < 7.0:
+        args, msg = parse_cmd_args(g)
+        result = vars(args)
+        assert result['port'] == 4242 and result['serverPort'] == 9084
+    else:
+        with assert_raises(SystemExit):
+            args, msg = parse_cmd_args(g)
 
 
 @with_setup(my_setup)

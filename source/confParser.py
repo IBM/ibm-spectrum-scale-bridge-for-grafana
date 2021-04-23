@@ -24,6 +24,7 @@ import argparse
 import os
 from messages import MSG
 import configparser
+import getpass
 
 
 def checkFileExists(path, filename):
@@ -43,6 +44,11 @@ def checkTLSsettings(args):
             return False, MSG['CertError']
     return True, ''
 
+def checkAPIsettings(args):
+    if not args.get('apiKeyName') or not args.get('apiKeyValue'):
+        return False, MSG['MissingParm']
+    return True, ''
+
 
 def getSettings(argv):
     settings = {}
@@ -55,11 +61,15 @@ def getSettings(argv):
         settings = args
     else:
         return None, msg
+    # check API key settings
+    valid, msg = checkAPIsettings(settings)
+    if not valid:
+        return None, msg
     # check TLS settings
     valid, msg = checkTLSsettings(settings)
-    if valid:
-        return settings, ''
-    return None, msg
+    if not valid:
+        return None, msg
+    return settings, ''
 
 
 def merge_defaults_and_args(defaults, args):
@@ -139,18 +149,25 @@ class ConfigManager(object, metaclass=Singleton):
         return defaults
 
 
+class Password(argparse.Action):
+    defaults = ConfigManager().defaults
+
+    def __call__(self, parser, namespace, values, option_string):
+        if values is None and self.defaults.get('apiKeyValue', None) == None:
+            print('no valid apiKeyValue found in the config.ini')
+            values = getpass.getpass()
+
+        setattr(namespace, self.dest, values)
+
+
 def parse_cmd_args(argv):
     '''parse input parameters'''
 
     parser = argparse.ArgumentParser('python zimonGrafanaIntf.py')
     parser.add_argument('-s', '--server', action="store", default=None,
-                        help='Host name or ip address of the ZIMon collector (Default from config.ini: 127.0.0.1) \
-                        NOTE: Per default ZIMon does not accept queries from remote machines. \
-                        To run the bridge from outside of the ZIMon collector, you need to modify ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
-    parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9084, 9094], default=None,
-                        help='ZIMon collector port number (Default from config.ini: 9084) \
-                        NOTE: In some environments, for better bridge performance the usage of the multi-threaded port 9094 could be helpful.\
-                        In this case make sure the \'query2port = \"9094\"\' is enabled in the ZIMon queryinterface settings (\'ZIMonCollector.cfg\')')
+                        help='Host name or ip address of the ZIMon collector (Default from config.ini: 127.0.0.1)')
+    parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9980, 9981], default=None,
+                        help='ZIMon collector port number (Default from config.ini: 9980)')
     parser.add_argument('-l', '--logPath', action="store", default=None, help='location path of the log file (Default from config.ini: \'/var/log/ibm_bridge_for_grafana\')')
     parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
@@ -159,6 +176,8 @@ def parse_cmd_args(argv):
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
+    parser.add_argument('-n', '--apiKeyName',  action="store", default=None, help='Name of api key file (Default from config.ini: \'scale_grafana\')')
+    parser.add_argument('-v', '--apiKeyValue',  action=Password, nargs='?', dest='apiKeyValue', default=None, help='Enter your apiKey value:')
 
     args = parser.parse_args(argv)
     return args, ''

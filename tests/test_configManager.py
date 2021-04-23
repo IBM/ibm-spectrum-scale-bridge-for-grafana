@@ -1,4 +1,5 @@
 from source.confParser import ConfigManager
+from source.__version__ import __version__ as version
 
 
 def test_case01():
@@ -66,4 +67,7 @@ def test_case09():
 def test_case10():
     cm = ConfigManager()
     result = cm.defaults
-    assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
+    if float(version) < 7.0:
+        assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
+    else:
+        assert int(result['port']) == 4242 and int(result['serverPort']) == 9980

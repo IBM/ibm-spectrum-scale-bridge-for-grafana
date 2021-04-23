@@ -31,9 +31,13 @@ import sys
 import time
 import select
 
+from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 try:
     import SysmonLogger
 except Exception:
+    pass
+
+class PerfmonConnError(Exception):
     pass
 
 
@@ -439,80 +443,35 @@ class QueryHandler2:
     Interface class to access ZIMon data
     '''
 
-    def __init__(self, server='localhost', port=9084, logger=None):
+    def __init__(self, server, port, logger, apiKeyName, apiKeyValue):
         '''
         Constructor requires name (or IP address) of the server and the port number (default: 9084)
         '''
+        self.__keyName = apiKeyName
+        self.__keyValue = apiKeyValue
         self.server = server
         self.remote_ip = socket.gethostbyname(server)
         self.port = port
-        self.logger = logger or SysmonLogger.getLogger(__name__)
+        self.logger = logger
 
-    def __do_query(self, data):
-        '''handle communication which collector node'''
-        if data is None or len(data) == 0:
-            return None
-        chunks = []
-        msg = ''
-        endstr = '.\n'
-        if sys.version >= '3':
-            msg = b''
-            endstr = b'.\n'
-        try:
-            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-                sock.settimeout(30)
-                sock.connect((self.remote_ip, self.port))
-                if sys.version >= '3':
-                    data = bytes(data, 'UTF-8')
-                sock.sendall(data)
-
-                while True:
-                    r, _, _ = select.select([sock], [], [])
-                    if r:
-                        chunk = sock.recv(4096)
-                        if chunk == '':
-                            raise IOError('QueryHandler: Socket connection broken, received no data')
-                        if chunk.endswith(endstr):
-                            chunks.append(chunk[0:-2])
-                            msg = msg.join(chunks)
-                            if sys.version >= '3':
-                                msg = msg.decode('UTF-8')
-                            break
-                        else:
-                            chunks.append(chunk)
-        except socket.timeout as e:
-            self.logger.error(e)
-            msg = None
-        except OSError as e:
-            self.logger.error(e)
-            msg = None
-        except Exception as e:
-            self.logger.error(e)
-            msg = None
-        finally:
-            sock.close()
-            if msg and msg.startswith('Error'):
-                self.logger.error('QueryHandler: query returned no data: {0}'.format(msg))
-                msg = None
-            return msg
+    @property
+    def apiKeyData(self):
+        return self.__keyName, self.__keyValue
 
     def getTopology(self, ignoreMetrics=False):
         '''
         Returns complete topology as a single JSON string
         ignoreAttrs can be used to skip the (leaf) metrics
         '''
-        queryString = 'topo \n'
+        params = None
         if ignoreMetrics:
-            queryString = 'topo -a \n'
-
-        res = self.__do_query(queryString)
+            params = {'query': '-a'}
+        res = self.__do_RESTCall('perfmon/topo', 'GET', params)
 
         if res is None:
             self.logger.error("QueryHandler: getTopology returns no data.")
             return
         try:
-            if sys.version < '3':
-                res = res.decode('utf-8', 'ignore')
             result = json.loads(res, strict=False)
             return result
         except Exception as e:
@@ -523,8 +482,8 @@ class QueryHandler2:
         '''
         Returns output from topo -m
         '''
-        queryString = 'topo -m \n'
-        return self.__do_query(queryString)
+        params = {'query': '-m'}
+        return self.__do_RESTCall('perfmon/topo', 'GET', params)
 
     def deleteKeyFromTopology(self, keyStr, precheck=True):
         '''
@@ -533,17 +492,15 @@ class QueryHandler2:
         '''
         # delete pre-check option
         check = '-n' if precheck == True else ''
+        deleteString = f'delete {check} key {keyStr} \n'
 
-        deleteString = 'delete %s key %s \n' % (check, keyStr)
-
-        response = self.__do_query(deleteString)
+        params = {'query': deleteString}
+        response = self.__do_RESTCall('perfmon/delete', 'DELETE', params)
 
         if response is None:
             self.logger.debug('QueryHandler: deleteKeysFromTopology response has no data results')
             return None
         try:
-            if sys.version < '3':
-                response = response.decode('utf-8', 'ignore')
             result = json.loads(response, strict=False)
             return result
         except Exception as e:
@@ -555,28 +512,50 @@ class QueryHandler2:
         runQuery: executes the given query based on the arguments.
         :param query: a query class instance
         '''
-        res = self.__do_query(str(query))
+        params = {'query': str(query)}
+        self.logger.debug('QueryHandler: REST call perfmon/data invoked with following params: {0}'.format(params))
+        res = self.__do_RESTCall('perfmon/data', 'GET', params)
 
         if res is None:
             self.logger.error('QueryHandler: query response has no data results')
             return None
         try:
-            result = json.loads(res)
-            return QueryResult(query, result)
-        except Exception as e:
-            self.logger.error(
-                'QueryHandler: query response not valid json: {0} {1}'.format(res[:20], e))
-        try:
-            res = res.decode('utf-8', 'ignore')
             result = json.loads(res, strict=False)
             return QueryResult(query, result)
         except Exception as e:
             self.logger.error(
                 'QueryHandler: query response not valid json: {0} {1}'.format(res[:20], e))
 
-    @staticmethod
-    def getQueryHandler():
-        server = 'localhost'
-        port = 9084
+    def __do_RESTCall(self, endpoint, requestType='GET', params=None):
+        '''
+        Forward query request to the HTTPRequest client interface
+        '''
 
-        return QueryHandler2(server, port)
+        self.logger.debug("__do_RESTcall invoke __ params: {} {} {}".format(endpoint, requestType, str(params)))
+
+        try:
+            _auth = getAuthHandler(*self.apiKeyData)
+            _reqData = createRequestDataObj(self.logger, requestType, endpoint, self.server, self.port, auth=_auth, params=params)
+            _request = perfHTTPrequestHelper(self.logger, reqdata=_reqData)
+            _request.session.verify = False
+            _response = _request.doRequest()
+
+            if _response.status_code == 200:
+                return _response.content.decode('utf-8', "strict")
+            elif _response.status_code == 401:
+                self.logger.debug('Request headers:{}'.format(_response.request.headers))
+                self.logger.debug('Request url:{}'.format(_response.request.url))
+                msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
+                self.logger.details(msg)
+                raise PerfmonConnError("{} {}".format(_response.status_code, _response.reason))
+            else:
+                msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
+                self.logger.warning(msg)
+                if _response.content:
+                    contentMsg = _response.content.decode('utf-8', "strict")
+                    self.logger.details(f'Response content:{contentMsg}')
+                return None
+        except TypeError as e:
+            self.logger.exception(e)
+            # return ("", str(e), 500)  # Internal Server Error
+            return None

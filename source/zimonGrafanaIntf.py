@@ -29,7 +29,7 @@ import socket
 import os
 
 from queryHandler.Query import Query
-from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
+from queryHandler.QueryHandler import PerfmonConnError, QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from __version__ import __version__
@@ -42,20 +42,22 @@ from timeit import default_timer as timer
 
 class MetadataHandler():
 
-    def __init__(self, logger, server, port=9084):
+    def __init__(self, logger, server, port, apiKeyName, apiKeyValue):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
         self.logger = logger
         self.server = server
         self.port = port
+        self.apiKeyName = apiKeyName
+        self.apiKeyValue = apiKeyValue
 
         self.__initializeTables()
 
     @property
     def qh(self):
         if not self.__qh:
-            self.__qh = QueryHandler(self.server, self.port, self.logger)
+            self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         return self.__qh
 
     @property
@@ -73,7 +75,7 @@ class MetadataHandler():
         the tables for metrics, keys, key elements (tag keys)
         and key values (tag values)'''
 
-        self.__qh = QueryHandler(self.server, self.port, self.logger)
+        self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
         tstart = timer()
         self.__metaData = Topo(self.qh.getTopology())
@@ -535,25 +537,6 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads('{}')
 
 
-def validateCollectorConf(args, logger):
-
-    # if not (args.get('server') == 'localhost') and not (args.get('server') == '127.0.0.1'):
-    try:
-        s = socket.socket()
-        s.connect((args.get('server'), args.get('serverPort')))
-        logger.info(MSG['CollectorConnInfo'])
-    finally:
-        s.close()
-    # else:
-        # get queryport
-        # foundPorts = SensorConfig.getCollectorPorts(logger)
-        # if foundPorts and str(args.get('serverPort')) not in foundPorts:
-        #    raise Exception("Invalid serverPort specified. Try with: %s" % str(foundPorts))
-        # elif foundPorts[1] and not (args.get('serverPort') == int(foundPorts[1])):
-        #    args['serverPort'] = int(foundPorts[1])
-        #    logger.details(MSG['Query2port'].format(args['serverPort']))
-
-
 def updateCherrypyConf(args):
 
     path = args.get('logPath')
@@ -583,7 +566,6 @@ def updateCherrypySslConf(args):
 
 
 def main(argv):
-
     # parse input arguments
     args, msg = getSettings(argv)
     if not args:
@@ -602,15 +584,14 @@ def main(argv):
     try:
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
-        validateCollectorConf(args, logger)
-        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'))
-    except (AttributeError, ValueError, TypeError) as e:
+        #logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
+        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), args.get('apiKeyValue'))
+    except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])
         return
-    except (Exception, IOError) as e:
-        logger.details('%s', MSG['IntError'].format(str(e)))
-        logger.error(MSG['CollectorErr'])
+    except (PerfmonConnError, Exception) as e:
+        logger.error('%s', MSG['CollectorErr'].format(str(e)))
         return
     except (OSError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
