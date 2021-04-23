@@ -44,6 +44,7 @@ def checkTLSsettings(args):
             return False, MSG['CertError']
     return True, ''
 
+
 def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
         return False, MSG['MissingParm']
@@ -153,7 +154,7 @@ class Password(argparse.Action):
     defaults = ConfigManager().defaults
 
     def __call__(self, parser, namespace, values, option_string):
-        if values is None and self.defaults.get('apiKeyValue', None) == None:
+        if values is None and self.defaults.get('apiKeyValue', None) is None:
             print('no valid apiKeyValue found in the config.ini')
             values = getpass.getpass()
 
@@ -176,8 +177,8 @@ def parse_cmd_args(argv):
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
-    parser.add_argument('-n', '--apiKeyName',  action="store", default=None, help='Name of api key file (Default from config.ini: \'scale_grafana\')')
-    parser.add_argument('-v', '--apiKeyValue',  action=Password, nargs='?', dest='apiKeyValue', default=None, help='Enter your apiKey value:')
+    parser.add_argument('-n', '--apiKeyName', action="store", default=None, help='Name of api key file (Default from config.ini: \'scale_grafana\')')
+    parser.add_argument('-v', '--apiKeyValue', action=Password, nargs='?', dest='apiKeyValue', default=None, help='Enter your apiKey value:')
 
     args = parser.parse_args(argv)
     return args, ''

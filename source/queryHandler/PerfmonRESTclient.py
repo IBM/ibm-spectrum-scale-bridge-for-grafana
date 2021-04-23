@@ -29,11 +29,9 @@ except Exception:
     pass
 
 
-
 DEFAULT_HEADERS = {
-            "Accept": "application/json",
-            "Content-type": "application/json"
-        }
+                    "Accept": "application/json",
+                    "Content-type": "application/json"}
 
 
 def getAuthHandler(keyName, keyValue):
@@ -41,7 +39,7 @@ def getAuthHandler(keyName, keyValue):
         keyName = bytes(keyName, 'utf-8')
     if not isinstance(keyValue, bytes):
         keyValue = bytes(keyValue, 'utf-8')
-    return requests.auth.HTTPBasicAuth(keyName,keyValue)
+    return requests.auth.HTTPBasicAuth(keyName, keyValue)
 
 
 def createRequestDataObj(logger, method, endpoint, host, port, auth, headers=None, files=None, json=None, params=None, data=None, cookies=None, hooks=None):
@@ -56,16 +54,15 @@ def createRequestDataObj(logger, method, endpoint, host, port, auth, headers=Non
     url = f'https://{host}:{port}/sysmon/v1/{endpoint}'
     # Create the Request.
     req = requests.Request(method=method.upper(),
-        url=url,
-        headers=headers or DEFAULT_HEADERS,
-        files=files,
-        data=data or {},
-        json=json,
-        params=params or {},
-        auth=auth,
-        cookies=cookies,
-        hooks=hooks,
-        )
+                           url=url,
+                           headers=headers or DEFAULT_HEADERS,
+                           files=files,
+                           data=data or {},
+                           json=json,
+                           params=params or {},
+                           auth=auth,
+                           cookies=cookies,
+                           hooks=hooks,)
     logger.debug('createRequestDataObj __ created request')
     return req
 
@@ -78,7 +75,7 @@ class perfHTTPrequestHelper(object):
     """
 
     def __init__(self, logger, reqdata=None, session=None):
-        self.session = session or requests.Session() 
+        self.session = session or requests.Session()
         self.requestData = reqdata
         self.logger = logger
 

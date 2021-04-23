@@ -21,21 +21,14 @@ Created on Feb 4, 2017
 '''
 
 from collections import namedtuple, defaultdict
-from contextlib import closing
 import inspect
 from itertools import chain
 import json
 import operator
 import socket
-import sys
 import time
-import select
-
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
-try:
-    import SysmonLogger
-except Exception:
-    pass
+
 
 class PerfmonConnError(Exception):
     pass

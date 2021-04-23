@@ -25,7 +25,6 @@ import json
 import re
 import logging.handlers
 import sys
-import socket
 import os
 
 from queryHandler.Query import Query
@@ -584,7 +583,7 @@ def main(argv):
     try:
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
-        #logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
+        # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
         mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), args.get('apiKeyValue'))
     except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
