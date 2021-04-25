@@ -75,7 +75,7 @@ Start the bridge application by issuing:
 # python3 zimonGrafanaIntf.py --apiKeyValue
 ```
 
-You will be prompted by a command line interface to enter the 'password'. You can also pass the key value directly (not recommended) by the zimonGrafanaIntf.py invocation following the '--apiKeyValue' input parameter name, or alternatively, store the key value in the config.ini file. For more options configuring and invoking API key please read the [WiKi](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Configuring-a-performance-monitoring-API-key-for-the-IBM-Spectrum-Scale-Performance-Monitoring-Bridge) article.
+You will be prompted by a command line interface to provide the 'password'. Enter the scale_grafana API key value(32 hexadecimal digits sequence). You can also pass the key value directly (not recommended) by the zimonGrafanaIntf.py script invocation following the '--apiKeyValue' input parameter name. Alternatively, store the key value in the config.ini file. For more options configuring and invoking the API key for an IBM Spectrum Scale Performance Monitoring Bridge please read the [WiKi](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Configuring-a-performance-monitoring-API-key-for-the-IBM-Spectrum-Scale-Performance-Monitoring-Bridge) article.
 
 If the bridge did establish the connection to the specified pmcollector and the initialization of the metadata was performed successfully, you should get the message "server started" at the end of line. Otherwise check the zserver.log stored in the zimonGrafanaIntf  directory.  Additionally, check the pmcollector service running properly by issuing:
 
