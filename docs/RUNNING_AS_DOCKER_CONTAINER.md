@@ -51,9 +51,15 @@ cp grafana_bridge/source/gpfsConfig
 4. Start the bridge running in a container:
 
 ```shell
-# podman run -dt -p 4242:4242 -e "SERVER=9.XXX.XXX.XXX" --pod new:my-pod --name grafana_bridge bridge_image:latest
+# podman run -dt -p 4242:4242 -e "SERVER=9.XXX.XXX.XXX" -e "APIKEYVALUE=XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" --pod new:my-pod --name grafana_bridge bridge_image:latest
 
 # podman logs grafana_bridge
+2021-04-25 16:02 - INFO     -  *** IBM Spectrum Scale bridge for Grafana - Version: 7.0 ***
+2021-04-25 16:02 - INFO     - Successfully retrieved MetaData
+2021-04-25 16:02 - INFO     - Received sensors:CPU, DiskFree, GPFSFilesystem, GPFSFilesystemAPI, GPFSNSDDisk, GPFSNSDFS, GPFSNSDPool, GPFSNode, GPFSNodeAPI, GPFSRPCS, GPFSVFSX, GPFSWaiters, Load, Memory, Netstat, Network, TopProc, CTDBDBStats, CTDBStats, SMBGlobalStats, SMBStats, GPFSDiskCap, GPFSFileset, GPFSInodeCap, GPFSPool, GPFSPoolCap
+2021-04-25 16:02 - INFO     - Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Aug 18 2020, 08:33:21)
+[GCC 8.3.1 20191121 (Red Hat 8.3.1-5)], cherryPy version: 18.6.0.
+2021-04-25 16:02 - INFO     - server started
 
 ```
 
@@ -69,15 +75,13 @@ Now you can add the host running the bridge container to the Grafana monitoring 
 2. Start the bridge running in a container:
 
 ```shell
-# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "PORT=8443" -e "TLSKEYPATH=/etc/bridge_ssl/certs" -e "TLSKEYFILE=privkey.pem" -e "TLSCERTFILE=cert.pem" \ -v /tmp:/var/log/ibm_bridge_for_grafana -v /etc/bridge_ssl/certs:/etc/bridge_ssl/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_image:latest 
+# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "APIKEYVALUE=XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" -e "PORT=8443" -e "TLSKEYPATH=/etc/bridge_ssl/certs" -e "TLSKEYFILE=privkey.pem" -e "TLSCERTFILE=cert.pem" \ -v /tmp:/var/log/ibm_bridge_for_grafana -v /etc/bridge_ssl/certs:/etc/bridge_ssl/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_image:latest 
 
 # podman logs bridge-ssl-test
-Connection to the collector server established successfully
-Successfully retrieved MetaData
-Received sensors:
-
-CPU     DiskFree        GPFSFilesystem  GPFSFilesystemAPI       GPFSNSDDisk     GPFSNSDFS       GPFSNSDPool     GPFSNode        GPFSNodeAPI     GPFSRPCS        GPFSVFS GPFSWaiters     Load    Memory  Netstat Network GPFSDiskCap     GPFSFileset GPFSFilesetQuota        GPFSInodeCap    GPFSPool        GPFSPoolCap
-Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Dec  5 2019, 15:45:45)
+2021-04-25 16:05 - INFO     -  *** IBM Spectrum Scale bridge for Grafana - Version: 7.0 ***
+2021-04-25 16:05 - INFO     - Successfully retrieved MetaData
+2021-04-25 16:05 - INFO     - Received sensors:CPU, DiskFree, GPFSFilesystem, GPFSFilesystemAPI, GPFSNSDDisk, GPFSNSDFS, GPFSNSDPool, GPFSNode, GPFSNodeAPI, GPFSRPCS, GPFSVFSX, GPFSWaiters, Load, Memory, Netstat, Network, TopProc, CTDBDBStats, CTDBStats, SMBGlobalStats, SMBStats, GPFSDiskCap, GPFSFileset, GPFSInodeCap, GPFSPool, GPFSPoolCap
+2021-04-25 16:05 - INFO     - Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Aug 18 2020, 08:33:21)
 [GCC 8.3.1 20191121 (Red Hat 8.3.1-5)], cherryPy version: 18.6.0.
-server started
+2021-04-25 16:05 - INFO     - server started
 ```
