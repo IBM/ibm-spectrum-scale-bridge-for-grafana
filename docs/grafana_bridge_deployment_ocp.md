@@ -5,6 +5,7 @@
 ### Dependencies
 This instructions could be used for: 
 - IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minimum release level 5.1.0.1 and above
+- IBM Spectrum Scale bridge for Grafana *version 6.1.2* (Checkout the branch 6.1)
 
 
 1. Follow the [instructions](/docs/BUILDING_DOCKER_IMAGE.md) and create the IBM Spectrum Scale bridge for Grafana image

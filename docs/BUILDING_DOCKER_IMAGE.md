@@ -12,7 +12,14 @@
 ```
 
 
-2. Create the bridge container image
+2. Switch to the 6.1 branch
+
+```shell
+# git checkout 6.1
+```
+
+
+3. Create the bridge container image
 
 ```shell
 # cd grafana_bridge/source
