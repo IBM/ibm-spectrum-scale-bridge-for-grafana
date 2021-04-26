@@ -1,3 +1,15 @@
+# Version 7 (04/26/2021)
+
+Added support for [IBM Spectrum Scale 5.1.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+- added IBM Spectrum Scale Performance monitoring API key authentication
+- added command line arguments('apiKeyName' and 'apiKeyValue') allowing to submit the API key authentication data at the bridge start
+- changed default serverPort to 9980
+Added the article "Configuring a performance monitoring API key for the IBM Spectrum Scale Performance Monitoring Bridge" to the Wiki
+
+Expanded test module with unit tests for the apiKeyValue verification
+
+
+
 # Version 6.1.2 (03/20/2021)
 
 Removed the "switching to the multi-threaded zimon port automatically" feature
