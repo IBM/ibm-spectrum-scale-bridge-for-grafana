@@ -1,6 +1,6 @@
 # Version 7 (04/26/2021)
 
-Added support for [IBM Spectrum Scale 5.1.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+Added support for [IBM Spectrum Scale 5.1.1](https://www.ibm.com/docs/en/spectrum-scale/5.1.1?topic=summary-changes)
 - added IBM Spectrum Scale Performance monitoring API key authentication
 - added command line arguments('apiKeyName' and 'apiKeyValue') allowing to submit the API key authentication data at the bridge start
 - changed default serverPort to 9980
