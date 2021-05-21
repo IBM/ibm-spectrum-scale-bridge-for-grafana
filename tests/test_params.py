@@ -3,11 +3,12 @@ from nose.tools import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g
+    global a, b, c, d, e, f, g, m, n
     a = ConfigManager().defaults
     b, c = parse_cmd_args([])
     d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
     f, g = parse_cmd_args(['-p', '8443', '-t', None, '-k', 'None', '-m', "None"])
+    m, n = parse_cmd_args(['-d', 'yes'])
 
 
 @with_setup(my_setup)
@@ -43,3 +44,19 @@ def test_case04():
     assert 'tlsKeyFile' not in result.keys()
     assert 'tlsCertFile' not in result.keys()
     assert result.get('port') == 8443
+
+
+@with_setup(my_setup)
+def test_case05():
+    result = merge_defaults_and_args(a, f)
+    assert len(result.keys()) > 0
+    assert 'includeDiskData' in result.keys()
+    assert result.get('includeDiskData') == False
+
+
+@with_setup(my_setup)
+def test_case06():
+    result = merge_defaults_and_args(a, m)
+    assert len(result.keys()) > 0
+    assert 'includeDiskData' in result.keys()
+    assert result.get('includeDiskData') == True

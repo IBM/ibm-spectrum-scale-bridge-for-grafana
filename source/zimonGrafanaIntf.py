@@ -42,13 +42,14 @@ from timeit import default_timer as timer
 
 class MetadataHandler():
 
-    def __init__(self, logger, server, port=9084):
+    def __init__(self, logger, server, port=9084, includeDiskData=False):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
         self.logger = logger
         self.server = server
         self.port = port
+        self.includeDiskData = includeDiskData
 
         self.__initializeTables()
 
@@ -232,6 +233,10 @@ class PostHandler(object):
         return self.__md.qh
 
     @property
+    def md(self):
+        return self.__md
+
+    @property
     def sensorsConf(self):
         return self.__md.SensorsConfig
 
@@ -298,7 +303,7 @@ class PostHandler(object):
 
     def _createZimonQuery(self, q, start, end):
         '''Creates zimon query string '''
-        query = Query()
+        query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
         bucketSize = 1  # default
         inMetric = q.get('metric')
@@ -603,7 +608,7 @@ def main(argv):
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
         validateCollectorConf(args, logger)
-        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'))
+        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('includeDiskData'))
     except (AttributeError, ValueError, TypeError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])

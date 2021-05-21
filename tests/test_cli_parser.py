@@ -4,7 +4,7 @@ from argparse import Namespace
 
 
 def my_setup():
-    global a, b, c, d, e, f, g
+    global a, b, c, d, e, f, g, h
     a = ['-p', '8443', '-t', '/etc/my_tls']
     b = ['-a']
     c = ['-a', 'abc']
@@ -12,6 +12,7 @@ def my_setup():
     e = ['-c', '10', '-t', '/opt/registry/certs']
     f = ['-c', '10', '-s', '9.155.108.199', '-p', '8443', '-t', '/opt/registry/certs', '--tlsKeyFile', 'privkey.pem', '--tlsCertFile', 'cert.pem']
     g = ['-p', '4242', '-P', '9084']
+    h = ['-d', 'no']
 
 
 def test_case01():
@@ -66,3 +67,17 @@ def test_case07():
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
     assert result.get('port') == 8443
+
+def test_case08():
+    args, msg = parse_cmd_args([])
+    result = vars(args)
+    assert 'includeDiskData' in result.keys()
+    assert result.get('includeDiskData') == None
+
+@with_setup(my_setup)
+def test_case09():
+    args, msg = parse_cmd_args(h)
+    result = vars(args)
+    assert 'includeDiskData' in result.keys()
+    assert result.get('includeDiskData') == 'no'
+

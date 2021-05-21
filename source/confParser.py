@@ -68,6 +68,11 @@ def merge_defaults_and_args(defaults, args):
     brConfig = dict(defaults)
     args = vars(args)
     brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
+    for k, v in brConfig.items():
+        if v == "no":
+            brConfig[k] = False
+        elif v == "yes":
+            brConfig[k] = True
     return brConfig
 
 
@@ -159,6 +164,7 @@ def parse_cmd_args(argv):
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
+    parser.add_argument('-d', '--includeDiskData', action="store", choices=["yes", "no"], default=None, help='Use or not the historical data from disk (Default from config.ini: "no")')
 
     args = parser.parse_args(argv)
     return args, ''

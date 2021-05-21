@@ -67,3 +67,10 @@ def test_case10():
     cm = ConfigManager()
     result = cm.defaults
     assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
+
+
+def test_case11():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'includeDiskData' in result.keys()
+    assert result['includeDiskData'] == 'no'
