@@ -68,11 +68,13 @@ def test_case07():
     assert 'port' in result.keys()
     assert result.get('port') == 8443
 
+
 def test_case08():
     args, msg = parse_cmd_args([])
     result = vars(args)
     assert 'includeDiskData' in result.keys()
-    assert result.get('includeDiskData') == None
+    assert result.get('includeDiskData') is None
+
 
 @with_setup(my_setup)
 def test_case09():
@@ -80,4 +82,3 @@ def test_case09():
     result = vars(args)
     assert 'includeDiskData' in result.keys()
     assert result.get('includeDiskData') == 'no'
-
