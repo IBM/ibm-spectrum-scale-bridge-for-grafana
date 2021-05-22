@@ -40,7 +40,7 @@ def test_case03():
 
 @with_setup(my_setup)
 def test_case04():
-    if float(version) < 7.0:
+    if version < "7.0":
         args, msg = parse_cmd_args(g)
         result = vars(args)
         assert isinstance(result['port'], int)
@@ -52,7 +52,7 @@ def test_case04():
 
 @with_setup(my_setup)
 def test_case05():
-    if float(version) < 7.0:
+    if version < "7.0":
         args, msg = parse_cmd_args(g)
         result = vars(args)
         assert result['port'] == 4242 and result['serverPort'] == 9084
