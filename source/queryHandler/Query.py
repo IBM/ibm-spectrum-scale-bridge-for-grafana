@@ -49,11 +49,11 @@ class Query(object):
                   "operation", "protocol", "waiters_time_threshold", "export",
                   "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass"])
 
-    def __init__(self, metrics=None, bucketsize=1, filters=None, groupby=None, includeDiskDate=False):
+    def __init__(self, metrics=None, bucketsize=1, filters=None, groupby=None, includeDiskData=False):
         '''
         Constructor, filters and groupby must be preformmated
         '''
-        self.includeDiskData = includeDiskDate     # disk or archived data (False or True)
+        self.includeDiskData = includeDiskData     # disk or archived data (False or True)
         self.bucket_size = bucketsize              # bucket size
 
         self.metrics = []             # list of string metrics

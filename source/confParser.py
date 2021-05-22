@@ -79,6 +79,11 @@ def merge_defaults_and_args(defaults, args):
     brConfig = dict(defaults)
     args = vars(args)
     brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
+    for k, v in brConfig.items():
+        if v == "no":
+            brConfig[k] = False
+        elif v == "yes":
+            brConfig[k] = True
     return brConfig
 
 
@@ -179,6 +184,7 @@ def parse_cmd_args(argv):
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-n', '--apiKeyName', action="store", default=None, help='Name of api key file (Default from config.ini: \'scale_grafana\')')
     parser.add_argument('-v', '--apiKeyValue', action=Password, nargs='?', dest='apiKeyValue', default=None, help='Enter your apiKey value:')
+    parser.add_argument('-d', '--includeDiskData', action="store", choices=["yes", "no"], default=None, help='Use or not the historical data from disk (Default from config.ini: "no")')
 
     args = parser.parse_args(argv)
     return args, ''

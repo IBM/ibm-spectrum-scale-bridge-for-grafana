@@ -10,6 +10,17 @@ Expanded test module with unit tests for the apiKeyValue verification
 
 
 
+# Version 6.1.3 (05/21/2021)
+
+Added support for the 'includeDiskData' command line argument.
+- using the 'includeDiskData' option allows to query and fetch data from the archived (on disk data) for better precision. 
+
+Expanded test module with more unit tests
+
+Tested with Grafana 7.5.1 version
+
+
+
 # Version 6.1.2 (03/20/2021)
 
 Removed the "switching to the multi-threaded zimon port automatically" feature
