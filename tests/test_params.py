@@ -74,6 +74,7 @@ def test_case07():
     assert 'apiKeyValue' in result.keys()
     assert '/' in str(result.get('apiKeyValue'))
 
+
 @with_setup(my_setup)
 def test_case08():
     result = merge_defaults_and_args(y, o)

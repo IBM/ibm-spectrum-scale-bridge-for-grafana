@@ -25,7 +25,7 @@ import json
 import re
 import logging.handlers
 import sys
-import os
+import os, errno
 
 from queryHandler.Query import Query
 from queryHandler.QueryHandler import PerfmonConnError, QueryHandler2 as QueryHandler
@@ -597,7 +597,7 @@ def main(argv):
     # prepare metadata
     try:
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
-        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k =='apiKeyValue'))
+        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k == 'apiKeyValue'))
         # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
         mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), resolveAPIKeyValue(args.get('apiKeyValue')), args.get('includeDiskData'))
     except (AttributeError, TypeError, ValueError) as e:
