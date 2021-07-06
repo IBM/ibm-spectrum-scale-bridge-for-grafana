@@ -51,8 +51,7 @@ spec:
                 values: [ linux ]
       containers:
         - name: grafana-bridge
-          image: "sys-spectrum-scale-team-cloud-native-docker-local.\
-            artifactory.swg-devops.com/scale-grafana-bridge-7.0:dev"
+          image: <bridge image location/bridge image name:tag>
           env:
           - name: SERVER
             value: $(IBM_SPECTRUM_SCALE_PERF_QUERY_SERVICE_HOST)
@@ -94,8 +93,7 @@ spec:
               type: DirectoryOrCreate
       initContainers:
       - name: init-scale-perf-query-service
-        image: "sys-spectrum-scale-team-cloud-native-docker-local.\
-            artifactory.swg-devops.com/busybox:latest"
+        image: busybox:latest
         command: ['sh', '-c', "until nslookup ibm-spectrum-scale-perf-query.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for ibm-spectrum-scale-perf-query service; sleep 2; done"]
       #######################################################################################################################
       #
@@ -103,8 +101,8 @@ spec:
       # you need to create a Secret based on existing Docker credentials and put the secret name under imagePullSecrets settings
       #
       #######################################################################################################################
-      imagePullSecrets:
-        - name: spectrumscale-registrykey
+      #imagePullSecrets:
+      #  - name: spectrumscale-registrykey
       volumes:
         - name: logfiles
           emptyDir: {}
