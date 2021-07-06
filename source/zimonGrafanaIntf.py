@@ -25,7 +25,8 @@ import json
 import re
 import logging.handlers
 import sys
-import os, errno
+import os
+import errno
 
 from queryHandler.Query import Query
 from queryHandler.QueryHandler import PerfmonConnError, QueryHandler2 as QueryHandler
