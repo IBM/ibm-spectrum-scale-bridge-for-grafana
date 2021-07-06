@@ -569,6 +569,16 @@ def updateCherrypySslConf(args):
     cherrypy.config.update(sslConfig)
 
 
+def resolveAPIKeyValue(storedKey):
+    keyValue = None
+    if "/" in str(storedKey):
+        with open(storedKey) as file:
+            keyValue = file.read().rstrip()
+        return keyValue
+    else:
+        return storedKey
+
+
 def main(argv):
     # parse input arguments
     args, msg = getSettings(argv)
@@ -587,12 +597,20 @@ def main(argv):
     # prepare metadata
     try:
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
-        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
+        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k =='apiKeyValue'))
         # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
-        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), args.get('apiKeyValue'), args.get('includeDiskData'))
+        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), resolveAPIKeyValue(args.get('apiKeyValue')), args.get('includeDiskData'))
     except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])
+        return
+    except IOError as e:
+        if e.errno == errno.ENOENT:
+            # file does not exist'
+            logger.error(f'Error reading file, Reason: {e}')
+        elif e.errno == errno.EACCES:
+            # file cannot be read
+            logger.error(f'Error accessing file, Reason: {e}')
         return
     except (PerfmonConnError, Exception) as e:
         logger.error('%s', MSG['CollectorErr'].format(str(e)))

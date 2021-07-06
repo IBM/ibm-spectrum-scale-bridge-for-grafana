@@ -48,6 +48,8 @@ def checkTLSsettings(args):
 def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
         return False, MSG['MissingParm']
+    elif "/" in str(args.get('apiKeyValue')) and not os.path.isfile(args.get('apiKeyValue')):
+        return False, MSG['FileNotFound'].format(args.get('apiKeyValue'))
     return True, ''
 
 
@@ -159,8 +161,8 @@ class Password(argparse.Action):
     defaults = ConfigManager().defaults
 
     def __call__(self, parser, namespace, values, option_string):
-        if values is None and self.defaults.get('apiKeyValue', None) is None:
-            print('no valid apiKeyValue found in the config.ini')
+        if values is None:
+            print('Enter your apiKey value')
             values = getpass.getpass()
 
         setattr(namespace, self.dest, values)

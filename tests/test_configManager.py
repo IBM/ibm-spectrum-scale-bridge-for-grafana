@@ -78,3 +78,9 @@ def test_case11():
     result = cm.defaults
     assert 'includeDiskData' in result.keys()
     assert result['includeDiskData'] == 'no'
+
+
+def test_case12():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'apiKeyValue' not in result.keys()
