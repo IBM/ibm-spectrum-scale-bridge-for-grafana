@@ -138,12 +138,44 @@ tls.key:  1704 bytes
 ```
 
 
-6. Since the IBM Spectrum Scale version 5.1.1 any client querying the performance data from the IBM Spectrum Scale cluster needs the API key authentication. You need to create API key secret for the grafana-bridge application using key name 'scale_grafana'. First encode your plaintext API key name and value using base_64:
+6. Since the IBM Spectrum Scale version 5.1.1 any client querying the performance data from the IBM Spectrum Scale cluster needs the API key authentication. You need to create API key secret for the grafana-bridge application using key name 'scale_default'. 
+
+First check the secret 'ibm-spectrum-scale-perfmon-default-api-key' exists in your CNSA project
 
 ```
-[root@mycluster-inf certs]# echo -n 'scale_grafana'| base64
+[root@mycluster-inf ~]# oc get secret ibm-spectrum-scale-perfmon-default-api-key
+NAME                                         TYPE     DATA   AGE
+ibm-spectrum-scale-perfmon-default-api-key   Opaque   1      16h
+
+```
+Copy the scale_default api key value from that secret, mounted as a file in core pods
+
+```
+[root@mycluster-inf ~]# oc get po -o wide
+NAME                                           READY   STATUS    RESTARTS   AGE   IP              NODE                               NOMINATED NODE   READINESS GATES
+ibm-spectrum-scale-core-8gqvm                  1/1     Running   0          19h   10.16.105.140   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-h5m6n                  1/1     Running   0          19h   10.16.105.141   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-mwstf                  1/1     Running   0          19h   10.16.97.21     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-gui-0                       9/9     Running   0          19h   10.254.16.108   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-operator-79cd7dfb68-q4k49   1/1     Running   0          19h   10.254.12.168   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-0               2/2     Running   0          19h   10.254.4.84     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-1               2/2     Running   0          19h   10.254.16.109   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+
+[root@mycluster-inf ~]# oc rsh ibm-spectrum-scale-core-8gqvm
+Defaulting container name to gpfs.
+Use 'oc describe pod/worker0 -n ibm-spectrum-scale' to see all of the containers in this pod.
+
+sh-4.4# cat /etc/perfmon-api-keys/scale_default
+7h7p860oF99YwIBKJag8TZPkvILQAx3p8F9E
+sh-4.4#
+```
+
+ As next encode the plaintext API key name and value using base_64:
+
+```
+[root@mycluster-inf certs]# echo -n 'scale_default'| base64
 c2NhbGVfZGVmYXVsdA==
-[root@mycluster-inf certs]# echo -n 'b0fbc340-43e8-4039-9895-e07eb34d1153'| base64
+[root@mycluster-inf certs]# echo -n '7h7p860oF99YwIBKJag8TZPkvILQAx3p8F9E'| base64
 YjBmYmMzNDAtNDNlOC00MDM5LTk4OTUtZTA3ZWIzNGQxMTUz
 ```
 
