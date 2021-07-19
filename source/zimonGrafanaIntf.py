@@ -588,7 +588,7 @@ def main(argv):
         return
 
     # prepare the logger
-    logger = configureLogging(args.get('logPath'), args.get('logFile'), args.get('logLevel'))
+    logger = configureLogging(args.get('logPath'), args.get('logFile', None), args.get('logLevel'))
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)

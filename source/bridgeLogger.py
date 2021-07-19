@@ -52,10 +52,7 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
     except (ValueError, TypeError):
         loglevel = logging.INFO
 
-    # create the logfile path if needed
-    if not os.path.exists(logPath):
-        os.makedirs(logPath)
-    logfile = os.path.join(logPath, logfile)
+    logToFile = True if logfile else False
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)-8s - %(message)s')
     formatter1 = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s', datefmt='%Y-%m-%d %H:%M')
@@ -65,15 +62,25 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.TRACE)
 
+    # prepare stream handler
     strmhandler = logging.StreamHandler()
-    strmhandler.setLevel(logging.INFO)
+    strmhandler.setLevel(loglevel)
     strmhandler.setFormatter(formatter1)
 
-    rfhandler = logging.handlers.RotatingFileHandler(logfile, 'a', 1000000, 5)  # 5 x 1M files
-    rfhandler.setLevel(loglevel)
-    rfhandler.setFormatter(formatter)
+    if logToFile:
+        # create the log file path if needed
+        if not os.path.exists(logPath):
+            os.makedirs(logPath)
+        logfile = os.path.join(logPath, logfile)
 
-    logger.addHandler(rfhandler)
+        rfhandler = logging.handlers.RotatingFileHandler(logfile, 'a', 1000000, 5)  # 5 x 1M files
+        rfhandler.setLevel(loglevel)
+        rfhandler.setFormatter(formatter)
+
+        strmhandler.setLevel(logging.INFO)  # if we log to a file limit the console traces to INFO level
+
+        logger.addHandler(rfhandler)
+
     logger.addHandler(strmhandler)
 
     logger.propagate = False  # prevent propagation to default (console) logger

@@ -177,7 +177,8 @@ def parse_cmd_args(argv):
     parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9980, 9981], default=None,
                         help='ZIMon collector port number (Default from config.ini: 9980)')
     parser.add_argument('-l', '--logPath', action="store", default=None, help='location path of the log file (Default from config.ini: \'/var/log/ibm_bridge_for_grafana\')')
-    parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
+    parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log). If no log file name specified \
+    all traces will be printed out directly on the command line')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
     parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=None, help='port number listening on for HTTP(S) connections (Default from config.ini: 4242)')
