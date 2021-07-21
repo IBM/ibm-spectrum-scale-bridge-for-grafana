@@ -76,7 +76,7 @@ def test_case11():
     assert result['includeDiskData'] == 'no'
 
 
-def test_case11():
+def test_case12():
     cm = ConfigManager()
     result = cm.defaults
     assert 'protocol' in result.keys()
