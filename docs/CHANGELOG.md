@@ -1,12 +1,15 @@
 # Version 7.0.1 (07/21/2021)
-Added support for [IBM Spectrum Scale Container Native Storage Access 5.1.1.1](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+Added support for [IBM Spectrum Scale Container Native Storage Access 5.1.1.1](https://www.ibm.com/docs/en/scalecontainernative?topic=spectrum-scale-container-native-storage-access-5111)
 - updated example deployment yaml files according the API key authentication changes introduced to the IBM Spectrum Scale Performance monitoring tool
-Modified config.ini allowing to specify the file path, where the 'apiKeyValue' is stored, instead of entering a key value in this file.
+
+Modified config.ini allowing to specify the file path, where the 'apiKeyValue' is stored, instead of entering a key value in this file
+
 Added the new command line argument'protocol'
-- Using this argument the user can decide if the bridge incoming requests should happen over HTTP or HTTPS connection
+- using this argument the user can decide if the bridge incoming requests should happen over HTTP or HTTPS connection
 Removed fixed port numbers for HTTP/HTTPS connections.
-- 4242 and 8443 still default ports for the bridge HTTP/HTTPS cnnections, but not fixed anymore.
-Added logic to re-attempt to get the MetaData from the pmcollector in case no data have been returned during the bridge start instead of stopping the process directly.
+- 4242 and 8443 still default ports for the bridge HTTP/HTTPS cnnections, but not fixed anymore
+
+Added logic to re-attempt to get the MetaData from the pmcollector in case no data have been returned during the bridge start instead of stopping the process directly
 - MAX_RETRY_COUNT = 3
 
 Expanded test module with more unit tests
