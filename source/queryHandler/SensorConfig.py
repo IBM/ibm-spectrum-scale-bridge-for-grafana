@@ -41,7 +41,7 @@ def readSensorsConfigFromMMSDRFS(logger=None):
         logger = SysmonLogger.getLogger(__name__)
 
     if not os.path.isfile(mmsdrfsFile):
-        logger.info("MMSDRFS file not found (%s) ", mmsdrfsFile)
+        logger.info("MMSDRFS file not found (%s), continue with trying to read pmsensors configuration from ZIMonSensors.cfg ", mmsdrfsFile)
         return readSensorsConfig(logger)
 
     data = ""
