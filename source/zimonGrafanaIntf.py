@@ -38,6 +38,7 @@ from bridgeLogger import configureLogging
 from confParser import getSettings
 from collections import defaultdict
 from timeit import default_timer as timer
+from time import sleep
 
 
 class MetadataHandler():
@@ -78,18 +79,27 @@ class MetadataHandler():
 
         self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
-        tstart = timer()
-        self.__metaData = Topo(self.qh.getTopology())
-        tend = timer()
-        if not (self.metaData and self.metaData.topo):
-            raise ValueError(MSG['NoData'])
-        foundItems = len(self.metaData.allParents) - 1
-        sensors = self.metaData.sensorsSpec.keys()
-        self.logger.info(MSG['MetaSuccess'])
-        self.logger.details(MSG['ReceivAttrValues'].format('parents totally', foundItems))
-        self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
-        self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
-        self.logger.details(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
+        MAX_ATTEMPTS_COUNT = 3
+        for attempt in range(1, MAX_ATTEMPTS_COUNT + 1):
+            tstart = timer()
+            self.__metaData = Topo(self.qh.getTopology())
+            tend = timer()
+            if not (self.metaData and self.metaData.topo):
+                if attempt > MAX_ATTEMPTS_COUNT:
+                    break
+                # if no data returned because of the REST HTTP server is still starting, sleep and retry (max 3 times)
+                self.logger.warning(MSG['NoDataStartNextAttempt'].format(attempt, MAX_ATTEMPTS_COUNT))
+                sleep(5) 
+            else:
+                foundItems = len(self.metaData.allParents) - 1
+                sensors = self.metaData.sensorsSpec.keys()
+                self.logger.info(MSG['MetaSuccess'])
+                self.logger.details(MSG['ReceivAttrValues'].format('parents totally', foundItems))
+                self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
+                self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
+                self.logger.details(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
+                return
+        raise ValueError(MSG['NoData'])
 
     def update(self):
         '''Read the topology from ZIMon and update
