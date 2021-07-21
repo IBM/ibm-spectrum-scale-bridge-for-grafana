@@ -75,6 +75,9 @@ Define a new data source (Data Sources -> Add New)
 
 ![](/docs/Example_Add_DataSource.png)
 
-**NOTE**: The IBM Spectrum Scale bridge listens on port 4242 for HTTP connections, and on port 8443 for HTTPS(SSL) connections. Follow the instructions [Generate SSL certificates](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-setup-HTTPS%28SSL%29-connection-for-the-IBM-Spectrum-Scale-bridge-for-Grafana#generate-ssl-certificates) to generate a private ssl key and a ssl certificate
+**NOTE**: Per default the IBM Spectrum Scale bridge listens on port 4242 for HTTP connections. For HTTPS(SSL) connections you need to set the appropriate protocol settings on the bridge start.
+          Follow the instructions [Generate SSL certificates](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-setup-HTTPS%28SSL%29-connection-for-the-IBM-Spectrum-Scale-bridge-for-Grafana#generate-ssl-certificates) to generate a private ssl key and a ssl certificate
+
+
 
 Grafana now can talk to Spectrum Scale Performance Monitoring tool via the bridge. Follow the grafana instructions to create dashboards.

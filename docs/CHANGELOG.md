@@ -1,3 +1,14 @@
+# Version 6.1.4 (07/21/2021)
+
+Added support for the 'protocol' command line argument.
+Removed fixed port numbers for HTTP/HTTPS connections.
+
+Expanded test module with more unit tests
+
+Tested with Grafana 8.0.3 version
+
+
+
 # Version 6.1.3 (05/21/2021)
 
 Added support for the 'includeDiskData' command line argument.
