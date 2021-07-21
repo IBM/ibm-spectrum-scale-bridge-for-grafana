@@ -1,3 +1,23 @@
+# Version 7.0.1 (07/21/2021)
+Added support for [IBM Spectrum Scale Container Native Storage Access 5.1.1.1](https://www.ibm.com/docs/en/scalecontainernative?topic=spectrum-scale-container-native-storage-access-5111)
+- updated example deployment yaml files according the API key authentication changes introduced to the IBM Spectrum Scale Performance monitoring tool
+
+Modified config.ini allowing to specify the file path, where the 'apiKeyValue' is stored, instead of entering a key value in this file
+
+Added the new command line argument'protocol'
+- using this argument the user can decide if the bridge incoming requests should happen over HTTP or HTTPS connection
+Removed fixed port numbers for HTTP/HTTPS connections.
+- 4242 and 8443 still default ports for the bridge HTTP/HTTPS cnnections, but not fixed anymore
+
+Added logic to re-attempt to get the MetaData from the pmcollector in case no data have been returned during the bridge start instead of stopping the process directly
+- MAX_RETRY_COUNT = 3
+
+Expanded test module with more unit tests
+
+Tested with Grafana version 7.5.1 and 8.0.3
+
+
+
 # Version 7 (04/26/2021)
 
 Added support for [IBM Spectrum Scale 5.1.1](https://www.ibm.com/docs/en/spectrum-scale/5.1.1?topic=summary-changes)
@@ -6,7 +26,27 @@ Added support for [IBM Spectrum Scale 5.1.1](https://www.ibm.com/docs/en/spectru
 - changed default serverPort to 9980
 Added the article "Configuring a performance monitoring API key for the IBM Spectrum Scale Performance Monitoring Bridge" to the Wiki
 
-Expanded test module with unit tests for the apiKeyValue verification
+
+
+# Version 6.1.4 (07/21/2021)
+
+Added support for the 'protocol' command line argument.
+Removed fixed port numbers for HTTP/HTTPS connections.
+
+Expanded test module with more unit tests
+
+Tested with Grafana 8.0.3 version
+
+
+
+# Version 6.1.3 (05/21/2021)
+
+Added support for the 'includeDiskData' command line argument.
+- using the 'includeDiskData' option allows to query and fetch data from the archived (on disk data) for better precision. 
+
+Expanded test module with more unit tests
+
+Tested with Grafana 7.5.1 version
 
 
 

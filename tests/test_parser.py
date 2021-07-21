@@ -19,5 +19,5 @@ def test_case03():
 
 def test_case04():
     result = os.system('python ./source/zimonGrafanaIntf.py -P 9084')
-    if float(version) >= 7.0:
+    if version >= "7.0":
         assert result > 0

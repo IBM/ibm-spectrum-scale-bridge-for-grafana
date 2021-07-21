@@ -75,7 +75,7 @@ Now you can add the host running the bridge container to the Grafana monitoring 
 2. Start the bridge running in a container:
 
 ```shell
-# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "APIKEYVALUE=XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" -e "PORT=8443" -e "TLSKEYPATH=/etc/bridge_ssl/certs" -e "TLSKEYFILE=privkey.pem" -e "TLSCERTFILE=cert.pem" \ -v /tmp:/var/log/ibm_bridge_for_grafana -v /etc/bridge_ssl/certs:/etc/bridge_ssl/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_image:latest 
+# podman run -dt -p 4242:4242,8443:8443 -e "SERVER=9.XXX.XXX.XXX" -e "APIKEYVALUE=XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" -e "PORT=8443" -e "PROTOCOL=https" -e "TLSKEYPATH=/etc/bridge_ssl/certs" -e "TLSKEYFILE=privkey.pem" -e "TLSCERTFILE=cert.pem" \ -v /tmp:/var/log/ibm_bridge_for_grafana -v /etc/bridge_ssl/certs:/etc/bridge_ssl/certs \ --pod new:my-bridge-ssl-test-pod --name bridge-ssl-test bridge_image:latest
 
 # podman logs bridge-ssl-test
 2021-04-25 16:05 - INFO     -  *** IBM Spectrum Scale bridge for Grafana - Version: 7.0 ***

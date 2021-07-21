@@ -26,6 +26,7 @@ import re
 import logging.handlers
 import sys
 import os
+import errno
 
 from queryHandler.Query import Query
 from queryHandler.QueryHandler import PerfmonConnError, QueryHandler2 as QueryHandler
@@ -37,11 +38,12 @@ from bridgeLogger import configureLogging
 from confParser import getSettings
 from collections import defaultdict
 from timeit import default_timer as timer
+from time import sleep
 
 
 class MetadataHandler():
 
-    def __init__(self, logger, server, port, apiKeyName, apiKeyValue):
+    def __init__(self, logger, server, port, apiKeyName, apiKeyValue, includeDiskData=False):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
@@ -50,6 +52,7 @@ class MetadataHandler():
         self.port = port
         self.apiKeyName = apiKeyName
         self.apiKeyValue = apiKeyValue
+        self.includeDiskData = includeDiskData
 
         self.__initializeTables()
 
@@ -76,18 +79,27 @@ class MetadataHandler():
 
         self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
-        tstart = timer()
-        self.__metaData = Topo(self.qh.getTopology())
-        tend = timer()
-        if not (self.metaData and self.metaData.topo):
-            raise ValueError(MSG['NoData'])
-        foundItems = len(self.metaData.allParents) - 1
-        sensors = self.metaData.sensorsSpec.keys()
-        self.logger.info(MSG['MetaSuccess'])
-        self.logger.details(MSG['ReceivAttrValues'].format('parents totally', foundItems))
-        self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
-        self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
-        self.logger.details(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
+        MAX_ATTEMPTS_COUNT = 3
+        for attempt in range(1, MAX_ATTEMPTS_COUNT + 1):
+            tstart = timer()
+            self.__metaData = Topo(self.qh.getTopology())
+            tend = timer()
+            if not (self.metaData and self.metaData.topo):
+                if attempt > MAX_ATTEMPTS_COUNT:
+                    break
+                # if no data returned because of the REST HTTP server is still starting, sleep and retry (max 3 times)
+                self.logger.warning(MSG['NoDataStartNextAttempt'].format(attempt, MAX_ATTEMPTS_COUNT))
+                sleep(5)
+            else:
+                foundItems = len(self.metaData.allParents) - 1
+                sensors = self.metaData.sensorsSpec.keys()
+                self.logger.info(MSG['MetaSuccess'])
+                self.logger.details(MSG['ReceivAttrValues'].format('parents totally', foundItems))
+                self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
+                self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
+                self.logger.details(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
+                return
+        raise ValueError(MSG['NoData'])
 
     def update(self):
         '''Read the topology from ZIMon and update
@@ -233,6 +245,10 @@ class PostHandler(object):
         return self.__md.qh
 
     @property
+    def md(self):
+        return self.__md
+
+    @property
     def sensorsConf(self):
         return self.__md.SensorsConfig
 
@@ -299,7 +315,7 @@ class PostHandler(object):
 
     def _createZimonQuery(self, q, start, end):
         '''Creates zimon query string '''
-        query = Query()
+        query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
         bucketSize = 1  # default
         inMetric = q.get('metric')
@@ -564,6 +580,16 @@ def updateCherrypySslConf(args):
     cherrypy.config.update(sslConfig)
 
 
+def resolveAPIKeyValue(storedKey):
+    keyValue = None
+    if "/" in str(storedKey):
+        with open(storedKey) as file:
+            keyValue = file.read().rstrip()
+        return keyValue
+    else:
+        return storedKey
+
+
 def main(argv):
     # parse input arguments
     args, msg = getSettings(argv)
@@ -572,22 +598,30 @@ def main(argv):
         return
 
     # prepare the logger
-    logger = configureLogging(args.get('logPath'), args.get('logFile'), args.get('logLevel'))
+    logger = configureLogging(args.get('logPath'), args.get('logFile', None), args.get('logLevel'))
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
-    if args.get('port') == 8443:
+    if args.get('protocol') == "https":
         updateCherrypySslConf(args)
 
     # prepare metadata
     try:
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
-        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items()))
+        logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k == 'apiKeyValue'))
         # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
-        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), args.get('apiKeyValue'))
+        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), resolveAPIKeyValue(args.get('apiKeyValue')), args.get('includeDiskData'))
     except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])
+        return
+    except IOError as e:
+        if e.errno == errno.ENOENT:
+            # file does not exist'
+            logger.error(f'Error reading file, Reason: {e}')
+        elif e.errno == errno.EACCES:
+            # file cannot be read
+            logger.error(f'Error accessing file, Reason: {e}')
         return
     except (PerfmonConnError, Exception) as e:
         logger.error('%s', MSG['CollectorErr'].format(str(e)))

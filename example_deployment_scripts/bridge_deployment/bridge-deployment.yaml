@@ -63,6 +63,20 @@ spec:
             value: "tls.crt"
           - name: PORT
             value: "8443"
+          - name: PROTOCOL
+            value: "https"
+          - name: SERVERPORT
+            value: "9981"
+          - name: APIKEYNAME
+            valueFrom:
+              secretKeyRef:
+                name: scale-grafana-api
+                key: api-key-name
+          - name: APIKEYVALUE
+            valueFrom:
+              secretKeyRef:
+                name: scale-grafana-api
+                key: api-key-value
           imagePullPolicy: Always
           ports:
             - name: http

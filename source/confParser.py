@@ -35,11 +35,11 @@ def checkFileExists(path, filename):
 
 
 def checkTLSsettings(args):
-    if args.get('port') == 8443 and (not args.get('tlsKeyPath') or not args.get('tlsKeyFile') or not args.get('tlsCertFile')):
+    if args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not args.get('tlsKeyFile') or not args.get('tlsCertFile')):
         return False, MSG['MissingParm']
-    elif args.get('port') == 8443 and not os.path.exists(args.get('tlsKeyPath')):
+    elif args.get('protocol') == "https" and not os.path.exists(args.get('tlsKeyPath')):
         return False, MSG['KeyPathError']
-    elif args.get('port') == 8443:
+    elif args.get('protocol') == "https":
         if (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsCertFile'))) or (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
             return False, MSG['CertError']
     return True, ''
@@ -48,6 +48,8 @@ def checkTLSsettings(args):
 def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
         return False, MSG['MissingParm']
+    elif "/" in str(args.get('apiKeyValue')) and not os.path.isfile(args.get('apiKeyValue')):
+        return False, MSG['FileNotFound'].format(args.get('apiKeyValue'))
     return True, ''
 
 
@@ -79,6 +81,11 @@ def merge_defaults_and_args(defaults, args):
     brConfig = dict(defaults)
     args = vars(args)
     brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
+    for k, v in brConfig.items():
+        if v == "no":
+            brConfig[k] = False
+        elif v == "yes":
+            brConfig[k] = True
     return brConfig
 
 
@@ -154,8 +161,8 @@ class Password(argparse.Action):
     defaults = ConfigManager().defaults
 
     def __call__(self, parser, namespace, values, option_string):
-        if values is None and self.defaults.get('apiKeyValue', None) is None:
-            print('no valid apiKeyValue found in the config.ini')
+        if values is None:
+            print('Enter your apiKey value')
             values = getpass.getpass()
 
         setattr(namespace, self.dest, values)
@@ -170,15 +177,18 @@ def parse_cmd_args(argv):
     parser.add_argument('-P', '--serverPort', action="store", type=int, choices=[9980, 9981], default=None,
                         help='ZIMon collector port number (Default from config.ini: 9980)')
     parser.add_argument('-l', '--logPath', action="store", default=None, help='location path of the log file (Default from config.ini: \'/var/log/ibm_bridge_for_grafana\')')
-    parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
+    parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log). If no log file name specified \
+    all traces will be printed out directly on the command line')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
-    parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=None, help='port number listening on for HTTP(S) connections (Default from config.ini: 4242)')
+    parser.add_argument('-p', '--port', action="store", type=int, default=None, help='port number listening on HTTP(S) client connections (Default from config.ini: 4242)')
+    parser.add_argument('-r', '--protocol', action="store", choices=["http", "https"], default=None, help='Connection protocol HTTP/HTTPS (Default from config.ini: "http")')
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-n', '--apiKeyName', action="store", default=None, help='Name of api key file (Default from config.ini: \'scale_grafana\')')
     parser.add_argument('-v', '--apiKeyValue', action=Password, nargs='?', dest='apiKeyValue', default=None, help='Enter your apiKey value:')
+    parser.add_argument('-d', '--includeDiskData', action="store", choices=["yes", "no"], default=None, help='Use or not the historical data from disk (Default from config.ini: "no")')
 
     args = parser.parse_args(argv)
     return args, ''

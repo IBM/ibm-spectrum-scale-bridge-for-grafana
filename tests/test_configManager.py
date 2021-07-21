@@ -67,7 +67,27 @@ def test_case09():
 def test_case10():
     cm = ConfigManager()
     result = cm.defaults
-    if float(version) < 7.0:
+    if version < "7.0":
         assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
     else:
         assert int(result['port']) == 4242 and int(result['serverPort']) == 9980
+
+
+def test_case11():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'includeDiskData' in result.keys()
+    assert result['includeDiskData'] == 'no'
+
+
+def test_case12():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'apiKeyValue' not in result.keys()
+
+
+def test_case13():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'protocol' in result.keys()
+    assert result['protocol'] == 'http'

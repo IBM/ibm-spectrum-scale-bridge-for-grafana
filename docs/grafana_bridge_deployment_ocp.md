@@ -63,7 +63,7 @@ Check that the both .pem files are created in the /tmp directory
 
 ```
 [root@mycluster-inf ~]# cd /etc/bridge_ssl/certs
-[root@mycluster-inf tmp]# cat privkey.pem
+[root@mycluster-inf certs]# cat privkey.pem
 -----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDZ7v0Oq9n9zx8T
 v/VPln5K74udrUVPA/4xz/+MsUIThlt+RLcaVuBx2jTbxDlSdPiQc/rSfZRtBTBt
@@ -92,7 +92,7 @@ ehAHRd4XxCH0p4/lAI+qQZxmkRfho1IXg/sAQoFXCF2dj+hMZ9nlV26m3n6iZxFY
 bjRUDSzBGHtV+WhPLzrKrsRFn4USCQHDA9+0aL2jGnfwC3En4SeMfk/3usLPVSAX
 B4MtCX8SrTMkQ7PutwU2/R+i
 -----END PRIVATE KEY-----
-[root@mycluster-inf tmp]# cat cert.pem
+[root@mycluster-inf certs]# cat cert.pem
 -----BEGIN CERTIFICATE-----
 MIIDNzCCAh+gAwIBAgIJAMlcr+FBcrAnMA0GCSqGSIb3DQEBCwUAMDIxFzAVBgNV
 BAMMDmdyYWZhbmEtYnJpZGdlMRcwFQYDVQQKDA5ncmFmYW5hLWJyaWRnZTAeFw0y
@@ -119,7 +119,7 @@ O+6FAarz5qVR/D09GhoohwQDT8m5N2hfS61JQ/f3iN3KUYK00ppwWzJeumabVY+Z
 5. Create the 'grafana-bridge-secret' secret for the TLS keys
 
 ```
-[root@mycluster-inf tmp]# kubectl create secret tls grafana-bridge-secret --key="privkey.pem" --cert="cert.pem"
+[root@mycluster-inf certs]# kubectl create secret tls grafana-bridge-secret --key="privkey.pem" --cert="cert.pem"
 secret/grafana-bridge-secret created
 
 [root@mycluster-inf tmp]# oc describe secret grafana-bridge-secret
@@ -138,10 +138,77 @@ tls.key:  1704 bytes
 ```
 
 
-6. Change to the directory example_deployment_scripts/bridge_deployment/ and apply the following .yaml files:
+6. Since the IBM Spectrum Scale version 5.1.1 any client querying the performance data from the IBM Spectrum Scale cluster needs the API key authentication. You need to create API key secret for the grafana-bridge application using key name 'scale_default'. 
+
+First check the secret 'ibm-spectrum-scale-perfmon-default-api-key' exists in your CNSA project
 
 ```
-[root@mycluster-inf tmp]# cd /opt/example_deployment_scripts/bridge_deployment
+[root@mycluster-inf ~]# oc get secret ibm-spectrum-scale-perfmon-default-api-key
+NAME                                         TYPE     DATA   AGE
+ibm-spectrum-scale-perfmon-default-api-key   Opaque   1      16h
+
+```
+Copy the scale_default api key value from that secret, mounted as a file in core pods
+
+```
+[root@mycluster-inf ~]# oc get po -o wide
+NAME                                           READY   STATUS    RESTARTS   AGE   IP              NODE                               NOMINATED NODE   READINESS GATES
+ibm-spectrum-scale-core-8gqvm                  1/1     Running   0          19h   10.16.105.140   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-h5m6n                  1/1     Running   0          19h   10.16.105.141   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-mwstf                  1/1     Running   0          19h   10.16.97.21     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-gui-0                       9/9     Running   0          19h   10.254.16.108   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-operator-79cd7dfb68-q4k49   1/1     Running   0          19h   10.254.12.168   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-0               2/2     Running   0          19h   10.254.4.84     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-1               2/2     Running   0          19h   10.254.16.109   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+
+[root@mycluster-inf ~]# oc rsh ibm-spectrum-scale-core-8gqvm
+Defaulting container name to gpfs.
+Use 'oc describe pod/worker0 -n ibm-spectrum-scale' to see all of the containers in this pod.
+
+sh-4.4# cat /etc/perfmon-api-keys/scale_default
+7h7p860oF99YwIBKJag8TZPkvILQAx3p8F9E
+sh-4.4#
+```
+
+ As next encode the plaintext API key name and value using base_64:
+
+```
+[root@mycluster-inf certs]# echo -n 'scale_default'| base64
+c2NhbGVfZGVmYXVsdA==
+[root@mycluster-inf certs]# echo -n '7h7p860oF99YwIBKJag8TZPkvILQAx3p8F9E'| base64
+YjBmYmMzNDAtNDNlOC00MDM5LTk4OTUtZTA3ZWIzNGQxMTUz
+```
+
+
+7. Change to the directory example_deployment_scripts/bridge_deployment/ and open the secret.yaml file in edit mode. 
+Replace the <YOUR_BASE64_ENCODED_API_KEY_NAME> and the <YOUR_BASE64_ENCODED_API_KEY_VALUE> with the values you generated with base_64.
+
+
+8. Create the 'scale-grafana-api' secret for the 'scale_grafana' API key authentication
+
+```
+[root@mycluster-inf certs]# oc create -f secret.yaml
+secret/scale-grafana-api created
+
+[root@mycluster-inf certs]# oc describe secret scale-grafana-api
+Name:         scale-grafana-api
+Namespace:    ibm-spectrum-scale-ns
+Labels:       <none>
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+api-key-name:   13 bytes
+api-key-value:  36 bytes
+```
+
+
+9. Apply the following .yaml files:
+
+```
+[root@mycluster-inf certs]# cd /opt/example_deployment_scripts/bridge_deployment
 
 [root@mycluster-inf bridge_deployment]# oc create -f role.yaml
 role.rbac.authorization.k8s.io/grafana-bridge created
@@ -157,29 +224,27 @@ deployment.apps/grafana-bridge-deployment created
 ```
 
 
-7. Verify the grafana-bridge pods are up and running
+10. Verify the grafana-bridge pods are up and running
 
 ```
 [root@mycluster-inf bridge_deployment]# oc get po -o wide
-NAME                                           READY   STATUS    RESTARTS   AGE   IP              NODE                               NOMINATED NODE   READINESS GATES
-grafana-bridge-deployment-5bdfcb6956-cpmjl     1/1     Running   0          9s    10.254.4.92     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
-grafana-bridge-deployment-5bdfcb6956-zcq59     1/1     Running   0          9s    10.254.16.118   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-core-8gqvm                  1/1     Running   0          20h   10.16.105.140   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-core-h5m6n                  1/1     Running   0          20h   10.16.105.141   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-core-mwstf                  1/1     Running   0          20h   10.16.97.21     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-gui-0                       9/9     Running   0          20h   10.254.16.108   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-operator-79cd7dfb68-q4k49   1/1     Running   0          20h   10.254.12.168   worker2.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-pmcollector-0               2/2     Running   0          20h   10.254.4.84     worker0.mycluster.os.fyre.ibm.com   <none>           <none>
-ibm-spectrum-scale-pmcollector-1               2/2     Running   0          20h   10.254.16.109   worker1.mycluster.os.fyre.ibm.com   <none>           <none>
+NAME                                           READY   STATUS    RESTARTS   AGE   IP             NODE                             NOMINATED NODE   READINESS GATES
+grafana-bridge-deployment-686f577585-jcr6r     1/1     Running   8          89m   10.254.20.19   worker0.helene.os.fyre.ibm.com   <none>           <none>
+grafana-bridge-deployment-686f577585-wdrcs     1/1     Running   8          89m   10.254.16.19   worker1.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-bpdwp                  0/1     Running   0          14h   10.16.69.109   worker1.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-dsnx7                  0/1     Running   0          14h   10.16.69.105   worker0.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-core-rdf54                  0/1     Running   0          14h   10.16.69.110   worker2.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-gui-0                       9/9     Running   0          14h   10.254.16.11   worker1.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-operator-6877d5c9bb-6xtxj   1/1     Running   0          15h   10.254.16.9    worker1.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-0               2/2     Running   9          8h    10.254.20.16   worker0.helene.os.fyre.ibm.com   <none>           <none>
+ibm-spectrum-scale-pmcollector-1               2/2     Running   0          8h    10.254.16.14   worker1.helene.os.fyre.ibm.com   <none>           <none>
 
-[root@mycluster-inf bridge_deployment]# oc logs grafana-bridge-deployment-5bdfcb6956-cpmjl
-Connection to the collector server established successfully
-Successfully retrieved MetaData
-Received sensors:
-
-CPU     DiskFree        GPFSNodeAPI     GPFSRPCS        GPFSVFSX        GPFSWaiters     Load    Memory  Netstat Network TopProc
-Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Dec  5 2019, 15:45:45)
+[root@mycluster-inf bridge_deployment]# oc logs grafana-bridge-deployment-686f577585-jcr6r
+2021-04-08 21:12 - INFO     -  *** IBM Spectrum Scale bridge for Grafana - Version: 7.0 ***
+2021-04-08 21:12 - INFO     - Successfully retrieved MetaData
+2021-04-08 21:12 - INFO     - Received sensors:CPU, DiskFree, GPFSNodeAPI, GPFSRPCS, GPFSVFSX, GPFSWaiters, Load, Memory, Netstat, Network, TopProc
+2021-04-08 21:12 - INFO     - Initial cherryPy server engine start have been invoked. Python version: 3.6.8 (default, Aug 18 2020, 08:33:21)
 [GCC 8.3.1 20191121 (Red Hat 8.3.1-5)], cherryPy version: 18.6.0.
-server started
+2021-04-08 21:12 - INFO     - server started
 
 ```
