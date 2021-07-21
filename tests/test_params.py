@@ -43,7 +43,9 @@ def test_case04():
     assert 'tlsKeyPath' not in result.keys()
     assert 'tlsKeyFile' not in result.keys()
     assert 'tlsCertFile' not in result.keys()
+    assert 'protocol' in result.keys()
     assert result.get('port') == 8443
+    assert result.get('protocol') == 'http'
 
 
 @with_setup(my_setup)

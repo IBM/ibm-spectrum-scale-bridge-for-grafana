@@ -74,3 +74,10 @@ def test_case11():
     result = cm.defaults
     assert 'includeDiskData' in result.keys()
     assert result['includeDiskData'] == 'no'
+
+
+def test_case11():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'protocol' in result.keys()
+    assert result['protocol'] == 'http'
