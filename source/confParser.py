@@ -34,11 +34,11 @@ def checkFileExists(path, filename):
 
 
 def checkTLSsettings(args):
-    if args.get('port') == 8443 and (not args.get('tlsKeyPath') or not args.get('tlsKeyFile') or not args.get('tlsCertFile')):
+    if args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not args.get('tlsKeyFile') or not args.get('tlsCertFile')):
         return False, MSG['MissingParm']
-    elif args.get('port') == 8443 and not os.path.exists(args.get('tlsKeyPath')):
+    elif args.get('protocol') == "https" and not os.path.exists(args.get('tlsKeyPath')):
         return False, MSG['KeyPathError']
-    elif args.get('port') == 8443:
+    elif args.get('protocol') == "https":
         if (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsCertFile'))) or (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
             return False, MSG['CertError']
     return True, ''
@@ -160,7 +160,8 @@ def parse_cmd_args(argv):
     parser.add_argument('-f', '--logFile', action="store", default=None, help='Name of the log file (Default from config.ini: zserver.log')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
-    parser.add_argument('-p', '--port', action="store", type=int, choices=[4242, 8443], default=None, help='port number listening on for HTTP(S) connections (Default from config.ini: 4242)')
+    parser.add_argument('-p', '--port', action="store", type=int, default=None, help='port number listening on HTTP(S) client connections (Default from config.ini: 4242)')
+    parser.add_argument('-r', '--protocol', action="store", choices=["http", "https"], default=None, help='Connection protocol HTTP/HTTPS (Default from config.ini: "http")')
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None, help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS port 8443)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None, help='Name of TLS key file, f.e.: privkey.pem (Required only for HTTPS port 8443)')
     parser.add_argument('-m', '--tlsCertFile', action="store", default=None, help='Name of TLS certificate file, f.e.: cert.pem (Required only for HTTPS port 8443)')
