@@ -592,7 +592,7 @@ def main(argv):
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
-    if args.get('port') == 8443:
+    if args.get('protocol') == "https":
         updateCherrypySslConf(args)
 
     # prepare metadata

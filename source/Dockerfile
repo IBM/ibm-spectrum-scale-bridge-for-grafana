@@ -21,6 +21,10 @@ COPY ./gpfsConfig/mmsdrfs* /var/mmfs/gen/
 COPY ./gpfsConfig/ZIMon* /opt/IBM/zimon/
 
 
+ARG HTTPPROTOCOL=http
+ENV PROTOCOL=$HTTPPROTOCOL
+RUN echo "the HTTP/S protocol is set to $PROTOCOL"
+
 ARG HTTPPORT=4242
 ENV PORT=$HTTPPORT
 RUN echo "the HTTP/S port is set to $PORT" 
@@ -44,7 +48,7 @@ ENV APIKEYNAME=$KEYNAME
 ARG KEYVALUE=None
 ENV APIKEYVALUE=$KEYVALUE
 
-RUN if [ -z "$TLSKEYPATH" ] || [ -z "$TLSCERTFILE" ] || [ -z "$TLSKEYFILE" ] && [ "$PORT" -eq 8443 ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
+RUN if [ -z "$TLSKEYPATH" ] || [ -z "$TLSCERTFILE" ] || [ -z "$TLSKEYFILE" ] && [ "$PROTOCOL" = "https" ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
 RUN echo "the ssl certificates path is set to $TLSKEYPATH" 
 
 ARG PMCOLLECTORIP=0.0.0.0
@@ -66,7 +70,8 @@ RUN echo "pmcollector_server: $SERVER" >> $LOGPATH
 RUN echo "ssl certificates location: $TLSKEYPATH" >> $LOGPATH
 RUN echo "HTTP/S port: $PORT" >> $LOGPATH
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -p $PORT -P $SERVERPORT -t $TLSKEYPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
+
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -P $SERVERPORT -t $TLSKEYPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
 
 EXPOSE 4242 8443
 
