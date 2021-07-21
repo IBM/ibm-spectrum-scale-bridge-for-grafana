@@ -84,3 +84,10 @@ def test_case12():
     cm = ConfigManager()
     result = cm.defaults
     assert 'apiKeyValue' not in result.keys()
+
+
+def test_case13():
+    cm = ConfigManager()
+    result = cm.defaults
+    assert 'protocol' in result.keys()
+    assert result['protocol'] == 'http'
