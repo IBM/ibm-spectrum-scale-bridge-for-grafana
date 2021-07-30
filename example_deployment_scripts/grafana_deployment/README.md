@@ -1,7 +1,7 @@
-# Deploying Grafana instance for monitoring the IBM Spectrum Scale Container Native Storage Access(CNSA) in a k8s/OCP environment
+# Example deployment of a Grafana instance in a k8s/OCP environment
 
 
-Using the scripts in this folder you can deploy an Grafana instance in the project 'grafana-for-cnsa'
+Using the scripts in this folder you can deploy a Grafana instance in the project 'grafana-for-cnsa'
 
 ```
 oc new-project grafana-for-cnsa
