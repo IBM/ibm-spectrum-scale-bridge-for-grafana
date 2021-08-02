@@ -1,3 +1,11 @@
+# Version 7.0.2 (08/02/2021)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi
+Changed the sleep time = 60 seconds for re-attempting to get the MetaData from the pmcollector in case no data have been returned during the bridge start instead of stopping the process directly
+
+Tested with Grafana version 7.5.1 and 8.0.3
+
+
+
 # Version 7.0.1 (07/21/2021)
 Added support for [IBM Spectrum Scale Container Native Storage Access 5.1.1.1](https://www.ibm.com/docs/en/scalecontainernative?topic=spectrum-scale-container-native-storage-access-5111)
 - updated example deployment yaml files according the API key authentication changes introduced to the IBM Spectrum Scale Performance monitoring tool
