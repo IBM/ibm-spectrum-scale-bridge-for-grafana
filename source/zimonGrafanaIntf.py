@@ -89,7 +89,7 @@ class MetadataHandler():
                     break
                 # if no data returned because of the REST HTTP server is still starting, sleep and retry (max 3 times)
                 self.logger.warning(MSG['NoDataStartNextAttempt'].format(attempt, MAX_ATTEMPTS_COUNT))
-                sleep(30)
+                sleep(60)
             else:
                 foundItems = len(self.metaData.allParents) - 1
                 sensors = self.metaData.sensorsSpec.keys()
