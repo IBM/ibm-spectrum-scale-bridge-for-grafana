@@ -1,13 +1,15 @@
-FROM registry.access.redhat.com/ubi8/python-36
+FROM registry.access.redhat.com/ubi8/ubi
 
-RUN pip3 install --upgrade pip
-RUN pip3 install setuptools
-RUN pip3 install cherrypy
-RUN pip3 install urllib3
-RUN pip3 install requests
+RUN yum install -y python36 python36-devel
 
-CMD python3 -V
-CMD pip3 list
+RUN /usr/bin/pip3 install --upgrade pip
+RUN /usr/bin/pip3 install setuptools
+RUN /usr/bin/pip3 install cherrypy
+RUN /usr/bin/pip3 install urllib3
+RUN /usr/bin/pip3 install requests
+
+RUN echo "Installed python version: $(/usr/bin/python3 -V)"
+RUN echo "Installed python packages: $(/usr/bin/pip3 list)"
 
 USER root
 
