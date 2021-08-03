@@ -5,7 +5,7 @@
 ### Dependencies
 
 
-- RedHat community-powered Grafana operator v.3.6.0
+- RedHat community-powered Grafana operator v.3.10.3
 
     Grafana instances provided with the Openshift monitoring stack (and its dashboards) are read-only. To solve this problem, you can use the RedHat community-powered Grafana operator provided by OperatorHub.
 
@@ -18,7 +18,7 @@
         Install Plugins (panels)
 
 
-    The Grafana operator image could be found at [quay.io/integreatly/grafana-operator:v3.6.0](https://quay.io/integreatly/grafana-operator:v3.6.0)
+    The Grafana operator image could be found at [quay.io/integreatly/grafana-operator:v3.10.3](https://quay.io/repository/integreatly/grafana-operator?tag=v3.10.3&tab=tags)
 
 
 
