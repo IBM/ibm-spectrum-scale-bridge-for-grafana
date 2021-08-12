@@ -1,4 +1,11 @@
 The following matrix gives a quick overview of the supported software for the IBM Spectrum Scale bridge for Grafana packages by version number:
+# Version 7.0.3 (08/13/2021)
+- Python 3.6
+- CherryPy 18.6.1
+- IBM Spectrum Scale system must run 5.1.1 and above or
+- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
+- Grafana 8.0.0 and above
+
 # Version 7.0.2 (08/02/2021)
 - Python 3.6
 - CherryPy 18.6.1

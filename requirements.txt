@@ -1,11 +1,13 @@
-nose
-pytest
-coverage
-coveralls
-PyYAML
-github3.py
-flake8
-six
-cherrypy
-requests
-urllib3
+#nose
+#pytest
+#coverage
+#coveralls
+#PyYAML
+#github3.py
+#flake8
+#six
+#cherrypy
+#requests
+#urllib3
+-r requirements/requirements_test.in
+-r requirements/requirements_ubi8.in

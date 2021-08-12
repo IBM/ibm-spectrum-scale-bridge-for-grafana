@@ -1,0 +1,16 @@
+# This file is used for generating python requirements list "requirements_test.txt".
+# It includes the additional packages needed to be installed to run nose/pytests for 
+# the IBM Spectrum Scale Performance Monitoring bridge for Grafana using CI/CD circleci workflows.
+#
+# To update, run:
+#
+#  $ pip-compile requirements_test.in  --output-file requirements_test.txt
+#
+nose
+pytest
+coverage
+coveralls
+PyYAML
+github3.py
+flake8
+six

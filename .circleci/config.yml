@@ -30,7 +30,6 @@ jobs:
           name: Build Docker image
           command: |
             . venv/bin/activate
-            cd source
             docker build -t bridge_image:latest .
 
 
