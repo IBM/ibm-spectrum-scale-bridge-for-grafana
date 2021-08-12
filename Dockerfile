@@ -1,27 +1,24 @@
-FROM registry.access.redhat.com/ubi8/ubi
+FROM registry.access.redhat.com/ubi8/ubi:8.4-206
+
+COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 
 RUN yum install -y python36 python36-devel
-
 RUN /usr/bin/pip3 install --upgrade pip
-RUN /usr/bin/pip3 install setuptools
-RUN /usr/bin/pip3 install cherrypy
-RUN /usr/bin/pip3 install urllib3
-RUN /usr/bin/pip3 install requests
 
+RUN /usr/bin/pip3 install -r /root/requirements_ubi8.txt
 RUN echo "Installed python version: $(/usr/bin/python3 -V)"
 RUN echo "Installed python packages: $(/usr/bin/pip3 list)"
 
 USER root
 
 RUN mkdir -p /opt/IBM/bridge
-ADD . /opt/IBM/bridge
-
+COPY ./source/ /opt/IBM/bridge
+COPY LICENSE /opt/IBM/bridge
 
 RUN mkdir -p /var/mmfs/gen
 RUN mkdir -p /opt/IBM/zimon
-COPY ./gpfsConfig/mmsdrfs* /var/mmfs/gen/
-COPY ./gpfsConfig/ZIMon* /opt/IBM/zimon/
-
+COPY ./source/gpfsConfig/mmsdrfs* /var/mmfs/gen/
+COPY ./source/gpfsConfig/ZIMon* /opt/IBM/zimon/
 
 ARG HTTPPROTOCOL=http
 ENV PROTOCOL=$HTTPPROTOCOL
