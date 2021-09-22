@@ -1,4 +1,5 @@
-FROM registry.access.redhat.com/ubi8/ubi:8.4-206
+ARG BASE=registry.access.redhat.com/ubi8/ubi:8.4-209
+FROM $BASE
 
 COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 

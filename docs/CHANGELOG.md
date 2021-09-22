@@ -1,3 +1,12 @@
+# Version 7.0.4 (09/22/2021)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.4-209
+Moved out the documentation files from the repository content. They have been placed on the [project Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki).
+
+Tested with Grafana version 7.5.1 and 8.0.3
+Tested with RedHat community-powered Grafana operator v.3.10.3
+
+
+
 # Version 7.0.3 (08/13/2021)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.4-206
 Added requirements_ubi8.txt file including the python versions packages needed to be installed to run the bridge in an OpenShift production environment, on top of the redhat UBI8 image
