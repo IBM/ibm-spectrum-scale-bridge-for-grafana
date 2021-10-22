@@ -1,0 +1,21 @@
+apiVersion: 1
+
+datasources:
+  - name: my_scale_cluster1
+    type: opentsdb
+    access: proxy
+    url: http://<host-ip>:4242
+    isDefault: true
+    jsonData:
+      tsdbResolution: 1
+      tsdbVersion: 2.3
+    editable: true
+  - name: my_scale_cluster2
+    type: opentsdb
+    access: proxy
+    url: http://<host-ip>:4242
+    isDefault: false
+    jsonData:
+      tsdbResolution: 1
+      tsdbVersion: 2.3
+    editable: true
