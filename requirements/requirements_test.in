@@ -6,7 +6,7 @@
 #
 #  $ pip-compile requirements_test.in  --output-file requirements_test.txt
 #
-nose
+nose2
 pytest
 coverage
 coveralls
