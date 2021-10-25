@@ -4,6 +4,7 @@ providers:
   - name: dashboards
     type: file
     updateIntervalSeconds: 30
+    allowUiUpdates: true
     options:
       path: /etc/dashboards/Example_Dashboards_bundle
       foldersFromFilesStructure: true
