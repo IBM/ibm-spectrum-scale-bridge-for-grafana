@@ -1,7 +1,8 @@
-# Importing example dashboards
+# Example dashboards
 
 Example dashboards can easily be imported in a running Grafana environment.
-Follow these [instructions](https://grafana.com/docs/grafana/latest/reference/export_import/)  to import your preferred dashboard into your Grafana installation.
+Follow these [instructions](https://grafana.com/docs/grafana/latest/reference/export_import/) to import your preferred dashboard into your Grafana installation.
+The Grafana provisioning feature might be helpful, if you are going to import multiple dashboards. For more info please read [Make usage of Grafana Provisioning feature](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Make-usage-of-Grafana-Provisioning-feature)
 
 
 ## Default Dashboards set
@@ -27,14 +28,7 @@ The package content consists of several folders:
 - Protocols - including dashboard examples for monitoring SMB and NFS metrics
 - TCT - including dashboard examples for monitoring TCT/cloud data transfers
 
-You can create the same folder structure in your running Grafana environment and sort the imported dashboards into it, but this is not a mandatory step.
+You can create the same folder structure in your running Grafana environment via provisioning folders structure from filesystem to Grafana.
+Follow [step-by-step instructions](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Make-usage-of-Grafana-Provisioning-feature#provision-the-example-dashboards-bundle-collection-with-folders-structure-to-grafana) available in the project Wiki.
 
 
-
-Each dashboard, included in the download package, can be imported and used as stand-alone dashboard, independent from all other dashboards in the package.  Only the "Available Dashboards" and the "Main Dashboard" are linked with children dashboards and do represent an example of the dashboards structuring.
-
-
-
-If you want to make a usage of the dashboards list overview as shown in the screenshot below, it is recommended to set the Grafana's home dashboard to the "Available Dashboards". For more information about how to change the home dashboard settings in Grafana read [this](https://community.grafana.com/t/change-home-dashboard/7441) Grafana's Community post.
-
-![](/docs/AvailableDashboards.PNG)

@@ -61,7 +61,7 @@
     
     [dashboards]
     # Path to the default home dashboard. If this value is empty, then Grafana uses StaticRootPath + "dashboards/home.json"
-    default_home_dashboard_path = /etc/dashboards/Example_Dashboards_bundle/home/Available_Dashboards.json
+    default_home_dashboard_path = /etc/dashboards/Example_Dashboards_bundle/Home/Available_Dashboards.json
    ```
 
 4. Restart Grafana to load the new changes.
