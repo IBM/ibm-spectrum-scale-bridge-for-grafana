@@ -26,7 +26,7 @@
    ```
     mkdir -p /etc/dashboards
     cd /etc/dashboards
-    svn export https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/trunk/examples/grafana_dashboards/default.json
+    svn export https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/trunk/examples/grafana_dashboards/simple.json
    ```
 2. Copy the dashboard.yaml file in the ***provisioning/dashboards/*** directory of your Grafana instance:
 
