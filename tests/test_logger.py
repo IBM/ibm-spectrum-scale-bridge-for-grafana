@@ -1,20 +1,20 @@
 import logging
 from source.bridgeLogger import configureLogging
-from nose.tools import assert_raises
+from nose2.tools.such import helper as assert_helper
 
 
 def test_case01():
-    with assert_raises(TypeError):
+    with assert_helper.assertRaises(TypeError):
         configureLogging()
 
 
 def test_case02():
-    with assert_raises(TypeError):
+    with assert_helper.assertRaises(TypeError):
         configureLogging('/tmp')
 
 
 def test_case03():
-    with assert_raises(TypeError):
+    with assert_helper.assertRaises(TypeError):
         configureLogging(None, 'myLog')
 
 

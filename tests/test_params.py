@@ -1,5 +1,5 @@
 from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args
-from nose.tools import with_setup
+from nose2.tools.decorators import with_setup
 
 
 def my_setup():
