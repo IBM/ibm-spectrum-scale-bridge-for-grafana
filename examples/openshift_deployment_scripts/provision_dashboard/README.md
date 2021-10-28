@@ -4,6 +4,6 @@
 Using the scripts in this folder you can provision an example dashboard to the Grafana instance running in the project 'grafana-for-cnsa'
 
 ```
-oc apply -f cnsa-cluster-simple-dashboard.yaml -n cnsa-cluster-simple-dashboard.yaml
+oc apply -f cnsa-cluster-simple-dashboard.yaml -n grafana-for-cnsa
 
 ```
