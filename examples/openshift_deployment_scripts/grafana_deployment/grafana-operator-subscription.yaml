@@ -4,7 +4,7 @@ metadata:
   name: grafana-operator-subscription
   namespace: grafana-for-cnsa
 spec:
-  channel: alpha 
+  channel: v4 
   name: grafana-operator 
   source: community-operators 
   sourceNamespace: openshift-marketplace 
