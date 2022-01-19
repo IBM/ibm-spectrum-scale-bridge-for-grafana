@@ -3,10 +3,12 @@ from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g, m, n, o, p, y
+    global a, b, c, d, e, f, g, m, n, o, p, y, x
     a = ConfigManager().defaults
     y = ConfigManager().defaults.copy()
     y['apiKeyValue'] = '/tmp/mykey'
+    x = ConfigManager().defaults.copy()
+    del x['retryDelay']
     b, c = parse_cmd_args([])
     d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
     f, g = parse_cmd_args(['-p', '8443', '-t', None, '-k', 'None', '-m', "None"])
@@ -84,3 +86,19 @@ def test_case08():
     assert 'apiKeyValue' in result.keys()
     assert '/' not in str(result.get('apiKeyValue'))
     assert result.get('apiKeyValue') == 'e40960c9-de0a-4c75-bc71-0bcae6db23b2'
+
+
+@with_setup(my_setup)
+def test_case09():
+    result = merge_defaults_and_args(a, b)
+    assert len(result.keys()) > 0
+    assert 'retryDelay' in result.keys()
+    assert isinstance(result.get('retryDelay'), int)
+    assert result.get('retryDelay') == 60
+
+
+@with_setup(my_setup)
+def test_case10():
+    result = merge_defaults_and_args(x, b)
+    assert len(result.keys()) > 0
+    assert 'retryDelay' not in result.keys()
