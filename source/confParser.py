@@ -53,6 +53,12 @@ def checkAPIsettings(args):
     return True, ''
 
 
+def checkCAsettings(args):
+    if args.get('caCertPath') and args['caCertPath'] != False and not (os.path.exists(args['caCertPath'])):
+        return False, MSG['FileNotFound'].format(args.get('caCertPath'))
+    return True, ''
+
+
 def getSettings(argv):
     settings = {}
     msg = ''
@@ -72,6 +78,10 @@ def getSettings(argv):
     valid, msg = checkTLSsettings(settings)
     if not valid:
         return None, msg
+    # check ca certificate settings
+    valid, msg = checkCAsettings(settings)
+    if not valid:
+        return None, msg
     return settings, ''
 
 
@@ -82,9 +92,9 @@ def merge_defaults_and_args(defaults, args):
     args = vars(args)
     brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
     for k, v in brConfig.items():
-        if v == "no":
+        if v == "no" or v == "False":
             brConfig[k] = False
-        elif v == "yes":
+        elif v == "yes" or v == "True":
             brConfig[k] = True
     return brConfig
 

@@ -104,3 +104,10 @@ def test_case10():
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
     assert 'protocol' in result.keys()
+
+
+@with_setup(my_setup)
+def test_case11():
+    args, msg = parse_cmd_args(h)
+    result = vars(args)
+    assert ('retryDelay' and 'caCertPath') not in result.keys()
