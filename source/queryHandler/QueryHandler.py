@@ -454,7 +454,7 @@ class QueryHandler2:
 
     @property
     def caCert():
-        return self._caCert
+        return self.__caCert
 
     def getTopology(self, ignoreMetrics=False):
         '''

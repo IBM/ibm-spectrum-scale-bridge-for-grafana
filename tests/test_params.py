@@ -1,7 +1,6 @@
 from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args, checkCAsettings
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
-import string
 
 
 def my_setup():
@@ -106,7 +105,7 @@ def test_case09():
 @with_setup(my_setup)
 def test_case10():
     x = a.copy()
-    if x.get('retryDelay', None) != None:
+    if x.get('retryDelay', None) is not None:
         del x['retryDelay']
     result = merge_defaults_and_args(x, b)
     assert len(result.keys()) > 0
