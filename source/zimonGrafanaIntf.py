@@ -613,7 +613,7 @@ def main(argv):
         logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k == 'apiKeyValue'))
         # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
         mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), resolveAPIKeyValue(args.get('apiKeyValue')),
-                                     args.get('caCertPath'), args.get('includeDiskData'), args.get('retryDelay', None))
+                                    args.get('caCertPath'), args.get('includeDiskData'), args.get('retryDelay', None))
     except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])
