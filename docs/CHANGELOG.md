@@ -1,3 +1,13 @@
+# Version 7.0.5 (01/24/2022)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.5
+Added 'caCertPath' to the configurable parameters, which allows the user to enable or disable CA certificate verification for the REST API HTTPS connections to the pmcollector.
+Added 'retryDelay' to the configurable parameters. Using this parameter the user can control how long the bridge should sleep before re-attempting to query the MetaData, in case no data was returned by pmcollector through the initial bridge startup
+
+Tested with Grafana version 7.5.1 and 8.0.3
+Tested with RedHat community-powered Grafana operator v.4.1
+
+
+
 # Version 7.0.4 (09/22/2021)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.4-209
 Moved out the documentation files from the repository content. They have been placed on the [project Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki).
