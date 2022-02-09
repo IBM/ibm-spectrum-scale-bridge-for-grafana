@@ -1,5 +1,6 @@
 The following matrix gives a quick overview of the supported software for the IBM Spectrum Scale bridge for Grafana packages by version number:
-# Version 7.0.5 (01/24/2022)
+
+# Version 7.0.5 (02/10/2022)
 Classic Scale:
  - Python 3.6
  - CherryPy 18.6.1
