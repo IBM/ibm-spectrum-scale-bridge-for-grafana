@@ -1,7 +1,7 @@
 from source.confParser import parse_cmd_args
 from source.__version__ import __version__ as version
-from nose.tools import with_setup
-from nose.tools import assert_raises
+from nose2.tools.such import helper as assert_helper
+from nose2.tools.decorators import with_setup
 from argparse import Namespace
 
 
@@ -47,7 +47,7 @@ def test_case04():
         assert isinstance(result['port'], int)
         assert result['port'] == 4242
     else:
-        with assert_raises(SystemExit):
+        with assert_helper.assertRaises(SystemExit):
             args, msg = parse_cmd_args(g)
 
 
@@ -58,7 +58,7 @@ def test_case05():
         result = vars(args)
         assert result['port'] == 4242 and result['serverPort'] == 9084
     else:
-        with assert_raises(SystemExit):
+        with assert_helper.assertRaises(SystemExit):
             args, msg = parse_cmd_args(g)
 
 
@@ -104,3 +104,10 @@ def test_case10():
     assert len(result.keys()) > 0
     assert 'port' in result.keys()
     assert 'protocol' in result.keys()
+
+
+@with_setup(my_setup)
+def test_case11():
+    args, msg = parse_cmd_args(h)
+    result = vars(args)
+    assert ('retryDelay' and 'caCertPath') not in result.keys()

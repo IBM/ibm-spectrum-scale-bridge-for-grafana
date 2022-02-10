@@ -1,12 +1,14 @@
-from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args
-from nose.tools import with_setup
+from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args, checkCAsettings
+from source.__version__ import __version__ as version
+from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g, m, n, o, p, y
+    global a, b, c, d, e, f, g, m, n, o, p, y, x
     a = ConfigManager().defaults
     y = ConfigManager().defaults.copy()
     y['apiKeyValue'] = '/tmp/mykey'
+
     b, c = parse_cmd_args([])
     d, e = parse_cmd_args(['-p', '8443', '-t', '/etc/my_tls'])
     f, g = parse_cmd_args(['-p', '8443', '-t', None, '-k', 'None', '-m', "None"])
@@ -84,3 +86,50 @@ def test_case08():
     assert 'apiKeyValue' in result.keys()
     assert '/' not in str(result.get('apiKeyValue'))
     assert result.get('apiKeyValue') == 'e40960c9-de0a-4c75-bc71-0bcae6db23b2'
+
+
+@with_setup(my_setup)
+def test_case09():
+    if version < "7.0.4":
+        assert ('retryDelay' and 'caCertPath') not in a.keys()
+    else:
+        result = merge_defaults_and_args(a, b)
+        assert len(result.keys()) > 0
+        assert 'retryDelay' and 'caCertPath' in result.keys()
+        assert isinstance(result.get('retryDelay'), int)
+        assert isinstance(result.get('caCertPath'), bool)
+        assert result.get('retryDelay') == 60
+        assert result.get('caCertPath') == eval("False")
+
+
+@with_setup(my_setup)
+def test_case10():
+    x = a.copy()
+    if x.get('retryDelay', None) is not None:
+        del x['retryDelay']
+    result = merge_defaults_and_args(x, b)
+    assert len(result.keys()) > 0
+    assert 'retryDelay' not in result.keys()
+
+
+@with_setup(my_setup)
+def test_case11():
+    x = a.copy()
+    x['caCertPath'] = '/etc/ssl/certs/service-ca.crt'
+    result = merge_defaults_and_args(x, b)
+    assert len(result.keys()) > 0
+    assert 'caCertPath' in result.keys()
+    assert isinstance(result.get('caCertPath'), str)
+
+
+@with_setup(my_setup)
+def test_case12():
+    x = a.copy()
+    x['caCertPath'] = "/etc/ssl/certs/service-ca.crt"
+    result = merge_defaults_and_args(x, b)
+    valid, msg = checkCAsettings(result)
+    assert len(result.keys()) > 0
+    assert 'caCertPath' in result.keys()
+    assert isinstance(result.get('caCertPath'), str)
+    assert valid == False
+    assert len(msg) > 0

@@ -1,31 +1,61 @@
 The following matrix gives a quick overview of the supported software for the IBM Spectrum Scale bridge for Grafana packages by version number:
+
+# Version 7.0.5 (02/10/2022)
+Classic Scale:
+ - Python 3.6
+ - CherryPy 18.6.1
+ - IBM Spectrum Scale system must run 5.1.2 and above
+ - Grafana 8.0.0 and above
+
+Cloud native:
+ - IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.2.1
+ - RedHat community-powered Grafana-Operator v4.1
+
 # Version 7.0.4 (09/22/2021)
-- Python 3.6
-- CherryPy 18.6.1
-- IBM Spectrum Scale system must run 5.1.1 and above or
-- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.4
-- Grafana 8.0.0 and above
+Classic Scale:
+ - Python 3.6
+ - CherryPy 18.6.1
+ - IBM Spectrum Scale system must run 5.1.1 and above
+ - Grafana 8.0.0 and above
+
+Cloud native:
+ - IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.4
+ - RedHat community-powered Grafana-Operator v4
 
 # Version 7.0.3 (08/13/2021)
-- Python 3.6
-- CherryPy 18.6.1
-- IBM Spectrum Scale system must run 5.1.1 and above or
+Classic Scale:
+ - Python 3.6
+ - CherryPy 18.6.1
+ - IBM Spectrum Scale system must run 5.1.1 and above
+ - Grafana 8.0.0 and above
+
+Cloud native:
 - IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
-- Grafana 8.0.0 and above
+- RedHat community-powered Grafana-Operator v3.10.3
 
 # Version 7.0.2 (08/02/2021)
+Classic Scale:
 - Python 3.6
 - CherryPy 18.6.1
-- IBM Spectrum Scale system must run 5.1.1 and above or
-- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
+- IBM Spectrum Scale system must run 5.1.1 and above
 - Grafana 8.0.0 and above
 
+Cloud native:
+- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
+- RedHat community-powered Grafana-Operator v3.10.3
+
+
 # Version 7.0.1 (07/21/2021)
+Classic Scale:
 - Python 3.6
 - CherryPy 18.6.0
-- IBM Spectrum Scale system must run 5.1.1 and above or
-- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
+- IBM Spectrum Scale system must run 5.1.1 and above
 - Grafana 7.5.0 and above
+
+Cloud native:
+- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.1.1
+- RedHat community-powered Grafana-Operator v3.10.3
+
 
 # Version 7 (04/26/2021)
 - Python 3.6

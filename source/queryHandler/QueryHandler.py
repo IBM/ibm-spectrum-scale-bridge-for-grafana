@@ -436,12 +436,13 @@ class QueryHandler2:
     Interface class to access ZIMon data
     '''
 
-    def __init__(self, server, port, logger, apiKeyName, apiKeyValue):
+    def __init__(self, server, port, logger, apiKeyName, apiKeyValue, caCert=False):
         '''
         Constructor requires name (or IP address) of the server and the port number (default: 9084)
         '''
         self.__keyName = apiKeyName
         self.__keyValue = apiKeyValue
+        self.__caCert = caCert
         self.server = server
         self.remote_ip = socket.gethostbyname(server)
         self.port = port
@@ -450,6 +451,10 @@ class QueryHandler2:
     @property
     def apiKeyData(self):
         return self.__keyName, self.__keyValue
+
+    @property
+    def caCert(self):
+        return self.__caCert
 
     def getTopology(self, ignoreMetrics=False):
         '''
@@ -530,7 +535,7 @@ class QueryHandler2:
             _auth = getAuthHandler(*self.apiKeyData)
             _reqData = createRequestDataObj(self.logger, requestType, endpoint, self.server, self.port, auth=_auth, params=params)
             _request = perfHTTPrequestHelper(self.logger, reqdata=_reqData)
-            _request.session.verify = False
+            _request.session.verify = self.caCert
             _response = _request.doRequest()
 
             if _response.status_code == 200:
