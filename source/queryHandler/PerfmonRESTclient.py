@@ -88,14 +88,12 @@ class perfHTTPrequestHelper(object):
                 res = requests.Response()
                 res.status_code = 503
                 res.reason = "Connection refused from server"
-                res.content = None
                 return res
             except requests.exceptions.RequestException as e:
                 self.logger.debug('doRequest __ RequestException. Request data: {}, Response data: {}'.format(e.request, e.response))
                 res = requests.Response()
                 res.status_code = 404
                 res.reason = "The request could not be processed from server"
-                res.content = None
                 return res
         else:
             raise TypeError('doRequest __ Error: request data wrong format')
