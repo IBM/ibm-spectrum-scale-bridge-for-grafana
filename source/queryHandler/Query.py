@@ -182,7 +182,14 @@ class Query(object):
         return self
 
     def __str__(self):
-        dd = '-a' if self.includeDiskData else ''
+        # dd = '-a' if self.includeDiskData else ''
+        # Workaround for RTC Defect 280368: Zimon capacity query does not return all results (seen on CNSA)
+        if (self.metrics and any('gpfs_disk_' in metric for metric in self.metrics)) or (self.sensor and self.sensor == "GPFSDiskCap"):
+            dd = '-ar'
+        elif self.includeDiskData:
+            dd = '-a'
+        else:
+            dd = ''
 
         if self.sensor is not None:
             queryString = 'get -j {0} group {1} bucket_size {2} {3}'.format(
