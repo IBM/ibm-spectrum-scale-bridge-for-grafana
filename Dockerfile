@@ -1,6 +1,12 @@
 ARG BASE=registry.access.redhat.com/ubi8/ubi:8.5
 FROM $BASE
 
+LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
+LABEL com.ibm.vendor="IBM" 
+LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
+to the query requests acceptable by the Grafana integrated openTSDB plugin"
+LABEL com.ibm.summary="It allows the IBM Spectrum Scale users to perform performance monitoring for IBM Spectrum Scale devices using Grafana"
+
 COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 
 RUN yum install -y python36 python36-devel
@@ -65,20 +71,15 @@ ENV LOGPATH=$DEFAULTLOGPATH
 RUN mkdir -p $LOGPATH
 RUN echo "the log will use $LOGPATH"
 
+# Switch to the working directory
 WORKDIR /opt/IBM/bridge
 RUN echo "$(pwd)"
-
-RUN touch "${LOGPATH}/install.log"
-RUN echo "log path: $LOGPATH" >> ${LOGPATH}/install.log
-RUN echo "pmcollector_server: $SERVER" >> ${LOGPATH}/install.log
-RUN echo "ssl certificates location: $TLSKEYPATH" >> ${LOGPATH}/install.log
-RUN echo "HTTP/S port: $PORT" >> ${LOGPATH}/install.log
 
 # Create a user 'bridge' under 'root' group
 RUN groupadd -g 2099 bridge
 RUN useradd -rm -d /home/2001 -s /bin/bash -g 2099 -u 2001 bridge
 
-# Chown all the files to the grafanabridge 'bridge' user.
+# Chown all the files to the grafanabridge 'bridge' user
 RUN chown -R 2001:2099 /opt/IBM/bridge
 RUN chown -R 2001:2099 /opt/IBM/zimon
 RUN chown -R 2001:2099 /var/mmfs/gen
