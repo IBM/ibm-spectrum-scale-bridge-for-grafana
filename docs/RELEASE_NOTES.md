@@ -1,3 +1,13 @@
+# Version 7.0.6 (04/12/2022)
+Fetch raw data for GPFSDiskCap metrics as workaround for the zimon issue not returning all capacity metrics results. \
+Added non root user to the Dockerfile. This way the main process will be started with a non-root user when running in a container.  \
+Added labels to the Dockerfile
+
+Tested with Grafana version 8.0.3
+Tested with RedHat community-powered Grafana operator v.4.1
+
+
+
 # Version 7.0.5 (02/10/2022)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.5 \
 Added 'caCertPath' to the configurable parameters, which allows the user to enable or disable CA certificate verification for the REST API HTTPS connections to the pmcollector. \
