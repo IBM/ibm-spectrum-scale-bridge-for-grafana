@@ -25,9 +25,8 @@ import operator
 import socket
 import time
 from collections import namedtuple, defaultdict
-import inspect
 from itertools import chain
-from typing import NamedTuple, Optional, Tuple
+from typing import NamedTuple, Tuple
 
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 
@@ -236,7 +235,7 @@ class QueryResult:
                 for step in prg:
                     if step in Calculator.OPS:
                         calc.op(step)
-                    elif step.isnumeric(): #is_number(step):
+                    elif step.isnumeric():                  # is_number(step):
                         calc.push(float(step))
                     else:
                         idx = self.index_cache.get((step, parent, myid), -1)
@@ -257,9 +256,9 @@ class QueryResult:
 
     def _populate_index_cache(self):
         for ci in self.columnInfos:
-            key = (ci.keys[0].metric,  ci.parents, ci.identifiers)
-            if key in self.index_cache:
-                SysmonLogger.getLogger(__name__).error("hash collision in _populate_index_cache")
+            key = (ci.keys[0].metric, ci.parents, ci.identifiers)
+            # if key in self.index_cache:
+            #     SysmonLogger.getLogger(__name__).error("hash collision in _populate_index_cache")
             self.index_cache[key] = ci.column
 
     def drop_base_metrics(self):
@@ -383,7 +382,7 @@ def div(a, b):  # defined anew because of py 2/3 difference
 
 class Calculator(object):
     '''simple UPN calculator'''
-    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div, ">=":  operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq }
+    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div, ">=": operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq}
 
     def __init__(self):
         self.stack = []
