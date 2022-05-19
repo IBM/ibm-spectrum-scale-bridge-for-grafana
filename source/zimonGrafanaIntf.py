@@ -377,6 +377,8 @@ class PostHandler(object):
     def _formatQueryResponse(self, inputQuery, results, showQuery=False, globalAnnotations=False):
 
         resList = []
+        # self.logger.debug("Column info keys:\n")
+        # self.logger.debug("\n".join("{}".format(k) for k in results.keys()))
 
         for columnInfo, dps in results.items():
             if columnInfo.name.find(inputQuery.get('metric')) == -1:
@@ -385,6 +387,10 @@ class PostHandler(object):
 
             filtersMap = self.TOPO.getAllFilterMapsForMetric(columnInfo.keys[0].metric)
             res = QueryResultObj(inputQuery, dps, showQuery, globalAnnotations)
+            # self.logger.info("filtersMap: \n")
+            # self.logger.info("\n".join("{}".format(k) for k in filtersMap))
+            # self.logger.info("Column info keys:\n")
+            # self.logger.info("\n".join("{}".format(k) for k in columnInfo.keys))
             res.parseTags(self.logger, filtersMap, columnInfo)
             cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
             resList.append(res.__dict__)
@@ -522,7 +528,7 @@ class QueryResultObj():
         self.aggregatedTags = []
 
     def parseTags(self, logger, filtersMap, columnInfo):
-        tagsDict = defaultdict(list)
+        tagsDict = defaultdict(set)
         for key in columnInfo.keys:
             ident = [key.parent]
             ident.extend(key.identifier)
@@ -534,13 +540,14 @@ class QueryResultObj():
                         self.tags = filtersDict
                     else:
                         for _key, _value in filtersDict.items():
-                            tagsDict[_key].append(_value)
+                            tagsDict[_key].add(_value)
+                    break
 
         for _key, _values in tagsDict.items():
-            if len(set(_values)) > 1:
+            if len(_values) > 1:
                 self.aggregatedTags.append(_key)
             else:
-                self.tags[_key] = _values[0]
+                self.tags[_key] = _values.pop()
 
 
 def processFormJSON(entity):

@@ -22,7 +22,7 @@ Created on Apr 4, 2017
 
 
 from collections import defaultdict
-
+from typing import Set, List, Dict, DefaultDict
 
 # dict.iteritems() deprecated in python 3
 iterval = lambda d: (getattr(d, 'itervalues', None) or d.values)()
@@ -35,8 +35,8 @@ class Topo(object):
 
     def __init__(self, jsonStr=None):
         self.topo = jsonStr
-        self.__metricsDef = defaultdict(defaultdict)   # metrics dictionary, per sensor for all elements in the metadata
-        self.__levels = defaultdict(defaultdict)       # component level priority dictionary, per sensor
+        self.__metricsDef = defaultdict(dict)   # metrics dictionary, per sensor for all elements in the metadata
+        self.__levels = defaultdict(dict)       # component level priority dictionary, per sensor
         self.__ids = {}                                # fieldIds dictionary
         self.__groupKeys = {}
         self.__compTree = {}
@@ -52,7 +52,7 @@ class Topo(object):
         for metaStr in metadata:
 
             # sub components dictionary of the highest level component (cluster or cluster_node)
-            _components = defaultdict(list)
+            _components = defaultdict(set)
             # filters dictionary, per sensor, per (cluster or cluster_node) component
             _filters = defaultdict(list)
             # name of the  (cluster or cluster_node) component
@@ -84,7 +84,7 @@ class Topo(object):
         # check if entity is a component
         if metaStr['type'] == 'node':
             if field_value not in components[field_name]:
-                components[field_name].append(field_value)
+                components[field_name].add(field_value)
             # check if metaStr includes next level metaStr
             if 'keys' in metaStr and len(metaStr['keys']) > 0:
                 for metaKey in metaStr['keys']:
@@ -101,31 +101,28 @@ class Topo(object):
             if field_name not in iterval(metrics[sensor]):
                 metrics[sensor][field_id] = field_name
 
-            # retrieve groupKey identifier
-            counter = groupKeys.get(groupKey, None)
-
-            if not counter:
+            if groupKey not in groupKeys:
                 # parse sensor relevant data f.e. groupKey, filters, levels
-                counter = len(groupKeys) + 1
-                groupKeys[groupKey] = counter
+                groupKeys[groupKey] = len(groupKeys) + 1
                 tags = {}
-                levTree = defaultdict()
+                levTree = {}
                 for i, compValue in enumerate(partKey):
                     for compLabel in components:
                         if compValue in components[compLabel]:
                             levTree[i + 1] = compLabel
                             tags[compLabel] = compValue
-                if tags not in filters[sensor]:
-                    filters[sensor].append(tags)
+                # if tags not in filters[sensor]:
+                # not needed as groupkeys check will allow this to be reached only once
+                filters[sensor].append(tags)
                 if sensor not in levels:
                     levels[sensor] = levTree
 
             # parse key id
-            key = '|'.join([groupKey, field_name])
-            ids[key] = ':'.join([str(counter), field_id])
+            key = f"{groupKey}|{field_name}"
+            ids[key] = f"{groupKeys[groupKey]}:{field_id}"
 
     @property
-    def allFiltersMaps(self):
+    def allFiltersMaps(self) -> DefaultDict[str, List[Dict[str, str]]]:
         '''
         Returns a list of all filters maps returned from zimon meta data.
         Each filters map is a list of component name, component value tuples
@@ -138,24 +135,24 @@ class Topo(object):
         return filtersMaps
 
     @property
-    def allAvailableComponents(self):
+    def allAvailableComponents(self) -> DefaultDict[str, Set[str]]:
         '''
         Returns a list of dictionaries.
         Each dictionary contains of a componet name and all found values for this
         component(tag) in the meta data returned by zimon
         '''
-        components = defaultdict(list)
+        components = defaultdict(set)
         for entryName in self.__compTree.keys():
             for name, values in self.__compTree[entryName]['componentsMap'].items():
-                components[name].extend(values)
+                components[name].update(values)
         return components
 
     @property
-    def allParents(self):
-        return self.__compTree.keys()
+    def allParents(self) -> List[str]:
+        return list(self.__compTree.keys())
 
     @property
-    def allIDs(self):
+    def allIDs(self) -> Dict[str, str]:
         return self.__ids
 
     @property
@@ -185,12 +182,12 @@ class Topo(object):
         ''' Returns list of all found metrics names'''
         metricslist = []
         for sensor_metrics in self.__metricsDef.values():
-            metricslist.extend(sensor_metrics.values())
+            metricslist.extend(list(sensor_metrics.values()))
         return list(set(metricslist))
 
     @property
     def getAllAvailableTagNames(self):
-        return self.allAvailableComponents.keys()
+        return list(self.allAvailableComponents.keys())
 
     @property
     def getAllAvailableTagValues(self):
@@ -218,15 +215,15 @@ class Topo(object):
             return list(set(sensorsList))
         return sensorsList
 
-    def getAllValuesForTagName(self, searchTag):
-        return self.allAvailableComponents.get(searchTag, [])
+    def getAllValuesForTagName(self, searchTag: str) -> Set[str]:
+        return self.allAvailableComponents.get(searchTag, set())
 
-    def getAllKeysForTagValue(self, searchValue):
-        tagklist = []
+    def getAllKeysForTagValue(self, searchValue: str) -> List[str]:
+        tagklist = set()
         for key, values in self.allAvailableComponents.items():
             if searchValue in values:
-                tagklist.extend(key)
-        return list(set(tagklist))
+                tagklist.add(key)
+        return list(tagklist)
 
     def getAllFilterMapsForSensor(self, searchSensor):
         '''
@@ -265,7 +262,7 @@ class Topo(object):
         keys = []
         filtersMap = self.getAllFilterMapsForMetric(searchMetric)
         for a in filtersMap:
-            keys.extend(a.keys())
+            keys.extend(list(a.keys()))
         if len(keys) > 1:
             return list(set(keys))
         return keys
@@ -274,7 +271,7 @@ class Topo(object):
         filterKeys = []
         filtersMap = self.getAllFilterMapsForMeasurementMetrics(searchMetrics)
         for a in filtersMap:
-            filterKeys.extend(a.keys())
+            filterKeys.extend(list(a.keys()))
         if len(filterKeys) > 1:
             return list(set(filterKeys))
         return filterKeys
@@ -284,7 +281,7 @@ class Topo(object):
            filters includes only gpfs type mounts'''
         onlyGPFS = []
         filtersMaps = self.allFiltersMaps
-        if listGPFSmounts:
+        if listGPFSmounts and 'DiskFree' in filtersMaps:
             diskFree_filters = filtersMaps['DiskFree']
             for filtersDict in diskFree_filters:
                 if filtersDict['mountPoint'] in listGPFSmounts:
@@ -352,7 +349,7 @@ class Topo(object):
         if len(filterBy) > max_level:
             return priority
 
-        filterKeys = filterBy.keys()
+        filterKeys = list(filterBy.keys())
         if '*' in filterBy.values():
             for key, value in filterBy.iteritems():
                 if value == '*':
