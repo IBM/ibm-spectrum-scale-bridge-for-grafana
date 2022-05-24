@@ -1,0 +1,786 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "iteration": 1653424070771,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "tags": [
+        "main"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "Ilsb01X7k"
+      },
+      "editable": true,
+      "error": false,
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "height": "100px",
+      "id": 2,
+      "isNew": true,
+      "links": [
+        {
+          "url": "/"
+        }
+      ],
+      "maxPerRow": 3,
+      "options": {
+        "content": "This dashboard displays all nodes that are NSD servers with specific performance information related to NSDs. If there are no NSD servers in the cluster, this graphs will show nothing.\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.0.0-a3c58345pre",
+      "style": {
+        "font-size": "36pt"
+      },
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "$byCluster"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 60,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 6,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 2
+      },
+      "id": 5,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0-a3c58345pre",
+      "targets": [
+        {
+          "aggregator": "avg",
+          "currentFilterGroupBy": true,
+          "currentFilterKey": "node",
+          "currentFilterType": "pm_filter",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [],
+          "metric": "gpfs_nsdds_bytes_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "avg",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [],
+          "metric": "gpfs_nsdds_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "Overall Data Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "$byCluster"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 60,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 6,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 2
+      },
+      "id": 9,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0-a3c58345pre",
+      "targets": [
+        {
+          "aggregator": "avg",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [],
+          "metric": "gpfs_nsdds_read_ops",
+          "refId": "A"
+        },
+        {
+          "aggregator": "avg",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [],
+          "metric": "gpfs_nsdds_write_ops",
+          "refId": "B"
+        }
+      ],
+      "title": "Overall Server workload (OPs)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "$byCluster"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0-a3c58345pre",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "\"bytes_read: [[tag_gpfs_disk_name]]\"",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_disk_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_nsdds_bytes_read",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "\"bytes_written: [[tag_gpfs_disk_name]]\"",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_disk_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_nsdds_bytes_written",
+          "refId": "A"
+        }
+      ],
+      "title": "\"DISKS bytes trasferred\" by Node: \"$byNode\"",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "$byCluster"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 10,
+      "links": [],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0-a3c58345pre",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "\"read_ops: [[tag_gpfs_disk_name]]\"",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_disk_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_nsdds_read_ops",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "\"write_ops: [[tag_gpfs_disk_name]]\"",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "Ilsb01X7k"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_disk_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_nsdds_write_ops",
+          "refId": "A"
+        }
+      ],
+      "title": "\"DISKS read/write operations\" by Node: \"$byNode\"",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [
+    "default",
+    "node"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "mycluster_5.1.4",
+          "value": "mycluster_5.1.4"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "select cluster",
+        "multi": false,
+        "name": "byCluster",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "gpfs_nsdds_read_ops",
+          "value": "gpfs_nsdds_read_ops"
+        },
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "Ilsb01X7k"
+        },
+        "definition": "metrics(gpfs_nsdds_)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "metric1",
+        "multi": false,
+        "name": "gpfsMetrics_nsd_server",
+        "options": [],
+        "query": "metrics(gpfs_nsdds_)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "Ilsb01X7k"
+        },
+        "definition": "metrics(netdev_b)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "throughput",
+        "multi": false,
+        "name": "gpfsMetrics_netdev1",
+        "options": [],
+        "query": "metrics(netdev_b)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "netdev_errors_r",
+          "value": "netdev_errors_r"
+        },
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "Ilsb01X7k"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "",
+        "multi": false,
+        "name": "gpfsMetrics_netdev2",
+        "options": [],
+        "query": "metrics(netdev_e.*)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "disk10",
+          "value": "disk10"
+        },
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "Ilsb01X7k"
+        },
+        "definition": "tag_values($gpfsMetrics_nsd_server,gpfs_disk_name)",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "byDisk",
+        "options": [],
+        "query": "tag_values($gpfsMetrics_nsd_server,gpfs_disk_name)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "scale-21",
+          "value": "scale-21"
+        },
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "Ilsb01X7k"
+        },
+        "definition": "tag_values($gpfsMetrics_nsd_server, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "byNode",
+        "options": [],
+        "query": "tag_values($gpfsMetrics_nsd_server, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "NSD Server node View",
+  "uid": "O1tbTSjik",
+  "version": 24,
+  "weekStart": ""
+}
