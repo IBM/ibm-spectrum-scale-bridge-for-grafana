@@ -83,7 +83,7 @@ class Key(namedtuple('_Key', 'parent, sensor, identifier, metric, domains')):
         return (self.parent, self.sensor, self.identifier, self.metric) == (other.parent, other.sensor, other.identifier, other.metric)
 
     def __ne__(self, other):
-        return not(self == other)
+        return not (self == other)
 
 
 class ColumnInfo(NamedTuple):
@@ -132,7 +132,7 @@ class ColumnInfo(NamedTuple):
         return (self.name, self.keys) == (other.name, other.keys)
 
     def __ne__(self, other):
-        return not(self == other)
+        return not (self == other)
 
 
 class Domain(namedtuple('_domain', 'domainID, start, end, bucketSize')):
@@ -286,7 +286,7 @@ class QueryResult:
         return Row(ts, values, [1] * len(values))
 
     def check_rows_have_no_data(self):
-        return True if(len([r for r in self.rows if not r.is_empty()]) == 0) else False
+        return True if (len([r for r in self.rows if not r.is_empty()]) == 0) else False
 
     def latest(self, column):
         ''' get last non null value of a column'''

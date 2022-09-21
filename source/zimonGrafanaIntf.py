@@ -121,7 +121,7 @@ class MetadataHandler():
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
-        return({'msg': MSG['MetaSuccess']})
+        return ({'msg': MSG['MetaSuccess']})
 
 
 class GetHandler(object):
@@ -149,7 +149,7 @@ class GetHandler(object):
         if params.get('q'):
             searchStr = params['q'].strip()
             # if '*' and tagv, then it denotes a grouping key value: do not process
-            if not(searchStr == '*' and params['type'] == 'tagv'):
+            if not (searchStr == '*' and params['type'] == 'tagv'):
                 # Since grafana sends the candidate string quickly, one character at a time, it
                 # is likely that the reg exp compilation will fail.
                 try:
