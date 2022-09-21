@@ -68,6 +68,8 @@ class MetadataHandler():
     def SensorsConfig(self):
         if not self.__sensorsConf or len(self.__sensorsConf) == 0:
             self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+            if not self.__sensorsConf:
+                raise ValueError(MSG['NoSensorConfigData'])
         return self.__sensorsConf
 
     @property
@@ -81,6 +83,8 @@ class MetadataHandler():
 
         self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+        if not self.__sensorsConf:
+            raise ValueError(MSG['NoSensorConfigData'])
         MAX_ATTEMPTS_COUNT = 3
         for attempt in range(1, MAX_ATTEMPTS_COUNT + 1):
             tstart = timer()
