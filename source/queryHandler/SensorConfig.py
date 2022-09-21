@@ -50,19 +50,11 @@ def readSensorsConfigFromMMSDRFS(logger=None):
         with open(mmsdrfsFile) as f:
             data = data.join([line.split(":")[4] for line in f if "PERFMONCFG" in line])
     except (Exception, IOError) as error:
-        logger.error("failed trying read %s with reason: %s", mmsdrfsFile, error)
+        logger.details("failed trying read %s with reason: %s", mmsdrfsFile, error)
         return []
 
-    sensors = []
-    sensorsStr = data[data.find("sensors"):data.find("smbstat")]
-    sensorsList = re.findall('(?P<sensor>{.*?})', sensorsStr)
-    for sensorString in sensorsList:
-        sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"[\S]*\"|\d+)', sensorString)
-        d = {}
-        for attr in sensorAttr:
-            d[attr[0]] = attr[1]
-        sensors.append(d)
-    return sensors
+    # parse config file in a list of dictionaries format
+    return parseSensorsConfig(data, logger)
 
 
 def readSensorsConfig(logger=None):
@@ -73,7 +65,7 @@ def readSensorsConfig(logger=None):
         logger = SysmonLogger.getLogger(__name__)
 
     if not os.path.isfile(zimonFile):
-        logger.error("ZiMon sensor configuration file not found (%s) ", zimonFile)
+        logger.details("ZiMon sensor configuration file not found (%s) ", zimonFile)
         print("ZiMon sensor configuration file not found")
         raise OSError(2, 'No such file or directory', zimonFile)
 
@@ -83,19 +75,29 @@ def readSensorsConfig(logger=None):
         with open(zimonFile) as myfile:
             data = myfile.read().replace('\n', '')
     except (Exception, IOError) as error:
-        logger.error("failed trying read %s with reason: %s", zimonFile, error)
+        logger.details("failed trying read %s with reason: %s", zimonFile, error)
         return []
+    # parse config file in a list of dictionaries format
+    return parseSensorsConfig(data, logger)
 
-    sensors = []
-    sensorsStr = data[data.find("sensors"):data.find("smbstat")]
-    sensorsList = re.findall('(?P<sensor>{.*?})', sensorsStr)
-    for sensorString in sensorsList:
-        sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"[\S]*\"|\d+)', sensorString)
-        d = {}
-        for attr in sensorAttr:
-            d[attr[0]] = attr[1]
-        sensors.append(d)
-    return sensors
+
+def parseSensorsConfig(sensorsConfig, logger):
+    """ Returns a list of dicts, describing definitions of sensors """
+    logger.debug("invoke parseSensorsConfig")
+    try:
+        sensors = []
+        sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):sensorsConfig.find("smbstat")]
+        sensorsList = re.findall('(?P<sensor>{.*?})(?:,|$)', sensorsStr)
+        for sensorString in sensorsList:
+            sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"\S*\"|\d+)', sensorString)
+            d = {}
+            for attr in sensorAttr:
+                d[attr[0]] = attr[1]
+            sensors.append(d)
+        return sensors
+    except (Exception, IOError) as error:
+        logger.details("failed parsing sensors config content with reason: %s", error)
+        return []
 
 
 def getCollectorPorts(logger=None):

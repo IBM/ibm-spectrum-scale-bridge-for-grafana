@@ -20,13 +20,14 @@ Created on Feb 4, 2017
 @author: NSCHULD
 '''
 
-from collections import namedtuple, defaultdict
-import inspect
-from itertools import chain
 import json
 import operator
 import socket
 import time
+from collections import namedtuple, defaultdict
+from itertools import chain
+from typing import NamedTuple, Tuple
+
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 
 
@@ -51,52 +52,6 @@ class Row(namedtuple('_Row', 'tstamp, values, nsamples')):
     def is_empty(self):
         return sum(self.nsamples) == 0
         # return len(self.values) == self.values.count(None)
-
-
-class ColumnInfo(namedtuple('_ColumnInfo', 'name, semType, keys, column')):
-    '''header data for each column          string, int, [KEY], int '''
-    __slots__ = ()
-
-    @property
-    def key_str(self):
-        '''string which includes all keys'''
-        return ', '.join(str(key) for key in self.keys if key)
-
-    @property
-    def identifiers(self):
-        ''' get all identifiers from all Keys'''
-        ident = set(key.identifier for key in self.flat_keys if key.identifier)
-        if len(ident) == 1:
-            return ident.pop()
-        return tuple(ident)
-
-    @property
-    def parents(self):
-        ''' get parent(s) of this column'''
-        parent = set(key.parent for key in self.flat_keys if key.parent)
-        if len(parent) == 1:
-            return parent.pop()
-        return tuple(parent)
-
-    @property
-    def flat_keys(self):
-        '''for computed columns we have multiple lists of keys, flatten it to a simple list'''
-        if len(self.keys) > 1 or isinstance(self.keys[0], list):
-            flat_keys = list(chain.from_iterable(self.keys))
-            if not isinstance(flat_keys[0], Key):
-                flat_keys = self.keys
-        else:
-            flat_keys = self.keys
-        return flat_keys
-
-    def __hash__(self):
-        return hash((self.name, self.key_str))
-
-    def __eq__(self, other):
-        return (self.name, self.key_str) == (other.name, other.key_str)
-
-    def __ne__(self, other):
-        return not(self == other)
 
 
 class Key(namedtuple('_Key', 'parent, sensor, identifier, metric, domains')):
@@ -128,7 +83,56 @@ class Key(namedtuple('_Key', 'parent, sensor, identifier, metric, domains')):
         return (self.parent, self.sensor, self.identifier, self.metric) == (other.parent, other.sensor, other.identifier, other.metric)
 
     def __ne__(self, other):
-        return not(self == other)
+        return not (self == other)
+
+
+class ColumnInfo(NamedTuple):
+    '''header data for each column          string, int, [KEY], int '''
+    name: str
+    semType: int
+    keys: Tuple[Key]
+    column: int
+
+    @property
+    def key_str(self):
+        '''string which includes all keys'''
+        return ', '.join(str(key) for key in self.keys if key)
+
+    @property
+    def identifiers(self):
+        ''' get all identifiers from all Keys'''
+        ident = set(key.identifier for key in self.flat_keys if key.identifier)
+        if len(ident) == 1:
+            return ident.pop()
+        return tuple(ident)
+
+    @property
+    def parents(self):
+        ''' get parent(s) of this column'''
+        parent = set(key.parent for key in self.flat_keys if key.parent)
+        if len(parent) == 1:
+            return parent.pop()
+        return tuple(parent)
+
+    @property
+    def flat_keys(self):
+        '''for computed columns we have multiple lists of keys, flatten it to a simple list'''
+        if len(self.keys) > 1 or isinstance(self.keys[0], list):
+            flat_keys = tuple(chain.from_iterable(self.keys))
+            if not isinstance(flat_keys[0], Key):
+                flat_keys = self.keys
+        else:
+            flat_keys = self.keys
+        return flat_keys
+
+    def __hash__(self):
+        return hash((self.name, self.keys))
+
+    def __eq__(self, other):
+        return (self.name, self.keys) == (other.name, other.keys)
+
+    def __ne__(self, other):
+        return not (self == other)
 
 
 class Domain(namedtuple('_domain', 'domainID, start, end, bucketSize')):
@@ -162,6 +166,7 @@ class QueryResult:
         self.ids = self._findIdentifiers()
 
         if self.query and len(self.query.measurements) > 0:
+            self._populate_index_cache()
             self._add_calculated_colunm_headers()
 
             calc = Calculator()
@@ -196,32 +201,30 @@ class QueryResult:
         return [Row(**item) for item in self.json['rows']]
 
     def _findIdentifiers(self):
-        ids = []  # not a set or dict because order matters
+        ids = {}  # using dict as a ordered set, order matters!
         for ci in self.columnInfos:
             p = set(key.parent for key in ci.keys)
             if len(p) == 1:
                 parents = p.pop()
             else:
                 parents = tuple(p)
-
             id_item = (parents, ci.identifiers)
-            if id_item not in ids:
-                ids.append(id_item)
-        return ids
+            ids[id_item] = 1
+        return ids.keys()
 
     def _add_calculated_colunm_headers(self):
         '''for each measurement create a result column for each ID '''
+        nextidx = max(ci.column for ci in self.columnInfos)
+
         for q_name, prg in self.query.measurements.items():
+            metrics = [step for step in prg if step not in Calculator.OPS and not step.isnumeric()]
             for parent, myid in self.ids:
                 key_aq = []
-                for step in prg:
-                    if step not in Calculator.OPS and not is_number(step):
-                        metric = step
-                        idx = self._index_by_metric_id(metric, parent, myid)
-                        if idx != -1:
-                            # key_aq.append([key for key in self.columnInfos[idx].keys if key])
-                            key_aq.extend(key for key in self.columnInfos[idx].keys if key)
-                nextidx = max(ci.column for ci in self.columnInfos) + 1
+                for metric in metrics:
+                    idx = self.index_cache.get((metric, parent, myid), -1)
+                    if idx != -1:
+                        key_aq.extend(key for key in self.columnInfos[idx].keys if key)
+                nextidx += 1
                 self.columnInfos.append(ColumnInfo(q_name, 15, (tuple(key_aq)), nextidx))
 
     def _add_calculated_row_data(self, calc, row):
@@ -232,10 +235,10 @@ class QueryResult:
                 for step in prg:
                     if step in Calculator.OPS:
                         calc.op(step)
-                    elif is_number(step):
+                    elif step.isnumeric():                  # is_number(step):
                         calc.push(float(step))
                     else:
-                        idx = self._index_by_metric_id(step, parent, myid)
+                        idx = self.index_cache.get((step, parent, myid), -1)
                         if idx != -1:
                             value = row.values[idx]
                             if value is None:
@@ -251,18 +254,12 @@ class QueryResult:
     def __getitem__(self, index):
         return self.rows[index]
 
-    def _index_by_metric_id(self, metric, parent, identifier):
-        '''get index to columInfo / values for a given metric and identifier'''
-        idx = self.index_cache.get((metric, parent, identifier), -1)
-        if idx != -1:
-            return idx
-
+    def _populate_index_cache(self):
         for ci in self.columnInfos:
-            # check for k.name too? handle parent?
-            if ci.keys[0].metric == metric and ci.identifiers == identifier and ci.parents == parent:
-                self.index_cache[(metric, parent, identifier)] = ci.column
-                return ci.column
-        return -1
+            key = (ci.keys[0].metric, ci.parents, ci.identifiers)
+            # if key in self.index_cache:
+            #     SysmonLogger.getLogger(__name__).error("hash collision in _populate_index_cache")
+            self.index_cache[key] = ci.column
 
     def drop_base_metrics(self):
         '''remove all headers and data columns which were used to compute a measurement'''
@@ -289,7 +286,7 @@ class QueryResult:
         return Row(ts, values, [1] * len(values))
 
     def check_rows_have_no_data(self):
-        return True if(len([r for r in self.rows if not r.is_empty()]) == 0) else False
+        return True if (len([r for r in self.rows if not r.is_empty()]) == 0) else False
 
     def latest(self, column):
         ''' get last non null value of a column'''
@@ -303,9 +300,9 @@ class QueryResult:
         ''' Performs downsampling of QueryResult.rows with specified aggregation method and interval'''
         try:
             func = __builtins__[aggregator]
-            return self.__downsample(func, interval)
+            return self.__downsample(func, int(interval))
         except Exception:
-            return self.__downsample(self.dAVG, interval)
+            return self.__downsample(self.dAVG, int(interval))
 
     def max(self, column):
         ''' get maximum value of a column'''
@@ -339,7 +336,7 @@ class QueryResult:
         else:
             data = (row.values[idx] for row in self.rows)
         try:
-            return fn(list(filter(lambda x: x is not None, data)))
+            return fn([x for x in data if x is not None])
         except Exception:
             return None
 
@@ -357,7 +354,7 @@ class QueryResult:
                     if len(column_values) == column_values.count(None):
                         aggr_value = None
                     else:
-                        aggr_value = fn(list(filter(lambda x: x is not None, column_values)))
+                        aggr_value = fn([x for x in column_values if x is not None])
                 except Exception:
                     aggr_value = None
                 aggr_values[idx] = aggr_value
@@ -385,9 +382,7 @@ def div(a, b):  # defined anew because of py 2/3 difference
 
 class Calculator(object):
     '''simple UPN calculator'''
-
-    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div,
-           ">=": operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq}
+    OPS = {"+": operator.add, "-": operator.sub, '*': operator.mul, '/': div, ">=": operator.ge, ">": operator.gt, "<=": operator.le, "<": operator.lt, "==": operator.eq}
 
     def __init__(self):
         self.stack = []
@@ -396,38 +391,19 @@ class Calculator(object):
         self.stack.append(arg)
         return self
 
-    def peek(self):
-        return self.stack[0]
-
     def pop(self):
         return self.stack.pop()
 
     def clear(self):
-        del self.stack[:]
+        self.stack.clear()
 
     def op(self, operation):
-        if (operation in Calculator.OPS):
-            operation = Calculator.OPS[operation]
+        operation = Calculator.OPS[operation]
 
-        if (inspect.isbuiltin(operation)):
-            if operation.__name__ in ('neg', 'pos', 'abs', 'not_', 'inv'):
-                ary = 1
-            else:
-                ary = 2
-        else:
-            ary = len(inspect.getargspec(operation)[0])
-
-        if ary == 1:
-            a = self.stack.pop()
-            c = operation(a)
-            self.push(c)
-        elif ary == 2:
-            a = self.stack.pop()
-            b = self.stack.pop()
-            c = operation(b, a)
-            self.push(c)
-        else:
-            raise ValueError('unknown operator')
+        a = self.stack.pop()
+        b = self.stack.pop()
+        c = operation(b, a)
+        self.push(c)
         return self
 
 

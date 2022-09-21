@@ -1,3 +1,11 @@
+# Version 7.0.7 (09/21/2022)
+Fixed issue in parsing zimon sensors config, having new filter format for Network sensor
+
+Tested with Grafana version 7.5.16 and 9.0.0
+Tested with RedHat community-powered Grafana operator v.4.6
+
+
+
 # Version 7.0.6 (04/12/2022)
 Fetch raw data for GPFSDiskCap metrics as workaround for the zimon issue not returning all capacity metrics results. \
 Added non root user to the Dockerfile. This way the main process will be started with a non-root user when running in a container.  \

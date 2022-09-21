@@ -68,6 +68,8 @@ class MetadataHandler():
     def SensorsConfig(self):
         if not self.__sensorsConf or len(self.__sensorsConf) == 0:
             self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+            if not self.__sensorsConf:
+                raise ValueError(MSG['NoSensorConfigData'])
         return self.__sensorsConf
 
     @property
@@ -81,6 +83,8 @@ class MetadataHandler():
 
         self.__qh = QueryHandler(self.server, self.port, self.logger, self.apiKeyName, self.apiKeyValue)
         self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
+        if not self.__sensorsConf:
+            raise ValueError(MSG['NoSensorConfigData'])
         MAX_ATTEMPTS_COUNT = 3
         for attempt in range(1, MAX_ATTEMPTS_COUNT + 1):
             tstart = timer()
@@ -117,7 +121,7 @@ class MetadataHandler():
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
-        return({'msg': MSG['MetaSuccess']})
+        return ({'msg': MSG['MetaSuccess']})
 
 
 class GetHandler(object):
@@ -145,7 +149,7 @@ class GetHandler(object):
         if params.get('q'):
             searchStr = params['q'].strip()
             # if '*' and tagv, then it denotes a grouping key value: do not process
-            if not(searchStr == '*' and params['type'] == 'tagv'):
+            if not (searchStr == '*' and params['type'] == 'tagv'):
                 # Since grafana sends the candidate string quickly, one character at a time, it
                 # is likely that the reg exp compilation will fail.
                 try:
@@ -377,6 +381,8 @@ class PostHandler(object):
     def _formatQueryResponse(self, inputQuery, results, showQuery=False, globalAnnotations=False):
 
         resList = []
+        # self.logger.debug("Column info keys:\n")
+        # self.logger.debug("\n".join("{}".format(k) for k in results.keys()))
 
         for columnInfo, dps in results.items():
             if columnInfo.name.find(inputQuery.get('metric')) == -1:
@@ -385,6 +391,10 @@ class PostHandler(object):
 
             filtersMap = self.TOPO.getAllFilterMapsForMetric(columnInfo.keys[0].metric)
             res = QueryResultObj(inputQuery, dps, showQuery, globalAnnotations)
+            # self.logger.info("filtersMap: \n")
+            # self.logger.info("\n".join("{}".format(k) for k in filtersMap))
+            # self.logger.info("Column info keys:\n")
+            # self.logger.info("\n".join("{}".format(k) for k in columnInfo.keys))
             res.parseTags(self.logger, filtersMap, columnInfo)
             cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
             resList.append(res.__dict__)
@@ -522,7 +532,7 @@ class QueryResultObj():
         self.aggregatedTags = []
 
     def parseTags(self, logger, filtersMap, columnInfo):
-        tagsDict = defaultdict(list)
+        tagsDict = defaultdict(set)
         for key in columnInfo.keys:
             ident = [key.parent]
             ident.extend(key.identifier)
@@ -534,13 +544,14 @@ class QueryResultObj():
                         self.tags = filtersDict
                     else:
                         for _key, _value in filtersDict.items():
-                            tagsDict[_key].append(_value)
+                            tagsDict[_key].add(_value)
+                    break
 
         for _key, _values in tagsDict.items():
-            if len(set(_values)) > 1:
+            if len(_values) > 1:
                 self.aggregatedTags.append(_key)
             else:
-                self.tags[_key] = _values[0]
+                self.tags[_key] = _values.pop()
 
 
 def processFormJSON(entity):
