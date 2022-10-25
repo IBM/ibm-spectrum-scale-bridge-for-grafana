@@ -2,7 +2,9 @@ ARG BASE=registry.access.redhat.com/ubi8/ubi:8.5
 FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
-LABEL com.ibm.vendor="IBM" 
+LABEL com.ibm.vendor="IBM"
+LABEL com.ibm.version="7.0.8-dev"
+LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
 LABEL com.ibm.summary="It allows the IBM Spectrum Scale users to perform performance monitoring for IBM Spectrum Scale devices using Grafana"
@@ -75,21 +77,50 @@ RUN echo "the log will use $LOGPATH"
 WORKDIR /opt/IBM/bridge
 RUN echo "$(pwd)"
 
-# Create a user 'bridge' under 'root' group
-RUN groupadd -g 2099 bridge
-RUN useradd -rm -d /home/2001 -s /bin/bash -g 2099 -u 2001 bridge
+ARG USERNAME=bridge
+ENV USER=$USERNAME
+ARG GROUPNAME=bridge
+ENV GROUP=$GROUPNAME
+ARG USERID=2001
+ENV UID=$USERID
+ARG GROUPID=0
+ENV GID=$GROUPID
 
-# Chown all the files to the grafanabridge 'bridge' user
-RUN chown -R 2001:2099 /opt/IBM/bridge
-RUN chown -R 2001:2099 /opt/IBM/zimon
-RUN chown -R 2001:2099 /var/mmfs/gen
-RUN chown -R 2001:2099 /etc/ssl/certs
-RUN chown -R 2001:2099 /etc/perfmon-api-keys
-RUN chown -R 2001:2099 $TLSKEYPATH
-RUN chown -R 2001:2099 $LOGPATH
+# Create a container user 
+RUN if [ "$GID" -gt "0" ]; then groupadd -g $GID $GROUP; else echo "Since root GID specified skipping groupadd"; fi
+RUN useradd -rm -d /home/$UID -s /bin/bash -g $GID -u $UID $USER
 
-# Switch to user 'bridge'
-USER 2001
+# Change group ownership
+RUN chgrp -R $GID /opt/IBM/bridge
+RUN chgrp -R $GID /opt/IBM/zimon
+RUN chgrp -R $GID /var/mmfs/gen
+RUN chgrp -R $GID /etc/ssl/certs
+RUN chgrp -R $GID /var/mmfs/gen
+RUN chgrp -R $GID /etc/perfmon-api-keys
+RUN chgrp -R $GID $TLSKEYPATH
+RUN chgrp -R $GID $LOGPATH
+
+# Set group permissions 
+RUN chmod -R g=u /opt/IBM/bridge
+RUN chmod -R g=u /opt/IBM/zimon
+RUN chmod -R g=u /var/mmfs/gen
+RUN chmod -R g=u /etc/ssl/certs
+RUN chmod -R g=u /var/mmfs/gen
+RUN chmod -R g=u /etc/perfmon-api-keys
+RUN chmod -R g=u $TLSKEYPATH
+RUN chmod -R g=u $LOGPATH
+
+# Chown all needed files 
+RUN chown -R $UID:$GID /opt/IBM/bridge
+RUN chown -R $UID:$GID /opt/IBM/zimon
+RUN chown -R $UID:$GID /var/mmfs/gen
+RUN chown -R $UID:$GID /etc/ssl/certs
+RUN chown -R $UID:$GID /etc/perfmon-api-keys
+RUN chown -R $UID:$GID $TLSKEYPATH
+RUN chown -R $UID:$GID $LOGPATH
+
+# Switch user
+USER $GID
 
 
 CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
