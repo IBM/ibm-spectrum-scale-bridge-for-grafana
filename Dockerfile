@@ -122,6 +122,8 @@ RUN chown -R $UID:$GID $LOGPATH
 # Switch user
 USER $GID
 
+# Do not write byte code inside ephemeral container storage.
+ENV PYTHONDONTWRITEBYTECODE 1
 
 CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
 
