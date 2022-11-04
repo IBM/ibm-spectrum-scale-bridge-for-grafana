@@ -9,6 +9,9 @@ LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performan
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
 LABEL com.ibm.summary="It allows the IBM Spectrum Scale users to perform performance monitoring for IBM Spectrum Scale devices using Grafana"
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 
 RUN yum install -y python36 python36-devel
@@ -122,8 +125,6 @@ RUN chown -R $UID:$GID $LOGPATH
 # Switch user
 USER $GID
 
-# Do not write byte code inside ephemeral container storage.
-ENV PYTHONDONTWRITEBYTECODE 1
 
 CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
 
