@@ -9,6 +9,9 @@ LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performan
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
 LABEL com.ibm.summary="It allows the IBM Spectrum Scale users to perform performance monitoring for IBM Spectrum Scale devices using Grafana"
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 
 RUN yum install -y python36 python36-devel
