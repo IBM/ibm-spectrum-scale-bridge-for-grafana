@@ -4,7 +4,6 @@ metadata:
   name: cnsa-cluster-simple-dashboard
   labels:
     app: grafana
-  namespace: grafana-for-cnsa
 spec:
   customFolderName: "examples"
   allowUiUpdates: true
