@@ -2,7 +2,6 @@ apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: ibm-spectrum-scale-operators-group
-  namespace: grafana-for-cnsa
 spec:
   targetNamespaces:
   - grafana-for-cnsa
