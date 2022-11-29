@@ -36,4 +36,3 @@ def test_case03():
     query = Query(includeDiskData=True)
     query.sensor = 'GPFSDiskCap'
     assert "-ar" in str(query)
-    
