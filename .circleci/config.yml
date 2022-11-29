@@ -22,7 +22,7 @@ jobs:
           name: Test
           command: |
             . venv/bin/activate
-            flake8 --max-line-length=999 --ignore=E731,E741,E712,E722 --exclude=venv* --statistics
+            flake8 --max-line-length=999 --ignore=E731,E741,E712,E722,W503 --exclude=venv* --statistics
             nose2
       - setup_remote_docker:
           version: 19.03.13
