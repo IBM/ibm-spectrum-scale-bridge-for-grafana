@@ -1,4 +1,4 @@
-ARG BASE=registry.access.redhat.com/ubi8/ubi:8.5
+ARG BASE=registry.access.redhat.com/ubi8/ubi:8.7
 FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
@@ -68,7 +68,7 @@ RUN yum install -y python36 python36-devel && \
     echo "Installed python packages: $(/usr/bin/pip3 list)"
 
 USER root
-    
+
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
     mkdir -p /etc/ssl/certs /etc/perfmon-api-keys $CERTPATH $LOGPATH
 
@@ -79,7 +79,7 @@ COPY ./source/gpfsConfig/mmsdrfs* /var/mmfs/gen/
 COPY ./source/gpfsConfig/ZIMon* /opt/IBM/zimon/
 
 RUN if [ "${APIKEYVALUE:0:1}" = "/" ]; then ln -s $APIKEYVALUE /etc/perfmon-api-keys; echo "APIKEYVALUE is a PATH"; else echo "APIKEYVALUE not a PATH"; fi && \
-	if [ -z "$TLSKEYPATH" ] || [ -z "$TLSCERTFILE" ] || [ -z "$TLSKEYFILE" ] && [ "$PROTOCOL" = "https" ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
+    if [ -z "$TLSKEYPATH" ] || [ -z "$TLSCERTFILE" ] || [ -z "$TLSKEYFILE" ] && [ "$PROTOCOL" = "https" ]; then echo "TLSKEYPATH FOR SSL CONNECTION NOT SET - ERROR"; exit 1; else echo "PASS"; fi
 RUN echo "the ssl certificates path is set to $TLSKEYPATH" 
 
 # Switch to the working directory
