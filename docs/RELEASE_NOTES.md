@@ -1,3 +1,13 @@
+# Version 7.0.8 (12/06/2022)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.7 \
+Made Dockerfile compatibe with OpenShift style allowing to specify user/group settings at the image build time. \
+Added Workaround for Disk Capacity sensors allowing to query and fetch data from the archived (on disk data). \
+
+Tested with Grafana version 7.5.17 and 9.0.0
+Tested with RedHat community-powered Grafana operator v.4.8
+
+
+
 # Version 7.0.7 (09/21/2022)
 Fixed issue in parsing zimon sensors config, having new filter format for Network sensor
 
