@@ -4,11 +4,22 @@
 Using the scripts in this folder you can deploy a Grafana instance in the project 'grafana-for-cnsa'
 
 ```
-oc new-project grafana-for-cnsa
-oc apply -f operator-group.yaml
-oc apply -f grafana-operator-subscription.yaml
-oc apply -f grafana-instance-for-cnsa.yaml
-
+NAMESPACE=grafana-for-cnsa
+```
+```
+echo $NAMESPACE
+```
+```
+oc new-project $NAMESPACE
+```
+```
+oc apply -f operator-group.yaml --namespace=$NAMESPACE
+```
+```
+oc apply -f grafana-operator-subscription.yaml --namespace=$NAMESPACE
+```
+```
+oc apply -f grafana-instance-for-cnsa.yaml --namespace=$NAMESPACE
 ```
 
 Alternatively you can install a Grafana instance using the OpenShift Container Platform web console. Please check the instructions described in the deployment examples stored in the project [Wiki](/docs/grafana_deployment_ocp.md)

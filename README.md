@@ -1,6 +1,6 @@
 
 [![CircleCI](https://circleci.com/gh/IBM/ibm-spectrum-scale-bridge-for-grafana.svg?style=svg)](https://app.circleci.com/pipelines/github/IBM/ibm-spectrum-scale-bridge-for-grafana?branch=master)
-
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5787/badge)](https://bestpractices.coreinfrastructure.org/projects/5787)
 
 The ***IBM Spectrum Scale bridge for Grafana*** could be used for exploring IBM Spectrum Scale performance data on [Grafana dashboards](https://grafana.com/grafana/).
 

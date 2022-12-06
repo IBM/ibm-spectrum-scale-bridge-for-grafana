@@ -2,7 +2,6 @@
 kind: GrafanaDataSource
 metadata:
   name: bridge-grafanadatasource
-  namespace: grafana-for-cnsa
 spec:
   datasources:
     - access: proxy

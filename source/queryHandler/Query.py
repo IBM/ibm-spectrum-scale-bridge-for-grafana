@@ -49,6 +49,10 @@ class Query(object):
                   "operation", "protocol", "waiters_time_threshold", "export",
                   "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass"])
 
+    DISK_CAP_METRICS = set(["gpfs_disk_disksize", "gpfs_disk_free_fullkb", "gpfs_disk_free_fragkb",
+                            "gpfs_pool_disksize", "gpfs_pool_free_fragkb", "gpfs_pool_free_fullkb",
+                            "gpfs_fs_inode_used", "gpfs_fs_inode_free", "gpfs_fs_inode_alloc", "gpfs_fs_inode_max"])
+
     def __init__(self, metrics=None, bucketsize=1, filters=None, groupby=None, includeDiskData=False):
         '''
         Constructor, filters and groupby must be preformmated
@@ -184,7 +188,11 @@ class Query(object):
     def __str__(self):
         # dd = '-a' if self.includeDiskData else ''
         # Workaround for RTC Defect 280368: Zimon capacity query does not return all results (seen on CNSA)
-        if (self.metrics and any('gpfs_disk_' in metric for metric in self.metrics)) or (self.sensor and self.sensor == "GPFSDiskCap"):
+        if (self.metrics
+            and any(str(metric) in self.DISK_CAP_METRICS for metric in self.metrics)
+            ) or (self.sensor
+                  and self.sensor in ("GPFSDiskCap", "GPFSPoolCap", "GPFSInodeCap")
+                  ):
             dd = '-ar'
         elif self.includeDiskData:
             dd = '-a'
