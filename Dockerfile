@@ -3,7 +3,7 @@ FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="7.0.8-dev"
+LABEL com.ibm.version="7.0.8"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
