@@ -440,7 +440,7 @@ class PostHandler(object):
         elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
             sensor = 'GPFSNSDDisk'
         elif sensor == 'DomainStore':
-            return 10
+            return 1
 
         for sensorAttr in self.sensorsConf:
             if sensorAttr['name'] == str('\"%s\"' % sensor):
