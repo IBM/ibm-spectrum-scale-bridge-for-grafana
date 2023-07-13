@@ -35,7 +35,7 @@ portend==2.7.1
     # via cherrypy
 pytz==2021.1
     # via tempora
-requests==2.26.0
+requests==2.27.1
     # via -r requirements_ubi8.in
 six==1.16.0
     # via cheroot
