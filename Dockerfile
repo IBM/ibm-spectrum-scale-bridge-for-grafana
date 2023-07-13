@@ -62,8 +62,8 @@ RUN echo "the log will use $LOGPATH"
 COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
 
 RUN yum install -y python36 python36-devel && \
-    /usr/bin/pip3 install --upgrade pip && \
-    /usr/bin/pip3 install -r /root/requirements_ubi8.txt && \
+    /usr/bin/python3 -m pip install --upgrade pip && \
+    /usr/bin/python3 -m pip install -r /root/requirements_ubi8.txt && \
     echo "Installed python version: $(/usr/bin/python3 -V)" && \
     echo "Installed python packages: $(/usr/bin/pip3 list)"
 
