@@ -1,4 +1,4 @@
-ARG BASE=registry.access.redhat.com/ubi8/ubi:8.7
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.2
 FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
@@ -59,11 +59,11 @@ ARG DEFAULTLOGPATH='/var/log/ibm_bridge_for_grafana'
 ENV LOGPATH=$DEFAULTLOGPATH
 RUN echo "the log will use $LOGPATH"
 
-COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
+COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 
-RUN yum install -y python36 python36-devel && \
+RUN yum install -y python39 python3-pip && \
     /usr/bin/python3 -m pip install --upgrade pip && \
-    /usr/bin/python3 -m pip install -r /root/requirements_ubi8.txt && \
+    /usr/bin/python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(/usr/bin/python3 -V)" && \
     echo "Installed python packages: $(/usr/bin/pip3 list)"
 
