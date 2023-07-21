@@ -10,4 +10,4 @@
 #requests
 #urllib3
 -r requirements/requirements_test.in
--r requirements/requirements_ubi8.in
+-r requirements/requirements_ubi.in
