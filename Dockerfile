@@ -62,10 +62,10 @@ RUN echo "the log will use $LOGPATH"
 COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 
 RUN yum install -y python39 python3-pip && \
-    /usr/bin/python3 -m pip install --upgrade pip && \
-    /usr/bin/python3 -m pip install -r /root/requirements_ubi9.txt && \
+    /usr/bin/python3 -m pip install --user --upgrade pip && \
+    /usr/bin/python3 -m pip install --user -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(/usr/bin/python3 -V)" && \
-    echo "Installed python packages: $(/usr/bin/pip3 list)"
+    echo "Installed python packages: $(/usr/bin/python3 -m pip list)"
 
 USER root
 
