@@ -7,16 +7,10 @@ annotated-types==0.5.0
     # via pydantic
 autocommand==2.2.2
     # via jaraco-text
-certifi==2023.7.22
-    # via requests
-charset-normalizer==3.2.0
-    # via requests
 cheroot==10.0.0
     # via cherrypy
 cherrypy==18.8.0
     # via -r /root/requirements_ubi.in
-idna==3.4
-    # via requests
 inflect==7.0.0
     # via jaraco-text
 jaraco-collections==4.3.0
@@ -30,7 +24,7 @@ jaraco-functools==3.8.0
     #   tempora
 jaraco-text==3.11.1
     # via jaraco-collections
-more-itertools==9.1.0
+more-itertools==10.0.0
     # via
     #   cheroot
     #   cherrypy
@@ -38,14 +32,12 @@ more-itertools==9.1.0
     #   jaraco-text
 portend==3.2.0
     # via cherrypy
-pydantic==2.0.3
+pydantic==2.1.0
     # via inflect
-pydantic-core==2.3.0
+pydantic-core==2.4.0
     # via pydantic
 pytz==2023.3
     # via tempora
-requests==2.31.0
-    # via -r /root/requirements_ubi.in
 tempora==5.5.0
     # via portend
 typing-extensions==4.7.1
@@ -53,10 +45,6 @@ typing-extensions==4.7.1
     #   inflect
     #   pydantic
     #   pydantic-core
-urllib3==2.0.4
-    # via
-    #   -r /root/requirements_ubi.in
-    #   requests
 zc-lockfile==3.0.post1
     # via cherrypy
 
