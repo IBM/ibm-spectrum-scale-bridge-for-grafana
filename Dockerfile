@@ -3,7 +3,7 @@ FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="7.0.8-dev"
+LABEL com.ibm.version="7.0.9-dev"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -62,14 +62,13 @@ RUN echo "the log will use $LOGPATH"
 COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 # COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 
-RUN yum install -y python39 python3-pip && \
-    /usr/bin/python3 -m pip install --user --upgrade pip 
+RUN yum install -y python39 python3-pip
 
-# RUN /usr/bin/python3 -m pip install --user pip-tools && \
+# RUN /usr/bin/python3 -m pip install pip-tools && \
 #     /usr/bin/python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
 #     echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"
 
-RUN /usr/bin/python3 -m pip install --user -r /root/requirements_ubi9.txt && \
+RUN /usr/bin/python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(/usr/bin/python3 -V)" && \
     echo "Installed python packages: $(/usr/bin/python3 -m pip list)"
 
@@ -101,7 +100,6 @@ RUN chgrp -R $GID /opt/IBM/bridge && \
     chgrp -R $GID /opt/IBM/zimon && \
     chgrp -R $GID /var/mmfs/gen && \
     chgrp -R $GID /etc/ssl/certs && \
-    chgrp -R $GID /var/mmfs/gen && \
     chgrp -R $GID /etc/perfmon-api-keys && \
     chgrp -R $GID $TLSKEYPATH && \
     chgrp -R $GID $LOGPATH
@@ -111,7 +109,6 @@ RUN chmod -R g=u /opt/IBM/bridge && \
     chmod -R g=u /opt/IBM/zimon && \
     chmod -R g=u /var/mmfs/gen && \
     chmod -R g=u /etc/ssl/certs && \
-    chmod -R g=u /var/mmfs/gen && \
     chmod -R g=u /etc/perfmon-api-keys && \
     chmod -R g=u $TLSKEYPATH && \
     chmod -R g=u $LOGPATH
