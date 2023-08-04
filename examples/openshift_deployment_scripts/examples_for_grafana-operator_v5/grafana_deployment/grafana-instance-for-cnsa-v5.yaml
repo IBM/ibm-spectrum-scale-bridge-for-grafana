@@ -1,0 +1,21 @@
+﻿apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana-for-cnsa
+
+  labels:
+    dashboards: my-dashboards
+    folders: my-folder
+spec:
+  config:
+    auth:
+      disable_login_form: 'false'
+    log:
+      level: warn
+      mode: console
+    security:
+      admin_password: secret
+      admin_user: root
+  route:
+    spec: {}
+
