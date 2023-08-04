@@ -1,0 +1,10 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cnsa-cluster-simple-dashboard
+spec:
+  folder: "my-folder"
+  instanceSelector:
+    matchLabels:
+      dashboards: "my-dashboards"
+  url: "https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/master/examples/grafana_dashboards/simple.json"
