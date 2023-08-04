@@ -3,22 +3,22 @@
 
 Using the scripts in this folder you can deploy a Grafana instance in the project 'grafana-for-cnsa'
 
-```
+```shell
 NAMESPACE=grafana-for-cnsa
 ```
-```
+```shell
 echo $NAMESPACE
 ```
-```
+```shell
 oc new-project $NAMESPACE
 ```
-```
+```shell
 oc apply -f operator-group-v5.yaml --namespace=$NAMESPACE
 ```
-```
+```shell
 oc apply -f grafana-operator-subscription-v5.yaml --namespace=$NAMESPACE
 ```
-```
+```shell
 oc apply -f grafana-instance-for-cnsa-v5.yaml --namespace=$NAMESPACE
 ```
 
