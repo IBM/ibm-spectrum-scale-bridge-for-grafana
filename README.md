@@ -4,11 +4,11 @@
 
 The ***IBM Spectrum Scale bridge for Grafana*** could be used for exploring IBM Storage Scale performance data on [Grafana dashboards](https://grafana.com/grafana/).
 
-Grafana Bridge is a standalone Python application. It translates the IBM Storage Scale metadata and performance data collected by the [IBM Storage Scale performance monitoring tool (ZiMon)](https://www.ibm.com/support/knowledgecenter/en/STXKQY_4.2.3/com.ibm.spectrum.scale.v4r23.doc/bl1adv_PMToverview.htm) to the query requests acceptable by the [Grafana integrated openTSDB plugin](https://grafana.com/docs/features/datasources/opentsdb/).
+Grafana Bridge is a standalone Python application. It translates the IBM Storage Scale metadata and performance data collected by the [IBM Storage Scale performance monitoring tool (ZiMon)](https://www.ibm.com/docs/en/storage-scale/5.1.8?topic=monitoring-using-performance-tool) to the query requests acceptable by the [Grafana integrated openTSDB plugin](https://grafana.com/docs/features/datasources/opentsdb/).
 
 
 <p align="center">
-  <img src="/docs/grafana_bridge_overview.PNG" />
+  <img src="/docs/grafana_bridge_overview.png" />
 </p>
 
 
