@@ -78,7 +78,7 @@ def readSensorsConfig(logger=None, customFile=None):
             for file in files:
                 if file.endswith(".cfg"):
                     sensorConfigFiles.append(os.path.join(root, file))
-    else :
+    else:
         logger.details("ZiMon sensor configuration file not found (%s) ", zimonFile)
         print("ZiMon sensor configuration file not found")
         raise OSError(2, 'No such file or directory', zimonFile)
