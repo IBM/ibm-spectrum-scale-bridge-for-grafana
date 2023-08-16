@@ -1,6 +1,5 @@
 import os
-# import source.queryHandler.SensorConfig as SensorConfig
-from source.queryHandler.SensorConfig import parseSensorsConfig, readSensorsConfig
+from source.queryHandler.SensorConfig import readSensorsConfig
 from source.bridgeLogger import configureLogging
 from nose2.tools.such import helper as assert_helper
 from nose2.tools.decorators import with_setup
