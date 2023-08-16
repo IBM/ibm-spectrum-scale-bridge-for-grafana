@@ -108,7 +108,6 @@ def parseSensorsConfig(sensorsConfig, logger):
         else:
             end = None
             sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):end]
-            logger.info(sensorsStr)
         sensorsList = re.findall('(?P<sensor>{.*?})(?:,|$)', sensorsStr)
         for sensorString in sensorsList:
             sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"\S*\"|\d+)', sensorString)
