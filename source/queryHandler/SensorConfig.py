@@ -106,8 +106,7 @@ def parseSensorsConfig(sensorsConfig, logger):
         if sensorsConfig.find("smbstat") != -1:
             sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):sensorsConfig.find("smbstat")]
         else:
-            end = None
-            sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):end]
+            sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):]
         sensorsList = re.findall('(?P<sensor>{.*?})(?:,|$)', sensorsStr)
         for sensorString in sensorsList:
             sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"\S*\"|\d+)', sensorString)

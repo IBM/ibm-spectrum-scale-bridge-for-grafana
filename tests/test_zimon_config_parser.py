@@ -26,14 +26,19 @@ def test_case02():
     sensorsList = readSensorsConfig(logger, zimonFile)
     assert isinstance(sensorsList, list)
     assert len(sensorsList) > 0
+    assert len(sensorsList) == 32
 
 
 @with_setup(my_setup)
 def test_case03():
     zimonFile = os.path.join(path, "tests", "test_data", wrongSensorsConfig)
     sensorsList = readSensorsConfig(logger, zimonFile)
+    nfsioConf = sensorsList[0]
     assert isinstance(sensorsList, list)
+    assert isinstance(nfsioConf, dict)
     assert len(sensorsList) > 0
+    assert len(sensorsList) == 1
+    assert nfsioConf.get('name') == '"NFSIO"'
 
 
 @with_setup(my_setup)
