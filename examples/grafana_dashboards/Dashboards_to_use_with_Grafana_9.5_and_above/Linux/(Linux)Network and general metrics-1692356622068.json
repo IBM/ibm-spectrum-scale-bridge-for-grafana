@@ -1,0 +1,774 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "icon": "external link",
+      "tags": [
+        "home"
+      ],
+      "type": "dashboards"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "$system"
+      },
+      "description": "show CPU, memory, storage and network usage",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "9.5.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "cpu_user",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "cpu_system",
+          "refId": "B"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "mem_memtotal",
+          "refId": "C"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "mem_memfree",
+          "refId": "D"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "df_free",
+          "refId": "E"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "df_total",
+          "refId": "F"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "df_used",
+          "refId": "G"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "$system"
+      },
+      "description": "show CPU utilization in system and user space, and context switches",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "9.5.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "system: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "cpu_system",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "user: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "cpu_user",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "contexts: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "cpu_contexts",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "CPU",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "$system"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "9.5.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "avg",
+          "alias": "collisions",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "metric": "netdev_collisions",
+          "refId": "A"
+        },
+        {
+          "aggregator": "avg",
+          "alias": "drops_r",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "metric": "netdev_drops_r",
+          "refId": "B"
+        },
+        {
+          "aggregator": "avg",
+          "alias": "errors_r",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "metric": "netdev_errors_r",
+          "refId": "C"
+        },
+        {
+          "aggregator": "avg",
+          "alias": "errors_s",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "metric": "netdev_errors_s",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Network Problems",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "$system"
+      },
+      "description": "Get details about the network.",
+      "editable": true,
+      "error": false,
+      "fill": 1,
+      "fillGradient": 0,
+      "grid": {},
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "isNew": true,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pluginVersion": "9.5.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "bytes_r: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "lo",
+              "groupBy": false,
+              "tagk": "netdev_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "netdev_bytes_r",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "bytes_s : $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "lo",
+              "groupBy": false,
+              "tagk": "netdev_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "netdev_bytes_s",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "collisions: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "lo",
+              "groupBy": false,
+              "tagk": "netdev_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "netdev_collisions",
+          "refId": "C"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "carrier : $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "uid": "$system"
+          },
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1m",
+          "filters": [
+            {
+              "filter": "lo",
+              "groupBy": false,
+              "tagk": "netdev_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$byNode",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "netdev_carrier",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Network Details",
+      "tooltip": {
+        "msResolution": false,
+        "shared": true,
+        "sort": 0,
+        "value_type": "cumulative"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "linux",
+    "network"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "vm2-cluster1",
+          "value": "vm2-cluster1"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "system",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(cpu_user,node)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "filter byNode",
+        "multi": false,
+        "name": "byNode",
+        "options": [],
+        "query": "tag_values(cpu_user,node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "(Linux)Network and general metrics",
+  "uid": "b_TgAvZiz",
+  "version": 3,
+  "weekStart": ""
+}
