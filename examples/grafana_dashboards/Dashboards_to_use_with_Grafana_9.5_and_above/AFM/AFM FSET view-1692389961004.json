@@ -1,0 +1,1675 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.2"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "home"
+      ],
+      "targetBlank": false,
+      "title": "",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$gateWayNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$afmFSET",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_afm_fset_bytes_written",
+          "refId": "A"
+        }
+      ],
+      "title": "$afmFSET (number of bytes written)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 34,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$gateWayNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$afmFSET",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_afm_fset_ops_sent",
+          "refId": "A"
+        }
+      ],
+      "title": " $afmFSET (number of operations sent )",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "",
+          "filters": [
+            {
+              "filter": "$gateWayNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$afmFSET",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_afm_fset_used_q_memory",
+          "refId": "A"
+        }
+      ],
+      "title": "$afmFSET (used memory in bytes by the messages queued)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 26,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.5.2",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "",
+          "filters": [
+            {
+              "filter": "$gateWayNode",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$afmFSET",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_afm_fset_num_queued_msgs",
+          "refId": "A"
+        }
+      ],
+      "title": "$afmFSET (number of messages that are currently queued)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 28,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 0,
+            "y": 18
+          },
+          "id": 30,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_bytes_read",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes read",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 7,
+            "y": 18
+          },
+          "id": 31,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_bytes_written",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes written",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 14,
+            "y": 18
+          },
+          "id": 32,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_bytes_pending",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes  pending",
+          "type": "stat"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "TREND CHARTS - Total number of bytes read/write from/to remote system  for \"$afmFSET\" ",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 21,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 0,
+            "y": 19
+          },
+          "id": 23,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "alias": "$tag_gpfs_fset_name",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_ops_sent",
+              "refId": "A"
+            }
+          ],
+          "title": " Total number of operations sent ",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 7,
+            "y": 19
+          },
+          "id": 24,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_ops_sync",
+              "refId": "A"
+            }
+          ],
+          "title": " Total number of synchronous operations",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 14,
+            "y": 19
+          },
+          "id": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_ops_revoked",
+              "refId": "A"
+            }
+          ],
+          "title": " Total number of operations revoked ",
+          "type": "stat"
+        }
+      ],
+      "repeat": "afmFSET",
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "TREND CHARTS - Number of operations that were sent to remote system for \"$afmFSET\" ",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 12,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 0,
+            "y": 20
+          },
+          "id": 8,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "max"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "avg",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_avg_time",
+              "refId": "A"
+            }
+          ],
+          "title": "Average time in seconds",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 6,
+            "y": 20
+          },
+          "id": 13,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "max"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "max",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_longest_time",
+              "refId": "A"
+            }
+          ],
+          "title": "Longest time in seconds",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 12,
+            "y": 20
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "min"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "min",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_shortest_time",
+              "refId": "A"
+            }
+          ],
+          "title": "Shortest time in seconds",
+          "type": "stat"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "TREND CHARTS - Time in seconds that a pending operation waited in the gateway queue before being sent to remote system for \"$afmFSET \"",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 16,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 21
+          },
+          "id": 18,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "max",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fset_conn_esta",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number  a connection was established",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 6,
+            "y": 21
+          },
+          "id": 19,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "max",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                },
+                {
+                  "filter": "$afmFSET",
+                  "groupBy": false,
+                  "tagk": "gpfs_fset_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_fs_conn_broken",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number  a connection was broken",
+          "type": "stat"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "Total number of times the connection to the remote system was established/ broken for the \"$afmFSET \" fileset",
+      "type": "row"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "afm",
+    "fileset"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "vm2-cluster1",
+          "value": "vm2-cluster1"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "cacheCluster",
+        "multi": false,
+        "name": "system",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_afm_fset_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "filter by Primary Gateway node",
+        "multi": true,
+        "name": "gateWayNode",
+        "options": [],
+        "query": "tag_values(gpfs_afm_fset_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_afm_fset_ops_sent, gpfs_fset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "filter by AFM Fileset",
+        "multi": false,
+        "name": "afmFSET",
+        "options": [],
+        "query": "tag_values(gpfs_afm_fset_ops_sent, gpfs_fset_name)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "AFM  FSET view",
+  "uid": "7hZDTy9Gz",
+  "version": 7,
+  "weekStart": ""
+}

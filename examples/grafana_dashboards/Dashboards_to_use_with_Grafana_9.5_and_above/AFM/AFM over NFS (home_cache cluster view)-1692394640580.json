@@ -1,0 +1,1042 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM2-CLUSTER2",
+      "label": "vm2-cluster2",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    },
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.2"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [
+        "home"
+      ],
+      "targetBlank": false,
+      "title": "",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 36,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER2}"
+          },
+          "description": "Display the NFS Throughput in bytes per second.\nCompare to the mmperfmon NamedQuery 'nfsThroughput' F.e. try on the command line:\n\n# mmperfmon query nfsThroughput 3600 -b 60",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 32,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "read: $tag_export",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER2}"
+              },
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1m",
+              "filters": [
+                {
+                  "filter": "$byExport",
+                  "groupBy": true,
+                  "tagk": "export",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "nfs_read",
+              "refId": "A"
+            },
+            {
+              "aggregator": "noop",
+              "alias": "write: $tag_export",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER2}"
+              },
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1m",
+              "filters": [
+                {
+                  "filter": "$byExport",
+                  "groupBy": true,
+                  "tagk": "export",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "nfs_write",
+              "refId": "B"
+            }
+          ],
+          "title": "NFS Throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER2}"
+          },
+          "description": "get the NFS IOps per second",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 34,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "readOPS: $tag_export",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER2}"
+              },
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1m",
+              "filters": [
+                {
+                  "filter": "$byExport",
+                  "groupBy": true,
+                  "tagk": "export",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "nfs_read_ops",
+              "refId": "A"
+            },
+            {
+              "aggregator": "noop",
+              "alias": "writeOPS: $tag_export",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER2}"
+              },
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1m",
+              "filters": [
+                {
+                  "filter": "$byExport",
+                  "groupBy": true,
+                  "tagk": "export",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "nfs_write_ops",
+              "refId": "B"
+            }
+          ],
+          "title": "NFS IO Rate",
+          "type": "timeseries"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "HOME CLUSTER  $homeCluster",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 38,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 11
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "gateWay node: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_used_q_memory",
+              "refId": "A"
+            }
+          ],
+          "title": "Used memory in bytes by the messages enqueued",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 11
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "gateWay node: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_used_q_memory",
+              "refId": "A"
+            }
+          ],
+          "title": "Number of messages that are currently enqueued",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 20
+          },
+          "id": 28,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "gateWay node: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_bytes_read",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes read from remote system",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 20
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "gateWay node: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_bytes_written",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes written to the remote system",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 20
+          },
+          "id": 30,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.2",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "gateWay node: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_VM2-CLUSTER1}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [
+                {
+                  "filter": "$gateWayNode",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_afm_bytes_pending",
+              "refId": "A"
+            }
+          ],
+          "title": "Total number of bytes pending, i.e. not yet written to the remote system",
+          "type": "timeseries"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "e14ad9c8-6fb1-478e-b2a2-1767f4ccaee4"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "CACHE CLUSTER $cacheCluster",
+      "type": "row"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [
+    "AFM",
+    "nfs"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "vm2-cluster2",
+          "value": "vm2-cluster2"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "homeCluster",
+        "multi": false,
+        "name": "homeCluster",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER2}"
+        },
+        "definition": "tag_values(nfs_read,export)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "filter by NFS export on home cluster",
+        "multi": true,
+        "name": "byExport",
+        "options": [],
+        "query": "tag_values(nfs_read,export)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "vm2-cluster1",
+          "value": "vm2-cluster1"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "cacheCluster",
+        "multi": false,
+        "name": "cacheCluster",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_afm_fset_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "filter by Primary Gateway node on cache cluster",
+        "multi": true,
+        "name": "gateWayNode",
+        "options": [],
+        "query": "tag_values(gpfs_afm_fset_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "AFM  over NFS (home/cache cluster view)",
+  "uid": "wiV9Y39Mk",
+  "version": 4,
+  "weekStart": ""
+}
