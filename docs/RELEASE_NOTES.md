@@ -1,3 +1,15 @@
+# Version 7.0.9 (08/20/2023)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.2 \
+Added example yaml files for Deploying Grafana instance on an Openshift cluster via Grafana-operator v5. \
+Added example yaml files for Deploying grafana-bridge as Grafanadatasource on an Openshift cluster via Grafana-operator v5. \
+Added example yaml file for grafana-bridge service route allowing an external Grafana instance query data from grafana-bridge running inside an Openshift cluster\
+Added example Dashboards compatible with Grafana 9.5 \
+
+Tested with Grafana version 9.5
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 7.0.8 (12/06/2022)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi8/ubi:8.7 \
 Made Dockerfile compatibe with OpenShift style allowing to specify user/group settings at the image build time. \

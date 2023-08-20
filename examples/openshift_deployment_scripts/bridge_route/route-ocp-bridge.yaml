@@ -1,0 +1,20 @@
+﻿kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: grafanabridge
+  namespace: ibm-spectrum-scale
+  labels:
+    app.kubernetes.io/instance: ibm-spectrum-scale
+    app.kubernetes.io/name: grafanabridge
+  annotations:
+    openshift.io/balance: source
+spec:
+  to:
+    kind: Service
+    name: ibm-spectrum-scale-grafana-bridge
+    weight: 100
+  port:
+    targetPort: https
+  tls:
+    termination: passthrough
+

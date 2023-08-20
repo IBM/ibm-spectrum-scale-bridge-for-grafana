@@ -1,12 +1,12 @@
-# This file is used for generating python requirements list "requirements_ubi8.txt".
+# This file is used for generating python requirements list "requirements_ubi9.txt".
 # It includes the packages needed to be installed to run the IBM Spectrum Scale Performance Monitoring bridge for Grafana
 # in an OpenShift production environment, on top of the redhat UBI8 image.
 #
 # To update, run:
 #
-#  $ pip-compile requirements_ubi8.in  --output-file requirements_ubi8.txt
+#  $ pip-compile requirements_ubi.in  --output-file requirements_ubi9.txt
 #
-setuptools
+# setuptools
 cherrypy
-urllib3
-requests
+# urllib3
+# requests

@@ -1,9 +1,9 @@
-ARG BASE=registry.access.redhat.com/ubi8/ubi:8.7
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.2
 FROM $BASE
 
 LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="7.0.8"
+LABEL com.ibm.version="7.0.9"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -59,13 +59,18 @@ ARG DEFAULTLOGPATH='/var/log/ibm_bridge_for_grafana'
 ENV LOGPATH=$DEFAULTLOGPATH
 RUN echo "the log will use $LOGPATH"
 
-COPY ./requirements/requirements_ubi8.txt  /root/requirements_ubi8.txt
+COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
+# COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 
-RUN yum install -y python36 python36-devel && \
-    /usr/bin/pip3 install --upgrade pip && \
-    /usr/bin/pip3 install -r /root/requirements_ubi8.txt && \
+RUN yum install -y python39 python3-pip
+
+# RUN /usr/bin/python3 -m pip install pip-tools && \
+#     /usr/bin/python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
+#     echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"
+
+RUN /usr/bin/python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(/usr/bin/python3 -V)" && \
-    echo "Installed python packages: $(/usr/bin/pip3 list)"
+    echo "Installed python packages: $(/usr/bin/python3 -m pip list)"
 
 USER root
 
@@ -95,7 +100,6 @@ RUN chgrp -R $GID /opt/IBM/bridge && \
     chgrp -R $GID /opt/IBM/zimon && \
     chgrp -R $GID /var/mmfs/gen && \
     chgrp -R $GID /etc/ssl/certs && \
-    chgrp -R $GID /var/mmfs/gen && \
     chgrp -R $GID /etc/perfmon-api-keys && \
     chgrp -R $GID $TLSKEYPATH && \
     chgrp -R $GID $LOGPATH
@@ -105,7 +109,6 @@ RUN chmod -R g=u /opt/IBM/bridge && \
     chmod -R g=u /opt/IBM/zimon && \
     chmod -R g=u /var/mmfs/gen && \
     chmod -R g=u /etc/ssl/certs && \
-    chmod -R g=u /var/mmfs/gen && \
     chmod -R g=u /etc/perfmon-api-keys && \
     chmod -R g=u $TLSKEYPATH && \
     chmod -R g=u $LOGPATH
