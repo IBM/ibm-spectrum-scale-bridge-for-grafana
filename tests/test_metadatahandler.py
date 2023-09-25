@@ -26,6 +26,7 @@ def test_case02():
     with assert_helper.assertRaises(KeyError):
         MetadataHandler(logger=logger, apiKeyName='scale_grafana')
 
+
 @with_setup(my_setup)
 def test_case03():
     with assert_helper.assertRaises(KeyError):
