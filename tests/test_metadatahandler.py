@@ -1,5 +1,4 @@
 import os
-import sys
 from source.bridgeLogger import configureLogging
 from source.zimonGrafanaIntf import MetadataHandler
 from nose2.tools.such import helper as assert_helper
@@ -19,18 +18,18 @@ def my_setup():
 @with_setup(my_setup)
 def test_case01():
     with assert_helper.assertRaises(KeyError):
-        md=MetadataHandler()
+        MetadataHandler()
 
 
 @with_setup(my_setup)
 def test_case02():
     with assert_helper.assertRaises(KeyError):
-        md=MetadataHandler(logger=logger, apiKeyName='scale_grafana')
+        MetadataHandler(logger=logger, apiKeyName='scale_grafana')
 
 @with_setup(my_setup)
 def test_case03():
     with assert_helper.assertRaises(KeyError):
-        md=MetadataHandler(logger=logger, server='localhost', port='4242', apiKeyName='scale_grafana')
+        MetadataHandler(logger=logger, server='localhost', port='4242', apiKeyName='scale_grafana')
 
 
 @with_setup(my_setup)
@@ -41,4 +40,3 @@ def test_case04():
         assert md == md1
         assert md1.logger == logger
         assert md1.apiKeyName == 'scale_grafana'
-
