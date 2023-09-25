@@ -34,6 +34,7 @@ from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from __version__ import __version__
 from messages import ERR, MSG
+from metaclasses import Singleton
 from bridgeLogger import configureLogging
 from confParser import getSettings
 from collections import defaultdict
@@ -41,20 +42,20 @@ from timeit import default_timer as timer
 from time import sleep
 
 
-class MetadataHandler():
+class MetadataHandler(metaclass=Singleton):
 
-    def __init__(self, logger, server, port, apiKeyName, apiKeyValue, caCertPath=False, includeDiskData=False, sleepTime=None):
+    def __init__(self, **kwargs):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
-        self.logger = logger
-        self.server = server
-        self.port = port
-        self.apiKeyName = apiKeyName
-        self.apiKeyValue = apiKeyValue
-        self.caCertPath = caCertPath
-        self.includeDiskData = includeDiskData
-        self.sleepTime = sleepTime or 60
+        self.logger = kwargs['logger']
+        self.server = kwargs['server']
+        self.port = kwargs['port']
+        self.apiKeyName = kwargs['apiKeyName']
+        self.apiKeyValue = kwargs['apiKeyValue']
+        self.caCertPath = kwargs.get('caCertPath', False)
+        self.includeDiskData = kwargs.get('includeDiskData', False)
+        self.sleepTime = kwargs.get('sleepTime', 60)
 
         self.__initializeTables()
 
@@ -625,8 +626,8 @@ def main(argv):
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, v) for k, v in args.items() if not k == 'apiKeyValue'))
         # logger.details('zimonGrafanaItf invoked with parameters:\n %s', "\n".join("{}={}".format(k, type(v)) for k, v in args.items()))
-        mdHandler = MetadataHandler(logger, args.get('server'), args.get('serverPort'), args.get('apiKeyName'), resolveAPIKeyValue(args.get('apiKeyValue')),
-                                    args.get('caCertPath'), args.get('includeDiskData'), args.get('retryDelay', None))
+        mdHandler = MetadataHandler(logger=logger, server=args.get('server'), port=args.get('serverPort'), apiKeyName=args.get('apiKeyName'), apiKeyValue=resolveAPIKeyValue(args.get('apiKeyValue')),
+                                    caCertPath=args.get('caCertPath'), includeDiskData=args.get('includeDiskData'), sleepTime=args.get('retryDelay', None))
     except (AttributeError, TypeError, ValueError) as e:
         logger.details('%s', MSG['IntError'].format(str(e)))
         logger.error(MSG['MetaError'])
