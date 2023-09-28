@@ -31,7 +31,6 @@ class ConfigWatcher(object):
     running = False
     refresh_delay_secs = 1
 
-    # Constructor
     def __init__(self, watch_paths, call_func_on_change=None, *args, **kwargs):
         self._cached_stamp = {}
         self.logger = getBridgeLogger()
@@ -40,7 +39,6 @@ class ConfigWatcher(object):
         self.call_func_on_change = call_func_on_change
         self.args = args
         self.kwargs = kwargs
-
 
     def update_files_list(self):
         oldfiles = self.filenames.copy()
@@ -57,9 +55,8 @@ class ConfigWatcher(object):
         for file in self.filenames.difference(oldfiles):
             self.logger.debug(MSG['FileAddedToWatch'].format(file))
 
-
-    # Look for changes
     def look(self):
+        """ Function to check if a file timestamp has changed"""
         for filename in self.filenames:
             stamp = os.stat(filename).st_mtime
             if filename not in self._cached_stamp:
@@ -71,8 +68,8 @@ class ConfigWatcher(object):
                 if self.call_func_on_change is not None:
                     self.call_func_on_change(*self.args, **self.kwargs)
 
-    # Keep watching in a loop        
     def watch(self):
+        """ Function to keep watching in a loop """
         self.running = True
         self.logger.debug(MSG['StartWatchingFiles'].format(self.paths))
         while self.running: 
@@ -93,8 +90,6 @@ class ConfigWatcher(object):
                 self.logger.details(MSG['UnhandledError'].format(type(e).__name__))
                 break
 
-
-    # break watching         
     def stop_watch(self):
+        """ Function to break watching """
         self.running = False
-

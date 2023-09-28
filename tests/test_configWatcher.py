@@ -2,7 +2,6 @@ import os
 import time
 from source.watcher import ConfigWatcher
 from source.bridgeLogger import configureLogging
-from source.__version__ import __version__ as version
 from nose2.tools.such import helper as assert_helper
 from nose2.tools.decorators import with_setup
 from threading import Thread
