@@ -28,7 +28,7 @@ from messages import MSG
 
 class ConfigWatcher(object):
     running = False
-    refresh_delay_secs = 1
+    refresh_delay_secs = 30
 
     def __init__(self, watch_paths, call_func_on_change=None, *args, **kwargs):
         self._cached_stamp = {}
