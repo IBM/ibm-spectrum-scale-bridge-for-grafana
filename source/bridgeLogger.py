@@ -54,8 +54,8 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
 
     logToFile = True if logfile else False
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)-8s - %(message)s')
-    formatter1 = logging.Formatter('%(asctime)s - %(levelname)-8s - %(message)s', datefmt='%Y-%m-%d %H:%M')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(threadName)-20s - %(levelname)-8s - %(message)s')
+    formatter1 = logging.Formatter('%(asctime)s - %(threadName)-20s - %(levelname)-8s - %(message)s', datefmt='%Y-%m-%d %H:%M')
 
     # prepare the logger
     logging.setLoggerClass(MyLogger)
@@ -85,3 +85,7 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
 
     logger.propagate = False  # prevent propagation to default (console) logger
     return logger
+
+
+def getBridgeLogger():
+    return logging.getLogger(__name__)

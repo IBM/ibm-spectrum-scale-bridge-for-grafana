@@ -55,5 +55,11 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'Query2port': 'For better bridge performance multithreaded port {} will be used',
        'CollectorConnInfo': 'Connection to the collector server established successfully',
        'BridgeVersionInfo': ' *** IBM Spectrum Scale bridge for Grafana - Version: {} ***',
-       'FileNotFound': 'The file {} not found.'
+       'FileNotFound': 'The file {} not found.',
+       'FileChanged': 'The file {} has been changed.',
+       'FileAddedToWatch': 'The file {} added to watching files.',
+       'StartWatchingFiles': 'Start watching file changes in the path {}.',
+       'StopWatchingFiles': 'Stop watching file changes in the path {}.',
+       'PathNoCfgFiles': 'The path does not contain any configuration files.',
+       'UnhandledError': 'Unhandled error: {}'
        }

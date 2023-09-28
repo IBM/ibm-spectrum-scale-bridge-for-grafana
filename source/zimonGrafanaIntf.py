@@ -37,9 +37,11 @@ from messages import ERR, MSG
 from metaclasses import Singleton
 from bridgeLogger import configureLogging
 from confParser import getSettings
+from watcher import ConfigWatcher
 from collections import defaultdict
 from timeit import default_timer as timer
 from time import sleep
+from threading import Thread
 
 
 class MetadataHandler(metaclass=Singleton):
@@ -108,10 +110,13 @@ class MetadataHandler(metaclass=Singleton):
                 return
         raise ValueError(MSG['NoData'])
 
-    def update(self):
+    def update(self, refresh_all=False):
         '''Read the topology from ZIMon and update
         the tables for metrics, keys, key elements (tag keys)
         and key values (tag values)'''
+
+        if refresh_all:
+            self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
 
         tstart = timer()
         self.__metaData = Topo(self.qh.getTopology())
@@ -606,6 +611,22 @@ def resolveAPIKeyValue(storedKey):
         return storedKey
 
 
+def refresh_metadata(refresh_all=False):
+    md = MetadataHandler()
+    md.update(refresh_all)
+
+
+def watch_config():
+    files_to_watch = []
+    if os.path.isfile(SensorConfig.mmsdrfsFile):
+        files_to_watch.append(SensorConfig.mmsdrfsFile)
+    else:
+        files_to_watch.append(SensorConfig.zimonFile)
+
+    watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
+    watcher.watch()
+
+
 def main(argv):
     # parse input arguments
     args, msg = getSettings(argv)
@@ -695,6 +716,9 @@ def main(argv):
     try:
         cherrypy.engine.start()
         logger.info("server started")
+        t = Thread(name='ConfigWatchThread', target=watch_config)
+        t.start()
+        # t.join()
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()
         foreground_pid_of_group = data.rsplit(" ", 45)[1]
