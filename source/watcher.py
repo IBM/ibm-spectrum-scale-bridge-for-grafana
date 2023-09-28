@@ -1,5 +1,3 @@
-import os
-import sys 
 '''
 ##############################################################################
 # Copyright 2023 IBM Corp.
@@ -22,6 +20,7 @@ Created on Sep 22, 2023
 @author: HWASSMAN
 '''
 
+import os
 import time
 from bridgeLogger import getBridgeLogger
 from messages import MSG
@@ -72,20 +71,20 @@ class ConfigWatcher(object):
         """ Function to keep watching in a loop """
         self.running = True
         self.logger.debug(MSG['StartWatchingFiles'].format(self.paths))
-        while self.running: 
-            try: 
+        while self.running:
+            try:
                 # Look for changes
                 time.sleep(self.refresh_delay_secs)
-                self.update_files_list() 
-                self.look() 
-            except KeyboardInterrupt: 
+                self.update_files_list()
+                self.look()
+            except KeyboardInterrupt:
                 self.logger.details(MSG['StopWatchingFiles'].format(self.paths))
-                break 
+                break
             except FileNotFoundError as e:
                 # Action on file not found
                 self.logger.warning(MSG['FileNotFound'].format(e.filename))
                 pass
-            except Exception as e: 
+            except Exception as e:
                 self.logger.warning(MSG['StopWatchingFiles'].format(self.paths))
                 self.logger.details(MSG['UnhandledError'].format(type(e).__name__))
                 break
