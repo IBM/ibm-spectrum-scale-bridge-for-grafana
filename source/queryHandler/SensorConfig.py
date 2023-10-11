@@ -32,6 +32,7 @@ mmsdrfsFile = '/var/mmfs/gen/mmsdrfs'
 zimonFile = '/opt/IBM/zimon'
 collectorsFile = '/opt/IBM/zimon/ZIMonCollector.cfg'
 
+
 def get_config_paths():
     files_to_watch = []
     if os.path.isfile(mmsdrfsFile):

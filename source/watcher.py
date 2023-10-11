@@ -108,4 +108,4 @@ class ConfigWatcher(object):
                 cherrypy.engine.log('Stopped custom thread %r.' % self.thread.name)
                 self.thread = None
         except KeyboardInterrupt:
-           print(f"Recived KeyboardInterrupt during stopping the thread {self.thread.name}")
+            print(f"Recived KeyboardInterrupt during stopping the thread {self.thread.name}")

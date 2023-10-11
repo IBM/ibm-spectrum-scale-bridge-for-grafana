@@ -3,7 +3,6 @@ import time
 from source.watcher import ConfigWatcher
 from source.bridgeLogger import configureLogging
 from nose2.tools.decorators import with_setup
-from threading import Thread
 
 
 def my_setup():
