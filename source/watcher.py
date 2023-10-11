@@ -20,14 +20,17 @@ Created on Sep 22, 2023
 @author: HWASSMAN
 '''
 
+import cherrypy
 import os
 import time
 from bridgeLogger import getBridgeLogger
 from messages import MSG
+from threading import Thread
 
 
 class ConfigWatcher(object):
     running = False
+    thread = None
     refresh_delay_secs = 30
 
     def __init__(self, watch_paths, call_func_on_change=None, *args, **kwargs):
@@ -39,7 +42,16 @@ class ConfigWatcher(object):
         self.args = args
         self.kwargs = kwargs
 
-    def update_files_list(self):
+    def start_watch(self):
+        """ Function to start watch in a thread"""
+        self.running = True
+        if not self.thread:
+            self.thread = Thread(name='ConfigWatchThread', target=self.watch)
+            self.thread.start()
+            cherrypy.engine.log('Started custom thread %r.' % self.thread.name)
+            self.logger.debug(MSG['StartWatchingFiles'].format(self.paths))
+
+    def _update_files_list(self):
         oldfiles = self.filenames.copy()
         for path in self.paths:
             if os.path.isfile(path):
@@ -54,7 +66,7 @@ class ConfigWatcher(object):
         for file in self.filenames.difference(oldfiles):
             self.logger.debug(MSG['FileAddedToWatch'].format(file))
 
-    def look(self):
+    def _look(self):
         """ Function to check if a file timestamp has changed"""
         for filename in self.filenames:
             stamp = os.stat(filename).st_mtime
@@ -69,14 +81,12 @@ class ConfigWatcher(object):
 
     def watch(self):
         """ Function to keep watching in a loop """
-        self.running = True
-        self.logger.debug(MSG['StartWatchingFiles'].format(self.paths))
         while self.running:
             try:
                 # Look for changes
                 time.sleep(self.refresh_delay_secs)
-                self.update_files_list()
-                self.look()
+                self._update_files_list()
+                self._look()
             except KeyboardInterrupt:
                 self.logger.details(MSG['StopWatchingFiles'].format(self.paths))
                 break
@@ -91,4 +101,11 @@ class ConfigWatcher(object):
 
     def stop_watch(self):
         """ Function to break watching """
-        self.running = False
+        try:
+            self.running = False
+            if self.thread:
+                self.thread.join()
+                cherrypy.engine.log('Stopped custom thread %r.' % self.thread.name)
+                self.thread = None
+        except KeyboardInterrupt:
+            print(f"Recived KeyboardInterrupt during stopping the thread {self.thread.name}")

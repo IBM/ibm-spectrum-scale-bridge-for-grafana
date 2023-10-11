@@ -33,6 +33,15 @@ zimonFile = '/opt/IBM/zimon'
 collectorsFile = '/opt/IBM/zimon/ZIMonCollector.cfg'
 
 
+def get_config_paths():
+    files_to_watch = []
+    if os.path.isfile(mmsdrfsFile):
+        files_to_watch.append(mmsdrfsFile)
+    else:
+        files_to_watch.append(zimonFile)
+    return files_to_watch
+
+
 def readSensorsConfigFromMMSDRFS(logger=None):
     '''
     :return: list of dictionaries with sensorsName as key and the values of the sensors in the mmsdrfs

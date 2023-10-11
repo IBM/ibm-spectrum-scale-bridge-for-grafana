@@ -41,7 +41,6 @@ from watcher import ConfigWatcher
 from collections import defaultdict
 from timeit import default_timer as timer
 from time import sleep
-from threading import Thread
 
 
 class MetadataHandler(metaclass=Singleton):
@@ -177,6 +176,7 @@ class GetHandler(object):
         return resp
 
     def __getLookup(self, params):
+        self.logger.debug(f'Lookup for {params} called')
 
         if params.get('m'):
             try:
@@ -616,17 +616,6 @@ def refresh_metadata(refresh_all=False):
     md.update(refresh_all)
 
 
-def watch_config():
-    files_to_watch = []
-    if os.path.isfile(SensorConfig.mmsdrfsFile):
-        files_to_watch.append(SensorConfig.mmsdrfsFile)
-    else:
-        files_to_watch.append(SensorConfig.zimonFile)
-
-    watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
-    watcher.watch()
-
-
 def main(argv):
     # parse input arguments
     args, msg = getSettings(argv)
@@ -714,11 +703,13 @@ def main(argv):
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
+        files_to_watch = SensorConfig.get_config_paths()
+        watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
+        cherrypy.engine.subscribe('start', watcher.start_watch)
+        cherrypy.engine.subscribe('stop', watcher.stop_watch)
         cherrypy.engine.start()
+        cherrypy.engine.log('test')
         logger.info("server started")
-        t = Thread(name='ConfigWatchThread', target=watch_config)
-        t.start()
-        # t.join()
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()
         foreground_pid_of_group = data.rsplit(" ", 45)[1]
@@ -736,7 +727,7 @@ def main(argv):
     ph = None
     gh = None
 
-    logger.warn("server stopped")
+    logger.warning("server stopped")
 
 
 if __name__ == '__main__':

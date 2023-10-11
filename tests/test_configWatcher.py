@@ -3,7 +3,6 @@ import time
 from source.watcher import ConfigWatcher
 from source.bridgeLogger import configureLogging
 from nose2.tools.decorators import with_setup
-from threading import Thread
 
 
 def my_setup():
@@ -21,11 +20,9 @@ def test_case01():
     cw = ConfigWatcher([dummyFile])
     assert len(cw.paths) == 1
     assert len(cw.filenames) == 0
-    t = Thread(name='ConfigWatchThread', target=cw.watch)
-    t.start()
+    cw.start_watch()
     time.sleep(3)
     cw.stop_watch()
-    t.join()
     assert len(cw.paths) == 1
     assert len(cw.filenames) == 0
 
@@ -35,10 +32,8 @@ def test_case02():
     cw = ConfigWatcher([path])
     assert len(cw.paths) > 0
     assert len(cw.filenames) == 0
-    t = Thread(name='ConfigWatchThread', target=cw.watch)
-    t.start()
+    cw.start_watch()
     time.sleep(3)
     cw.stop_watch()
-    t.join()
     assert len(cw.paths) > 0
     assert len(cw.filenames) > 1
