@@ -46,6 +46,7 @@ from threading import Thread
 
 local_cache = []
 
+
 class MetadataHandler(metaclass=Singleton):
 
     def __init__(self, **kwargs):
@@ -565,7 +566,7 @@ class QueryResultObj():
             if not found:
                 already_reported = False
                 for cache_item in local_cache:
-                    if set(cache) == set(ident):
+                    if set(cache_item) == set(ident):
                         logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
                         already_reported = True
                         break
