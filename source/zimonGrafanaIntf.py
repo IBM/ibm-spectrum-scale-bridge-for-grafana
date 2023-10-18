@@ -41,7 +41,10 @@ from watcher import ConfigWatcher
 from collections import defaultdict
 from timeit import default_timer as timer
 from time import sleep
+from threading import Thread
 
+
+local_cache = []
 
 class MetadataHandler(metaclass=Singleton):
 
@@ -153,6 +156,7 @@ class GetHandler(object):
 
         if params.get('q'):
             searchStr = params['q'].strip()
+            self.logger.trace(f'Suggest for {searchStr} called')
             # if '*' and tagv, then it denotes a grouping key value: do not process
             if not (searchStr == '*' and params['type'] == 'tagv'):
                 # Since grafana sends the candidate string quickly, one character at a time, it
@@ -194,6 +198,7 @@ class GetHandler(object):
                     res = LookupResultObj(searchMetric)
                     res.parseResultTags(identifiersMap)
                     res.parseRequestTags(filterBy)
+                    self.logger.trace(f'lookUp result {res}')
                     resp = res.__dict__
 
             except Exception as e:
@@ -545,6 +550,7 @@ class QueryResultObj():
             ident = [key.parent]
             ident.extend(key.identifier)
             logger.debug(MSG['ReceivAttrValues'].format('Single ts identifiers', ', '.join(ident)))
+            found = False
             for filtersDict in filtersMap:
                 if all((value in filtersDict.values()) for value in ident):
                     logger.debug(MSG['ReceivAttrValues'].format('filtersKeys', ', '.join(filtersDict.keys())))
@@ -553,7 +559,20 @@ class QueryResultObj():
                     else:
                         for _key, _value in filtersDict.items():
                             tagsDict[_key].add(_value)
+                    found = True
                     break
+            # detected zimon key, do we need refresh local TOPO?
+            if not found:
+                already_reported = False
+                for cache_item in local_cache:
+                    if set(cache) == set(ident):
+                        logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
+                        already_reported = True
+                        break
+                if not already_reported:
+                    logger.debug(MSG['NewKeyDetected'].format(ident))
+                    local_cache.append(ident)
+                    Thread(name='AdHocMetaDataUpdate', target=refresh_metadata).start()
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:

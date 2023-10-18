@@ -61,5 +61,7 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'StartWatchingFiles': 'Start watching file changes in the path {}.',
        'StopWatchingFiles': 'Stop watching file changes in the path {}.',
        'PathNoCfgFiles': 'The path does not contain any configuration files.',
+       'NewKeyDetected': 'Detected not known single ts identifiers {}.',
+       'NewKeyAlreadyReported': 'Single ts identifiers {} already reported as not known.',
        'UnhandledError': 'Unhandled error: {}'
        }

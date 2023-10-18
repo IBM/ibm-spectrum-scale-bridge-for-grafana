@@ -46,7 +46,7 @@ class ConfigWatcher(object):
         """ Function to start watch in a thread"""
         self.running = True
         if not self.thread:
-            self.thread = Thread(name='ConfigWatchThread', target=self.watch)
+            self.thread = Thread(name='ConfigWatcher', target=self.watch)
             self.thread.start()
             cherrypy.engine.log('Started custom thread %r.' % self.thread.name)
             self.logger.debug(MSG['StartWatchingFiles'].format(self.paths))
