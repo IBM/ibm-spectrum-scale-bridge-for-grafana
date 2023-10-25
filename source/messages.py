@@ -63,5 +63,6 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'PathNoCfgFiles': 'The path does not contain any configuration files.',
        'NewKeyDetected': 'Detected not known single ts identifiers {}.',
        'NewKeyAlreadyReported': 'Single ts identifiers {} already reported as not known.',
-       'UnhandledError': 'Unhandled error: {}'
+       'UnhandledError': 'Unhandled error: {}',
+       'DataWrongFormat': 'Content could not be parsed: {}'
        }
