@@ -205,6 +205,12 @@ class Topo(object):
                 return sensor
         return None
 
+    def getSensorMetricNames(self, searchSensor: str) -> list:
+        metrics = self.__metricsDef.get(searchSensor, None)
+        if metrics:
+            return metrics.values()
+        return []
+
     def getSensorsForMeasurementMetrics(self, searchMetrics):
         sensorsList = []
         for metric in searchMetrics:
