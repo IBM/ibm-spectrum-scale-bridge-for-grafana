@@ -53,6 +53,7 @@ class MetadataHandler(metaclass=Singleton):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
+        self.__metricsDesc = {}
         self.logger = kwargs['logger']
         self.server = kwargs['server']
         self.port = kwargs['port']
@@ -63,6 +64,7 @@ class MetadataHandler(metaclass=Singleton):
         self.sleepTime = kwargs.get('sleepTime', 60)
 
         self.__initializeTables()
+        self.__getSupportedMetrics()
 
     @property
     def qh(self):
@@ -81,6 +83,50 @@ class MetadataHandler(metaclass=Singleton):
     @property
     def metaData(self):
         return self.__metaData
+
+    @property
+    def metricsDesc(self):
+        return self.__metricsDesc
+
+    def getSensorPeriod(self, metric):
+        bucketSize = 0
+        sensor = self.metaData.getSensorForMetric(metric)
+        if not sensor:
+            self.logger.error(MSG['MetricErr'].format(metric))
+            raise cherrypy.HTTPError(404, MSG['MetricErr'].format(metric))
+        elif sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
+            sensor = 'GPFSDiskCap'
+        elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
+            sensor = 'GPFSNSDDisk'
+        elif sensor == 'DomainStore':
+            return 1
+
+        for sensorAttr in self.SensorsConfig:
+            if sensorAttr['name'] == str('\"%s\"' % sensor):
+                bucketSize = int(sensorAttr['period'])
+        return bucketSize
+
+    def __getSupportedMetrics(self):
+        """retrieve all defined (enabled and disabled) metrics list by querying topo -m"""
+
+        metricSpec = {}
+
+        outp = self.qh.getAvailableMetrics()
+
+        if not outp or outp == "" or outp.startswith("Error:"):
+            self.logger.warning(MSG['NoData'])
+            return
+
+        for line in outp.split("\n"):
+            if len(line) > 0:
+                tokens = line.split(";")
+                if tokens and len(tokens) > 2:
+                    name = tokens[0]
+                    desc = tokens[2] or "No description provided"
+                    metricSpec[name] = desc
+                else:
+                    self.logger.warning(MSG['DataWrongFormat'].format(line))
+        self.__metricsDesc = metricSpec
 
     def __initializeTables(self):
         '''Read the topology from ZIMon and (re-)construct
