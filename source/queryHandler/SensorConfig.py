@@ -105,10 +105,8 @@ def readSensorsConfig(logger=None, customFile=None):
         parsedSensors.extend(parseSensorsConfig(data, logger))
     return parsedSensors
 
-
 def parseSensorsConfig(sensorsConfig, logger):
     """ Returns a list of dicts, describing definitions of sensors """
-    logger.debug("invoke parseSensorsConfig")
     try:
         sensors = []
         sensorsStr = ""
