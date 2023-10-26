@@ -108,7 +108,6 @@ def readSensorsConfig(logger=None, customFile=None):
 
 def parseSensorsConfig(sensorsConfig, logger):
     """ Returns a list of dicts, describing definitions of sensors """
-    logger.debug("invoke parseSensorsConfig")
     try:
         sensors = []
         sensorsStr = ""
