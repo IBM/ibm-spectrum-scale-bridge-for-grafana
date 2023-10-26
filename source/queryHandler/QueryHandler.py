@@ -27,6 +27,7 @@ import time
 from collections import namedtuple, defaultdict
 from itertools import chain
 from typing import NamedTuple, Tuple
+from utils import execution_time
 
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 
@@ -432,6 +433,7 @@ class QueryHandler2:
     def caCert(self):
         return self.__caCert
 
+    @execution_time()
     def getTopology(self, ignoreMetrics=False):
         '''
         Returns complete topology as a single JSON string
@@ -452,6 +454,7 @@ class QueryHandler2:
             self.logger.error(
                 'QueryHandler: getTopology response not valid json: {0} {1}'.format(res[:20], e))
 
+    @execution_time()
     def getAvailableMetrics(self):
         '''
         Returns output from topo -m
@@ -481,6 +484,7 @@ class QueryHandler2:
             self.logger.error(
                 'QueryHandler: deleteKeysFromTopology response not valid json: {0} {1}'.format(response[:20], e))
 
+    @execution_time()
     def runQuery(self, query):
         '''
         runQuery: executes the given query based on the arguments.
