@@ -52,7 +52,7 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
     return outer
 
 
-def classattributes(default_attr, more_allowed_attr):
+def classattributes(default_attr: dict, more_allowed_attr: list):
     """ class __init__decorator
         Parses kwargs attributes, for optional arguments uses default values,
         if not provided with kwargs
