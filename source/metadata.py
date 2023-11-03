@@ -25,9 +25,9 @@ import cherrypy
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
+from utils import execution_time
 from messages import MSG
 from metaclasses import Singleton
-from timeit import default_timer as timer
 from time import sleep
 
 
@@ -75,13 +75,16 @@ class MetadataHandler(metaclass=Singleton):
     def metricsDesc(self):
         return self.__metricsDesc
 
-    def getSensorPeriod(self, metric):
-        bucketSize = 0
+    def getSensorPeriodForMetric(self, metric):
         sensor = self.metaData.getSensorForMetric(metric)
         if not sensor:
             self.logger.error(MSG['MetricErr'].format(metric))
             raise cherrypy.HTTPError(404, MSG['MetricErr'].format(metric))
-        elif sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
+        return self.getSensorPeriod(sensor)
+
+    def getSensorPeriod(self, sensor):
+        bucketSize = 0
+        if sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
             sensor = 'GPFSDiskCap'
         elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
             sensor = 'GPFSNSDDisk'
@@ -93,8 +96,8 @@ class MetadataHandler(metaclass=Singleton):
                 bucketSize = int(sensorAttr['period'])
         return bucketSize
 
-    def __getSupportedMetrics(self):
-        """retrieve all defined (enabled and disabled) metrics list by querying topo -m"""
+    def __getSupportedMetrics(self) -> dict:
+        """ Retrieves all defined (enabled and disabled) metrics by querying topo -m """
 
         metricSpec = {}
 
@@ -112,7 +115,7 @@ class MetadataHandler(metaclass=Singleton):
                     desc = tokens[2] or "No description provided"
                     metricSpec[name] = desc
                 else:
-                    self.logger.warning(MSG['DataWrongFormat'].format(line))
+                    self.logger.moreinfo(MSG['DataWrongFormat'].format(line))
         self.__metricsDesc = metricSpec
 
     def __initializeTables(self):
@@ -143,6 +146,7 @@ class MetadataHandler(metaclass=Singleton):
                 return
         raise ValueError(MSG['NoData'])
 
+    @execution_time()
     def update(self, refresh_all=False):
         '''Read the topology from ZIMon and update
         the tables for metrics, keys, key elements (tag keys)
@@ -151,13 +155,10 @@ class MetadataHandler(metaclass=Singleton):
         if refresh_all:
             self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
 
-        tstart = timer()
         self.__metaData = Topo(self.qh.getTopology())
-        tend = timer()
         if not (self.metaData and self.metaData.topo):
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
             raise cherrypy.HTTPError(404, MSG[404])
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
-        self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
         return ({'msg': MSG['MetaSuccess']})
