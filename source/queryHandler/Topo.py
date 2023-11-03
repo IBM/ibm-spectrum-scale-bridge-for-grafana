@@ -273,6 +273,15 @@ class Topo(object):
             return list(set(keys))
         return keys
 
+    def getAllFilterKeysForSensor(self, searchSensor):
+        keys = []
+        filtersMap = self.getAllFilterMapsForSensor(searchSensor)
+        for a in filtersMap:
+            keys.extend(list(a.keys()))
+        if len(keys) > 1:
+            return list(set(keys))
+        return keys
+
     def getAllFilterKeysForMeasurementsMetrics(self, searchMetrics):
         filterKeys = []
         filtersMap = self.getAllFilterMapsForMeasurementMetrics(searchMetrics)
