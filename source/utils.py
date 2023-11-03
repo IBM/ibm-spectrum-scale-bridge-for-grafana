@@ -21,6 +21,7 @@ Created on Oct 25, 2023
 '''
 
 import time
+import copy
 from typing import Callable, TypeVar, Any
 from functools import wraps
 from messages import MSG
@@ -44,8 +45,37 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
             duration = time.time() - t
             if not skip_attribute:
                 wrapper._execution_duration = duration  # type: ignore
-            self.logger.trace(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
-            self.logger.trace(MSG['TimerInfo'].format(f.__name__, duration))
+            self.logger.debug(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
+            self.logger.debug(MSG['TimerInfo'].format(f.__name__, duration))
             return result
         return wrapper
     return outer
+
+def classattributes(default_attr,more_allowed_attr):
+    """ class __init__decorator 
+        Parses kwargs attributes, for optional arguments uses default values,
+        if not provided with kwargs
+        Usage:
+            1st arg is a dict of attributes with default values
+            2nd arg is a list of additional allowed attributes which may be instantiated or not
+    """
+    def class_decorator(cls):
+        def new_init(self,**kwargs):
+            allowed_attr = list(default_attr.keys()) + more_allowed_attr
+            default_attr_to_update = copy.deepcopy(default_attr) 
+            default_attr_to_update.update(kwargs)
+            self.__dict__.update((k,v) for k,v in default_attr_to_update.items() if k in allowed_attr)
+        cls.__init__ = new_init
+        return cls
+    return class_decorator
+
+def getTimeMultiplier(timeunit):
+        '''Translate OpenTSDB time units, ignoring ms (milliseconds)'''
+        return {
+            's': 1,
+            'm': 60,
+            'h': 3600,
+            'd': 86400,
+            'w': 604800,
+            'n': 2628000,
+            'y': 31536000, }.get(timeunit, -1)
