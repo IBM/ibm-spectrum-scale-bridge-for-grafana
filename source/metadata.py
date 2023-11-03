@@ -25,9 +25,9 @@ import cherrypy
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
+from utils import execution_time
 from messages import MSG
 from metaclasses import Singleton
-from timeit import default_timer as timer
 from time import sleep
 
 
@@ -96,8 +96,8 @@ class MetadataHandler(metaclass=Singleton):
                 bucketSize = int(sensorAttr['period'])
         return bucketSize
 
-    def __getSupportedMetrics(self):
-        """retrieve all defined (enabled and disabled) metrics list by querying topo -m"""
+    def __getSupportedMetrics(self) -> dict:
+        """ Retrieves all defined (enabled and disabled) metrics by querying topo -m """
 
         metricSpec = {}
 
@@ -115,7 +115,7 @@ class MetadataHandler(metaclass=Singleton):
                     desc = tokens[2] or "No description provided"
                     metricSpec[name] = desc
                 else:
-                    self.logger.warning(MSG['DataWrongFormat'].format(line))
+                    self.logger.moreinfo(MSG['DataWrongFormat'].format(line))
         self.__metricsDesc = metricSpec
 
     def __initializeTables(self):
