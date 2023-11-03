@@ -73,11 +73,4 @@ def classattributes(default_attr: dict, more_allowed_attr: list):
 
 def getTimeMultiplier(timeunit):
     """ Translate OpenTSDB time units, ignoring ms (milliseconds) """
-    return {
-            's': 1,
-            'm': 60,
-            'h': 3600,
-            'd': 86400,
-            'w': 604800,
-            'n': 2628000,
-            'y': 31536000, }.get(timeunit, -1)
+    return {'s': 1, 'm': 60, 'h': 3600, 'd': 86400, 'w': 604800, 'n': 2628000, 'y': 31536000}.get(timeunit, -1)
