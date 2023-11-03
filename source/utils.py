@@ -51,8 +51,9 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
         return wrapper
     return outer
 
-def classattributes(default_attr,more_allowed_attr):
-    """ class __init__decorator 
+
+def classattributes(default_attr, more_allowed_attr):
+    """ class __init__decorator
         Parses kwargs attributes, for optional arguments uses default values,
         if not provided with kwargs
         Usage:
@@ -60,18 +61,19 @@ def classattributes(default_attr,more_allowed_attr):
             2nd arg is a list of additional allowed attributes which may be instantiated or not
     """
     def class_decorator(cls):
-        def new_init(self,**kwargs):
+        def new_init(self, **kwargs):
             allowed_attr = list(default_attr.keys()) + more_allowed_attr
-            default_attr_to_update = copy.deepcopy(default_attr) 
+            default_attr_to_update = copy.deepcopy(default_attr)
             default_attr_to_update.update(kwargs)
-            self.__dict__.update((k,v) for k,v in default_attr_to_update.items() if k in allowed_attr)
+            self.__dict__.update((k, v) for k, v in default_attr_to_update.items() if k in allowed_attr)
         cls.__init__ = new_init
         return cls
     return class_decorator
 
+
 def getTimeMultiplier(timeunit):
-        '''Translate OpenTSDB time units, ignoring ms (milliseconds)'''
-        return {
+    """ Translate OpenTSDB time units, ignoring ms (milliseconds) """
+    return {
             's': 1,
             'm': 60,
             'h': 3600,
