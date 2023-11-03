@@ -75,13 +75,16 @@ class MetadataHandler(metaclass=Singleton):
     def metricsDesc(self):
         return self.__metricsDesc
 
-    def getSensorPeriod(self, metric):
-        bucketSize = 0
+    def getSensorPeriodForMetric(self, metric):
         sensor = self.metaData.getSensorForMetric(metric)
         if not sensor:
             self.logger.error(MSG['MetricErr'].format(metric))
             raise cherrypy.HTTPError(404, MSG['MetricErr'].format(metric))
-        elif sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
+        return self.getSensorPeriod(sensor)
+
+    def getSensorPeriod(self, sensor):
+        bucketSize = 0
+        if sensor in ('GPFSPoolCap', 'GPFSInodeCap'):
             sensor = 'GPFSDiskCap'
         elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
             sensor = 'GPFSNSDDisk'
@@ -143,6 +146,7 @@ class MetadataHandler(metaclass=Singleton):
                 return
         raise ValueError(MSG['NoData'])
 
+    @execution_time()
     def update(self, refresh_all=False):
         '''Read the topology from ZIMon and update
         the tables for metrics, keys, key elements (tag keys)
@@ -151,13 +155,10 @@ class MetadataHandler(metaclass=Singleton):
         if refresh_all:
             self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
 
-        tstart = timer()
         self.__metaData = Topo(self.qh.getTopology())
-        tend = timer()
         if not (self.metaData and self.metaData.topo):
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
             raise cherrypy.HTTPError(404, MSG[404])
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
-        self.logger.debug(MSG['TimerInfo'].format('Metadata', str(tend - tstart)))
         return ({'msg': MSG['MetaSuccess']})
