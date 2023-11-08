@@ -115,7 +115,7 @@ class MetadataHandler(metaclass=Singleton):
                     desc = tokens[2] or "No description provided"
                     metricSpec[name] = desc
                 else:
-                    self.logger.moreinfo(MSG['DataWrongFormat'].format(line))
+                    self.logger.info(MSG['DataWrongFormat'].format(line))
         self.__metricsDesc = metricSpec
 
     def __initializeTables(self):
