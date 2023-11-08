@@ -226,8 +226,9 @@ class OpenTsdbApi(object):
                         filters[tagk] = f.get('filter')
 
         except ValueError as e:
-                self.logger.error(MSG['QueryError'].format(str(e)))
-                raise cherrypy.HTTPError(400, MSG['QueryError'].format(str(e)))
+            self.logger.error(MSG['QueryError'].format(str(e)))
+            raise cherrypy.HTTPError(400, MSG['QueryError'].format(str(e)))
+
         return (filters, groupby)
 
     def _get_downsmpl_op(self, downsample):
@@ -358,9 +359,9 @@ class LookupResponse():
 
 class SingleTimeSeriesResponse():
 
-    def __init__(self, inputQuery, dps, showQuery = False,
+    def __init__(self, inputQuery, dps, showQuery=False,
                  globalAnnotations=False, tags: dict = None,
-                 aggrTags: list=None):
+                 aggrTags: list = None):
         self.metric = inputQuery.get('metric')
         self.dps = dps
         if showQuery:
