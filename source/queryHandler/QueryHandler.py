@@ -491,7 +491,7 @@ class QueryHandler2:
         :param query: a query class instance
         '''
         params = {'query': str(query)}
-        self.logger.debug('QueryHandler: REST call perfmon/data invoked with following params: {0}'.format(params))
+        self.logger.trace('QueryHandler: REST call perfmon/data invoked with following params: {0}'.format(params))
         res = self.__do_RESTCall('perfmon/data', 'GET', params)
 
         if res is None:
@@ -509,7 +509,7 @@ class QueryHandler2:
         Forward query request to the HTTPRequest client interface
         '''
 
-        self.logger.debug("__do_RESTcall invoke __ params: {} {} {}".format(endpoint, requestType, str(params)))
+        self.logger.trace("__do_RESTcall invoke __ params: {} {} {}".format(endpoint, requestType, str(params)))
 
         try:
             _auth = getAuthHandler(*self.apiKeyData)

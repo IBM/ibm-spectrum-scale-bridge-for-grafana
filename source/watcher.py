@@ -96,7 +96,8 @@ class ConfigWatcher(object):
                 pass
             except Exception as e:
                 self.logger.warning(MSG['StopWatchingFiles'].format(self.paths))
-                self.logger.details(MSG['UnhandledError'].format(type(e).__name__))
+                self.logger.details(
+                    MSG['UnexpecterError'].format(type(e).__name__))
                 break
 
     def stop_watch(self):

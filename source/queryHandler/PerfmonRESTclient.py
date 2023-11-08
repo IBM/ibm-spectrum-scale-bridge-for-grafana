@@ -62,7 +62,7 @@ def createRequestDataObj(logger, method, endpoint, host, port, auth, headers=Non
                            auth=auth,
                            cookies=cookies,
                            hooks=hooks,)
-    logger.debug('createRequestDataObj __ created request')
+    logger.trace('createRequestDataObj __ created request')
     return req
 
 
