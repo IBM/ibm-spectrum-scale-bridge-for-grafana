@@ -298,7 +298,7 @@ class SensorCollector(SensorTimeSeries):
 
         if self.query and self.request:
             if self.request.dsOp and self.request.dsBucketSize > int(
-                                        self.query.bucket_size):
+                    self.query.bucket_size):
                 dsInterval = int(
                     self.request.dsBucketSize / int(self.query.bucket_size))
         return dsInterval
