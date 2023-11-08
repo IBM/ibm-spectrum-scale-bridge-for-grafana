@@ -298,7 +298,7 @@ class SensorCollector(SensorTimeSeries):
 
         if self.query and self.request:
             if self.request.dsOp and self.request.dsBucketSize > int(
-                            self.query.bucket_size):
+                                        self.query.bucket_size):
                 dsInterval = int(
                     self.request.dsBucketSize / int(self.query.bucket_size))
         return dsInterval
@@ -345,8 +345,7 @@ class SensorCollector(SensorTimeSeries):
         # self.logger.info(f'rows data {str(columnValues)}')
 
     def prepare_static_metrics_data(self):
-        incl_metrics = list(
-            self.request.metricsaggr.keys()
+        incl_metrics = list(self.request.metricsaggr.keys()
                             ) if self.request.metricsaggr else None
         self.setup_static_metrics_data(incl_metrics)
 
