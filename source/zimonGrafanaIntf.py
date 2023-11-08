@@ -22,7 +22,6 @@ Created on Apr 4, 2017
 
 import cherrypy
 import json
-import logging.handlers
 import sys
 import os
 import errno

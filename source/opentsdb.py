@@ -218,12 +218,12 @@ class OpenTsdbApi(object):
         filters = {}
         try:
             for f in input_filters:
-                    tagk = f.get('tagk')
-                    if tagk:
-                        if f.get('groupBy'):
-                            groupby.append(tagk)
-                        if f.get('filter'):
-                            filters[tagk] = f.get('filter')
+                tagk = f.get('tagk')
+                if tagk:
+                    if f.get('groupBy'):
+                        groupby.append(tagk)
+                    if f.get('filter'):
+                        filters[tagk] = f.get('filter')
 
         except ValueError as e:
                 self.logger.error(MSG['QueryError'].format(str(e)))
@@ -358,8 +358,8 @@ class LookupResponse():
 
 class SingleTimeSeriesResponse():
 
-    def __init__(self, inputQuery, dps, showQuery=False,
-                 globalAnnotations=False, tags: dict=None,
+    def __init__(self, inputQuery, dps, showQuery = False,
+                 globalAnnotations=False, tags: dict = None,
                  aggrTags: list=None):
         self.metric = inputQuery.get('metric')
         self.dps = dps
