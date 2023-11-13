@@ -1,6 +1,6 @@
 # This file is used for generating python requirements list "requirements_test.txt".
 # It includes the additional packages needed to be installed to run nose/pytests for 
-# the IBM Spectrum Scale Performance Monitoring bridge for Grafana using CI/CD circleci workflows.
+# the IBM Storage Scale Performance Monitoring bridge for Grafana using CI/CD circleci workflows.
 #
 # To update, run:
 #

@@ -2,7 +2,7 @@
 [![CircleCI](https://circleci.com/gh/IBM/ibm-spectrum-scale-bridge-for-grafana.svg?style=svg)](https://app.circleci.com/pipelines/github/IBM/ibm-spectrum-scale-bridge-for-grafana?branch=master)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5787/badge)](https://bestpractices.coreinfrastructure.org/projects/5787)
 
-The ***IBM Spectrum Scale bridge for Grafana*** could be used for exploring IBM Storage Scale performance data on [Grafana dashboards](https://grafana.com/grafana/).
+The ***IBM Storage Scale bridge for Grafana*** could be used for exploring IBM Storage Scale performance data on [Grafana dashboards](https://grafana.com/grafana/).
 
 Grafana Bridge is a standalone Python application. It translates the IBM Storage Scale metadata and performance data collected by the [IBM Storage Scale performance monitoring tool (ZiMon)](https://www.ibm.com/docs/en/storage-scale/5.1.8?topic=monitoring-using-performance-tool) to the query requests acceptable by the [Grafana integrated openTSDB plugin](https://grafana.com/docs/features/datasources/opentsdb/).
 
@@ -31,4 +31,4 @@ At this time, third party contributions to this code will not be accepted.
 
 ## License
 
-IBM Spectrum Scale bridge for Grafana is licensed under version 2.0 of the Apache License. See the [LICENSE](LICENSE.txt) file for details.
+IBM Storage Scale bridge for Grafana is licensed under version 2.0 of the Apache License. See the [LICENSE](LICENSE.txt) file for details.

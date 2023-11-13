@@ -1,7 +1,7 @@
 # Example deployment of the Route for a grafana-bridge running in a k8s/OCP environment
 
 
-In some situations an instance of the IBM Spectrum Scale Performance Monitoring Bridge for Grafana (grafana-bridge), running inside of a k8s/OCP environment, needs to be connected to a Grafana instance running outside of this k8s/OCP environment. In this case a Route needs to be created for a service that exposes the grafana-bridge deployment.
+In some situations an instance of the IBM Storage Scale Performance Monitoring Bridge for Grafana (grafana-bridge), running inside of a k8s/OCP environment, needs to be connected to a Grafana instance running outside of this k8s/OCP environment. In this case a Route needs to be created for a service that exposes the grafana-bridge deployment.
 Using the script in this folder you can deploy a Route instance for the grafana-bridge service. 
 
 1. Get grafana-bridge application namespace
