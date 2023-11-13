@@ -1,13 +1,13 @@
-# Example deployment of IBM Spectrum Scale bridge for Grafana in a k8s/OCP environment manually
+# Example deployment of IBM Storage Scale bridge for Grafana in a k8s/OCP environment manually
 
 
 
 ### Dependencies
 This instructions could be used for: 
-- IBM Spectrum Scale Container Native Storage Access(CNSA) devices having minimum release level 5.1.1 and above
+- IBM Storage Scale Container Native Storage Access(CNSA) devices having minimum release level 5.1.1 and above
 
 
-1. Create the IBM Spectrum Scale bridge for Grafana image
+1. Create the IBM Storage Scale bridge for Grafana image
 
 ```
 # git clone https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana.git grafana_bridge
@@ -18,8 +18,8 @@ This instructions could be used for:
 ```
 
 
-2. Make sure you have deployed the IBM Spectrum Scale Container Native Storage Access(CNSA) cluster including the ibm-spectrum-scale-pmcollector pods.
-For more information about how to deploy a CNSA cluster please refer to the [IBM Spectrum Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
+2. Make sure you have deployed the IBM Storage Scale Container Native Storage Access(CNSA) cluster including the ibm-spectrum-scale-pmcollector pods.
+For more information about how to deploy a CNSA cluster please refer to the [IBM Storage Scale Knowledge Center](https://www.ibm.com/support/knowledgecenter/STXKQY_CNS_SHR/com.ibm.spectrum.scale.cns.v5r101.doc/introduction.html)
 
 ```
 # oc get po -o wide
@@ -145,7 +145,7 @@ tls.key:  1704 bytes
 ```
 
 
-6. Since the IBM Spectrum Scale version 5.1.1 any client querying the performance data from the IBM Spectrum Scale cluster needs the API key authentication. You need to create API key secret for the grafana-bridge application using key name 'scale_grafana'. First encode your plaintext API key name and value using base_64:
+6. Since the IBM Storage Scale version 5.1.1 any client querying the performance data from the IBM Storage Scale cluster needs the API key authentication. You need to create API key secret for the grafana-bridge application using key name 'scale_grafana'. First encode your plaintext API key name and value using base_64:
 
 ```
 # echo -n 'scale_grafana'| base64

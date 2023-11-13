@@ -24,12 +24,12 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - IBM Spectrum Scale system type:
-    - [ ] IBM Spectrum Scale classic cluster.
-    - [ ] IBM Spectrum Scale Container Native Storage Access (CNSA).
+ - IBM Storage Scale system type:
+    - [ ] IBM Storage Scale classic cluster.
+    - [ ] IBM Storage Scale Container Native Storage Access (CNSA).
     - [ ] IBM Elastic Storage Server (ESS).
- - IBM Spectrum Scale cluster version:
- - IBM Spectrum Scale bridge for Grafana version:
+ - IBM Storage Scale cluster version:
+ - IBM Storage Scale bridge for Grafana version:
  - Grafana version:
  - OS Grafana is installed on:
 

@@ -1,4 +1,4 @@
-The following matrix gives a quick overview of the supported software for the IBM Spectrum Scale bridge for Grafana packages by version number:
+The following matrix gives a quick overview of the supported software for the IBM Storage Scale bridge for Grafana packages by version number:
 # Version 7.0.9 (08/20/2023)
 Classic Scale:
  - Python 3.9

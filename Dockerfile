@@ -1,13 +1,13 @@
 ARG BASE=registry.access.redhat.com/ubi9/ubi:9.2
 FROM $BASE
 
-LABEL com.ibm.name="IBM Spectrum Scale bridge for Grafana"
+LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
 LABEL com.ibm.version="7.1.0-dev"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
-LABEL com.ibm.description="This tool translates the IBM Spectrum Scale performance data collected internally \
+LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
-LABEL com.ibm.summary="It allows the IBM Spectrum Scale users to perform performance monitoring for IBM Spectrum Scale devices using Grafana"
+LABEL com.ibm.summary="It allows the IBM Storage Scale users to perform performance monitoring for IBM Storage Scale devices using Grafana"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

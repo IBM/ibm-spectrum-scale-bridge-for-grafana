@@ -1,7 +1,7 @@
 # Example deployment of a GrafanaDatasource instance in a k8s/OCP environment
 
 
-Using the scripts in this folder you can deploy a GrafanaDatasource instance for the IBM Spectrum Scale Performance Monitoring Bridge for Grafana running in in the project 'grafana-for-cnsa'
+Using the scripts in this folder you can deploy a GrafanaDatasource instance for the IBM Storage Scale Performance Monitoring Bridge for Grafana running in in the project 'grafana-for-cnsa'
 
 ```shell
 NAMESPACE=grafana-for-cnsa
