@@ -65,6 +65,10 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'PathNoCfgFiles': 'The path does not contain any configuration files.',
        'NewKeyDetected': 'Detected not known single ts identifiers {}.',
        'NewKeyAlreadyReported': 'Single ts identifiers {} already reported as not known.',
-       'UnhandledError': 'Unhandled error: {}',
-       'DataWrongFormat': 'Content could not be parsed: {}'
+       'UnexpecterError': 'Unexpected error: {}',
+       'DataWrongFormat': 'Content could not be parsed: {}',
+       'StartCustomThread': 'Started custom thread {}',
+       'StopCustomThread': 'Stopped custom thread {}',
+       'MetricInResults': 'Metric {} is in Collector.metrcs',
+       'MetricNotInResults': 'Metric {} is not in Collector.metrcs'
        }
