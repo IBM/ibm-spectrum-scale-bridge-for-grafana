@@ -25,7 +25,8 @@ import json
 import sys
 import os
 import errno
-
+import logging
+from logging import handlers
 from queryHandler.QueryHandler import PerfmonConnError
 from queryHandler import SensorConfig
 from __version__ import __version__
@@ -49,7 +50,13 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads('{}')
 
 
-def updateCherrypyConf(args):
+def setup_cherrypy_logging(args):
+
+    log = cherrypy.log
+
+    # Remove the default FileHandlers if present.
+    log.error_file = ""
+    log.access_file = ""
 
     path = args.get('logPath')
     if not os.path.exists(path):
@@ -57,9 +64,22 @@ def updateCherrypyConf(args):
     accesslog = os.path.join(path, 'cherrypy_access.log')
     errorlog = os.path.join(path, 'cherrypy_error.log')
 
+    # Make a new RotatingFileHandler for the error log.
+    handler = handlers.RotatingFileHandler(errorlog, 'a', 1000000, 10)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(cherrypy._cplogging.logfmt)
+    log.error_log.addHandler(handler)
+
+    # Make a new RotatingFileHandler for the access log.
+    handler = handlers.RotatingFileHandler(accesslog, 'a', 1000000, 10)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(cherrypy._cplogging.logfmt)
+    log.access_log.addHandler(handler)
+
+
+def updateCherrypyConf(args):
+
     globalConfig = {'global': {'server.socket_port': args.get('port'),
-                               'log.access_file': accesslog,
-                               'log.error_file': errorlog,
                                # default error response
                                'error_page.default': format_default_error_page,
                                # unexpected errors
@@ -138,6 +158,9 @@ def main(argv):
     # prepare the logger
     logger = configureLogging(args.get('logPath'), args.get('logFile', None),
                               args.get('logLevel'))
+
+    # prepare cherrypy logging configuration
+    setup_cherrypy_logging(args)
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
