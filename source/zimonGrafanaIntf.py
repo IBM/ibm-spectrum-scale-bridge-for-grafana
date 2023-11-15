@@ -79,10 +79,7 @@ def setup_cherrypy_logging(args):
 
 def updateCherrypyConf(args):
 
-    globalConfig = {'global': {'server.socket_port': args.get('port'),
-                               # default error response
-                               'error_page.default': format_default_error_page,
-                               # unexpected errors
+    globalConfig = {'global': {'error_page.default': format_default_error_page,
                                'request.error_response': handle_error},
                     }
 
@@ -91,6 +88,20 @@ def updateCherrypyConf(args):
     dirname, filename = os.path.split(os.path.abspath(__file__))
     customconf = os.path.join(dirname, 'mycherrypy.conf')
     cherrypy.config.update(customconf)
+    cherrypy.server.unsubscribe()
+
+
+def bind_opentsdb_server(args):
+    opentsdb_server = cherrypy._cpserver.Server()
+    opentsdb_server.socket_port = args.get('port')
+    opentsdb_server._socket_host = '0.0.0.0'
+    if args.get('protocol') == "https":
+        certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
+        keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
+        opentsdb_server.ssl_module = 'builtin'
+        opentsdb_server.ssl_certificate = certPath
+        opentsdb_server.ssl_private_key = keyPath
+    opentsdb_server.subscribe()
 
 
 def updateCherrypySslConf(args):
@@ -164,8 +175,6 @@ def main(argv):
 
     # prepare cherrypy server configuration
     updateCherrypyConf(args)
-    if args.get('protocol') == "https":
-        updateCherrypySslConf(args)
 
     # prepare metadata
     try:
@@ -203,44 +212,47 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
-    api = OpenTsdbApi(logger, mdHandler)
-    cherrypy.tree.mount(api, '/api/query',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
-                          'request.body.processors': {'application/x-www-form-urlencoded': processFormJSON}
-                          }
-                         }
-                        )
-    # query for metric name (openTSDB: zimon extension returns keys as well)
-    cherrypy.tree.mount(api, '/api/suggest',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                         }
-                        )
-    # query for tag name and value, given a metric (openTSDB)
-    cherrypy.tree.mount(api, '/api/search/lookup',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                         }
-                        )
-    # query to force update of metadata (zimon feature)
-    cherrypy.tree.mount(api, '/api/update',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                         }
-                        )
-    # query for list of aggregators (openTSDB)
-    cherrypy.tree.mount(api, '/api/aggregators',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                         }
-                        )
-    # query for list of filters (openTSDB)
-    cherrypy.tree.mount(api, '/api/config/filters',
-                        {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                         }
-                        )
+    if args.get('port'):
+        bind_opentsdb_server(args)
+        api = OpenTsdbApi(logger, mdHandler)
+
+        cherrypy.tree.mount(api, '/api/query',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                              'request.body.processors': {'application/x-www-form-urlencoded': processFormJSON}
+                              }
+                             }
+                            )
+        # query for metric name (openTSDB: zimon extension returns keys as well)
+        cherrypy.tree.mount(api, '/api/suggest',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for tag name and value, given a metric (openTSDB)
+        cherrypy.tree.mount(api, '/api/search/lookup',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query to force update of metadata (zimon feature)
+        cherrypy.tree.mount(api, '/api/update',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for list of aggregators (openTSDB)
+        cherrypy.tree.mount(api, '/api/aggregators',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for list of filters (openTSDB)
+        cherrypy.tree.mount(api, '/api/config/filters',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
 
     try:
         files_to_watch = SensorConfig.get_config_paths()

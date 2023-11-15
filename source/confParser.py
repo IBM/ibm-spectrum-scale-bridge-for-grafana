@@ -45,6 +45,12 @@ def checkTLSsettings(args):
     return True, ''
 
 
+def checkApplicationPort(args):
+    if not args.get('port') or not args.get('apiKeyValue'):
+        return False, MSG['MissingParm']
+    return True, ''
+
+
 def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
         return False, MSG['MissingParm']
@@ -70,6 +76,8 @@ def getSettings(argv):
         settings = args
     else:
         return None, msg
+    # check application port
+    valid, msg = checkApplicationPort(settings)
     # check API key settings
     valid, msg = checkAPIsettings(settings)
     if not valid:
