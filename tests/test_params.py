@@ -1,4 +1,4 @@
-from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args, checkCAsettings
+from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args, checkCAsettings, checkApplicationPort
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
 
@@ -131,5 +131,17 @@ def test_case12():
     assert len(result.keys()) > 0
     assert 'caCertPath' in result.keys()
     assert isinstance(result.get('caCertPath'), str)
+    assert valid == False
+    assert len(msg) > 0
+
+
+@with_setup(my_setup)
+def test_case13():
+    x = a.copy()
+    del x['port']
+    result = merge_defaults_and_args(x, b)
+    valid, msg = checkApplicationPort(result)
+    assert len(result.keys()) > 0
+    assert 'port' not in result.keys()
     assert valid == False
     assert len(msg) > 0
