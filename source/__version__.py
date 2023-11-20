@@ -20,4 +20,4 @@ Created on Feb 17, 2021
 @author: HWASSMAN
 '''
 
-__version__ = '7.1.0'
+__version__ = '8.0.0-dev'
