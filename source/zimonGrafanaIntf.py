@@ -254,6 +254,8 @@ def main(argv):
                              }
                             )
 
+    logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
+
     try:
         files_to_watch = SensorConfig.get_config_paths()
         watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
