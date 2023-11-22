@@ -25,7 +25,7 @@ import copy
 from queryHandler.Query import Query
 from messages import MSG
 from collections import defaultdict
-from typing import Optional, Any
+from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
@@ -150,7 +150,7 @@ class SensorTimeSeries(object):
         else:
             self._setup_static_metrics_data(metrics)
 
-    def _setup_static_metrics_data(self, metric_names: list[str]):
+    def _setup_static_metrics_data(self, metric_names: List[str]):
         mDict = {}
         md = MetadataHandler()
         spec = md.metricsDesc

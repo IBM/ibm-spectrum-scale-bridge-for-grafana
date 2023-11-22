@@ -26,6 +26,7 @@ from messages import ERR, MSG
 from collections import defaultdict
 from collector import SensorCollector, QueryPolicy
 from utils import getTimeMultiplier
+from typing import List
 
 
 class OpenTsdbApi(object):
@@ -47,7 +48,7 @@ class OpenTsdbApi(object):
     def TOPO(self):
         return self.__md.metaData
 
-    def format_response(self, data: dict, jreq: dict) -> list[dict]:
+    def format_response(self, data: dict, jreq: dict) -> List[dict]:
         respList = []
         for name, metric in data.items():
             for st in metric.timeseries:
@@ -60,7 +61,7 @@ class OpenTsdbApi(object):
                 respList.append(res.__dict__)
         return respList
 
-    def query(self, jreq: dict) -> list[dict]:
+    def query(self, jreq: dict) -> List[dict]:
         resp = []
         collectors = []
 
