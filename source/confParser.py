@@ -46,7 +46,7 @@ def checkTLSsettings(args):
 
 
 def checkApplicationPort(args):
-    if not args.get('port') or not args.get('apiKeyValue'):
+    if not args.get('port', None) and not args.get('prometheus', None):
         return False, MSG['MissingParm']
     return True, ''
 
