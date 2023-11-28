@@ -8,7 +8,7 @@ Grafana Bridge is a standalone Python application. It translates the IBM Storage
 
 
 <p align="center">
-  <img src="/docs/grafana_bridge_overview.png" />
+  <img src="/docs/grafana_bridge_prometheus_overview.png" />
 </p>
 
 
