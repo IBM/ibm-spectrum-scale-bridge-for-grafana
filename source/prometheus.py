@@ -23,10 +23,9 @@ Created on Oct 30, 2023
 import cherrypy
 import copy
 import json
-from messages import ERR, MSG
+from messages import MSG
 from typing import Optional
 from cherrypy.process.plugins import Monitor
-from time import time
 from collector import SensorCollector, QueryPolicy
 from utils import execution_time
 
@@ -56,7 +55,7 @@ class PrometheusExporter(object):
     def TOPO(self):
         return self.__md.metaData
 
-    def format_response(self, data)-> [str]:
+    def format_response(self, data) -> [str]:
         resp = []
         for name, metric in data.items():
             header = metric.str_descfmt()
@@ -127,33 +126,14 @@ class PrometheusExporter(object):
         attrs = {'sensor': sensor, 'period': period, 'nsamples': 1}
         request = QueryPolicy(**attrs)
         collector = SensorCollector(sensor, period, self.logger, request)
-        # collector.cache = True
-        # else:
-            # ts = calendar.timegm(time.gmtime()) - 15
-            # ts = int(round(time.time() * 1000))
-            # ts=int(timer()*1000)
 
-            # ts=int(time()*1000)
-            # ts1 = ts-1000
-            # self.logger.trace("ts:{0}, ts1:{1}".format(str(ts),str(ts1)))
-            # qstart = str(int(int(str(ts1)) / 1000))
-            # attrs = {'sensor': sensor, 'period': period, 'start': qstart}
-            # request = QueryPolicy(**attrs)
-            # collector = SensorCollector(sensor, period, self.logger, request)
-
-        self.logger.debug(f'request instance {str(request.__dict__)}')
-        self.logger.debug(f'Created Collector instance {str(collector.__dict__)}')
+        self.logger.trace(f'request instance {str(request.__dict__)}')
+        self.logger.trace(f'Created Collector instance {str(collector.__dict__)}')
         return collector
 
     def GET(self, **params):
-        '''Handle partial URLs such as /api/suggest?q=cpu_&type=metrics
-        where type is one of metrics, tagk or tagv
-        or
-        Handle /api/search/lookup/m=cpu_idle{node=*}
-        where m is the metric and optional term { tagk = tagv } qualifies the lookup.
-        For more details please check openTSDB API (version 2.2 and higher) documentation for
-        /api/lookup
-        /api/search/lookup
+        '''Handle partial URLs such as /metrics_cpu
+           TODO: add more explanation
         '''
         resp = []
 
@@ -163,7 +143,7 @@ class PrometheusExporter(object):
 
         # /update
         if 'update' in cherrypy.request.script_name:
-            #cherrypy.response.headers['Content-Type'] = 'application/json'
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
 
         # /metrics_cpu
@@ -207,7 +187,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_gpfs_fileset
         elif 'metrics_gpfs_fileset' in cherrypy.request.script_name:
