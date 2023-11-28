@@ -21,7 +21,6 @@ Created on Oct 30, 2023
 '''
 
 import cherrypy
-import copy
 import json
 from messages import MSG
 from typing import Optional
@@ -113,7 +112,7 @@ class PrometheusExporter(object):
                     frequency=collector.period,
                     name=thread_name).subscribe()
 
-    def build_collector(self, sensor) -> SensorCollector :
+    def build_collector(self, sensor) -> SensorCollector:
 
         period = self.md.getSensorPeriod(sensor)
         if period < 1:

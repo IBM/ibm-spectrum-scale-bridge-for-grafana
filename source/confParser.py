@@ -118,15 +118,6 @@ def merge_defaults_and_args(defaults, args):
     return brConfig
 
 
-#class Singleton(type):
-#   _inst = {}
-
-#    def __call__(clazz, *args, **kwargs):
-#        if clazz not in clazz._inst:
-#            clazz._inst[clazz] = super(Singleton, clazz).__call__(*args, **kwargs)
-#        return clazz._inst[clazz]
-
-
 class ConfigManager(object, metaclass=Singleton):
     ''' A singleton class managing the application configuration defaults '''
 
