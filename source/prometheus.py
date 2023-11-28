@@ -127,19 +127,19 @@ class PrometheusExporter(object):
         attrs = {'sensor': sensor, 'period': period, 'nsamples': 1}
         request = QueryPolicy(**attrs)
         collector = SensorCollector(sensor, period, self.logger, request)
-        #collector.cache = True
-        #else:
-            #ts = calendar.timegm(time.gmtime()) - 15
-            #ts = int(round(time.time() * 1000))
-            #ts=int(timer()*1000)
+        # collector.cache = True
+        # else:
+            # ts = calendar.timegm(time.gmtime()) - 15
+            # ts = int(round(time.time() * 1000))
+            # ts=int(timer()*1000)
 
-            #ts=int(time()*1000)
-            #ts1 = ts-1000
-            #self.logger.trace("ts:{0}, ts1:{1}".format(str(ts),str(ts1)))
-            #qstart = str(int(int(str(ts1)) / 1000))
-            #attrs = {'sensor': sensor, 'period': period, 'start': qstart}
-            #request = QueryPolicy(**attrs)
-            #collector = SensorCollector(sensor, period, self.logger, request)
+            # ts=int(time()*1000)
+            # ts1 = ts-1000
+            # self.logger.trace("ts:{0}, ts1:{1}".format(str(ts),str(ts1)))
+            # qstart = str(int(int(str(ts1)) / 1000))
+            # attrs = {'sensor': sensor, 'period': period, 'start': qstart}
+            # request = QueryPolicy(**attrs)
+            # collector = SensorCollector(sensor, period, self.logger, request)
 
         self.logger.debug(f'request instance {str(request.__dict__)}')
         self.logger.debug(f'Created Collector instance {str(collector.__dict__)}')
@@ -165,7 +165,6 @@ class PrometheusExporter(object):
         if 'update' in cherrypy.request.script_name:
             #cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
-            #resp = json.dumps(resp)
 
         # /metrics_cpu
         elif 'metrics_cpu' in cherrypy.request.script_name:
@@ -173,7 +172,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_load
         elif 'metrics_load' in cherrypy.request.script_name:
@@ -181,7 +179,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_memory
         elif 'metrics_memory' in cherrypy.request.script_name:
@@ -189,7 +186,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_network
         elif 'metrics_network' in cherrypy.request.script_name:
@@ -197,7 +193,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_netstat
         elif 'metrics_netstat' in cherrypy.request.script_name:
@@ -205,7 +200,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_diskfree
         elif 'metrics_diskfree' in cherrypy.request.script_name:
@@ -221,7 +215,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics_gpfs_pool
         elif 'metrics_gpfs_pool' in cherrypy.request.script_name:
@@ -229,7 +222,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         # /metrics
         elif 'metrics' in cherrypy.request.script_name:
@@ -237,7 +229,6 @@ class PrometheusExporter(object):
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
-            #return bytes(resString, 'utf-8')
 
         elif 'aggregators' in cherrypy.request.script_name:
             resp = ["noop", "sum", "avg", "max", "min", "rate"]
@@ -271,7 +262,7 @@ class SingleTimeSeriesResponse():
 
     def __init__(self, metricname, timestamp, value, tags):
         self.metric = metricname
-        self.timestamp = timestamp*1000
+        self.timestamp = timestamp * 1000
         self.value = value if value is not None else 0     # TODO check if we should return None or null
         self.tags = tags
 
@@ -287,11 +278,10 @@ class SingleTimeSeriesResponse():
             fmtstr = '{name}{{{labels}}} {value} {timestamp}'
         else:
             fmtstr = '{name} {value} {timestamp}'
-        mstring = fmtstr.format(
-                name=self.metric,
-                labels=labels,
-                value=repr(float(self.value)),
-                timestamp = int(self.timestamp)
-            )
+        mstring = fmtstr.format(name=self.metric,
+                                labels=labels,
+                                value=repr(float(self.value)),
+                                timestamp=int(self.timestamp)
+                                )
         myset.append(mstring)
         return myset
