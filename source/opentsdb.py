@@ -32,9 +32,10 @@ from typing import List
 class OpenTsdbApi(object):
     exposed = True
 
-    def __init__(self, logger, mdHandler):
+    def __init__(self, logger, mdHandler, port):
         self.logger = logger
         self.__md = mdHandler
+        self.port = port
 
     @property
     def md(self):
@@ -272,6 +273,10 @@ class OpenTsdbApi(object):
             /api/search/lookup
         """
         resp = []
+
+        conn = cherrypy.request.headers.get('Host').split(':')
+        if int(conn[1]) != int(self.port):
+            raise cherrypy.HTTPError(400, MSG[400])
 
         # /api/suggest
         if 'suggest' in cherrypy.request.script_name:

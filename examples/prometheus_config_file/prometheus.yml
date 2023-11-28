@@ -1,0 +1,126 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+  query_log_file: /var/log/prometheus/query.log
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ["<prometheus_server_ip>:9090"]
+
+  - job_name: 'CPU'
+    scrape_interval: 1s
+    honor_timestamps: true
+    metrics_path: '/metrics_cpu'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'Load'
+    scrape_interval: 1s
+    honor_timestamps: true
+    metrics_path: '/metrics_load'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250'] 
+
+  - job_name: 'Memory'
+    scrape_interval: 1s
+    honor_timestamps: true
+    metrics_path: '/metrics_memory'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'Network'
+    scrape_interval: 1s
+    honor_timestamps: true
+    metrics_path: '/metrics_network'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'Netstat'
+    scrape_interval: 1s
+    honor_timestamps: true
+    metrics_path: '/metrics_netstat'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'DiskFree'
+    scrape_interval: 600s
+    honor_timestamps: true
+    metrics_path: '/metrics_diskfree'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'GPFSFileset'
+    scrape_interval: 300s
+    honor_timestamps: true
+    metrics_path: '/metrics_gpfs_fileset'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'GPFSPool'
+    scrape_interval: 300s
+    honor_timestamps: true
+    metrics_path: '/metrics_gpfs_pool'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']

@@ -35,6 +35,7 @@ from bridgeLogger import configureLogging, getBridgeLogger
 from confParser import getSettings
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
+from prometheus import PrometheusExporter
 from watcher import ConfigWatcher
 from cherrypy import _cperror
 
@@ -104,13 +105,16 @@ def bind_opentsdb_server(args):
     opentsdb_server.subscribe()
 
 
-def updateCherrypySslConf(args):
+def bind_prometheus_server(args):
+    prometheus_server = cherrypy._cpserver.Server()
+    prometheus_server.socket_port = args.get('prometheus')
+    prometheus_server._socket_host = '0.0.0.0'
     certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
     keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
-    sslConfig = {'global': {'server.ssl_module': 'builtin',
-                            'server.ssl_certificate': certPath,
-                            'server.ssl_private_key': keyPath}}
-    cherrypy.config.update(sslConfig)
+    prometheus_server.ssl_module = 'builtin'
+    prometheus_server.ssl_certificate = certPath
+    prometheus_server.ssl_private_key = keyPath
+    prometheus_server.subscribe()
 
 
 def resolveAPIKeyValue(storedKey):
@@ -212,9 +216,9 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
-    if args.get('port'):
+    if args.get('port', None):
         bind_opentsdb_server(args)
-        api = OpenTsdbApi(logger, mdHandler)
+        api = OpenTsdbApi(logger, mdHandler, args.get('port'))
 
         cherrypy.tree.mount(api, '/api/query',
                             {'/':
@@ -249,6 +253,70 @@ def main(argv):
                             )
         # query for list of filters (openTSDB)
         cherrypy.tree.mount(api, '/api/config/filters',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+
+    if args.get('prometheus', None):
+        bind_prometheus_server(args)
+        exporter = PrometheusExporter(logger, mdHandler, args.get('prometheus'))
+        # query to force update of metadata (zimon feature)
+        cherrypy.tree.mount(exporter, '/update',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for all metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for CPU sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_cpu',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for Load sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_load',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for Memory sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_memory',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for Network sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_network',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for Netstat sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_netstat',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for DiskFree sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_diskfree',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for GPFSFileset sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_gpfs_fileset',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for GPFSPool sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_gpfs_pool',
                             {'/':
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
