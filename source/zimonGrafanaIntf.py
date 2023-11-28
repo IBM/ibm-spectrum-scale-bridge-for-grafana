@@ -109,16 +109,12 @@ def bind_prometheus_server(args):
     prometheus_server = cherrypy._cpserver.Server()
     prometheus_server.socket_port = args.get('prometheus')
     prometheus_server._socket_host = '0.0.0.0'
-    prometheus_server.subscribe()
-
-
-def updateCherrypySslConf(args):
     certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
     keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
-    sslConfig = {'global': {'server.ssl_module': 'builtin',
-                            'server.ssl_certificate': certPath,
-                            'server.ssl_private_key': keyPath}}
-    cherrypy.config.update(sslConfig)
+    prometheus_server.ssl_module = 'builtin'
+    prometheus_server.ssl_certificate = certPath
+    prometheus_server.ssl_private_key = keyPath
+    prometheus_server.subscribe()
 
 
 def resolveAPIKeyValue(storedKey):

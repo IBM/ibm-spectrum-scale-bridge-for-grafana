@@ -23,6 +23,7 @@ Created on Feb 15, 2021
 import argparse
 import os
 from messages import MSG
+from metaclasses import Singleton
 import configparser
 import getpass
 
@@ -35,12 +36,22 @@ def checkFileExists(path, filename):
 
 
 def checkTLSsettings(args):
-    if args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not args.get('tlsKeyFile') or not args.get('tlsCertFile')):
+    if args.get('prometheus') and (not args.get('tlsKeyPath') or not
+                                   args.get('tlsKeyFile') or not
+                                   args.get('tlsCertFile')):
+        return False, MSG['MissingSSLCert']
+    elif args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not
+                                              args.get('tlsKeyFile') or not
+                                              args.get('tlsCertFile')
+                                              ):
         return False, MSG['MissingParm']
     elif args.get('protocol') == "https" and not os.path.exists(args.get('tlsKeyPath')):
         return False, MSG['KeyPathError']
     elif args.get('protocol') == "https":
-        if (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsCertFile'))) or (not checkFileExists(args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
+        if (not checkFileExists(
+            args.get('tlsKeyPath'), args.get('tlsCertFile'))
+            ) or (not checkFileExists(
+                args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
             return False, MSG['CertError']
     return True, ''
 
@@ -107,13 +118,13 @@ def merge_defaults_and_args(defaults, args):
     return brConfig
 
 
-class Singleton(type):
-    _inst = {}
+#class Singleton(type):
+#   _inst = {}
 
-    def __call__(clazz, *args, **kwargs):
-        if clazz not in clazz._inst:
-            clazz._inst[clazz] = super(Singleton, clazz).__call__(*args, **kwargs)
-        return clazz._inst[clazz]
+#    def __call__(clazz, *args, **kwargs):
+#        if clazz not in clazz._inst:
+#            clazz._inst[clazz] = super(Singleton, clazz).__call__(*args, **kwargs)
+#        return clazz._inst[clazz]
 
 
 class ConfigManager(object, metaclass=Singleton):
