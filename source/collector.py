@@ -89,8 +89,8 @@ class TimeSeries(object):
 
 class MetricTimeSeries(object):
 
-    def __init__(self, name: str, desc: str):
-        self.mtype = 'gauge'
+    def __init__(self, name: str, desc: str, type: Optional[str] = None):
+        self.mtype = type or 'gauge'
         self.mname = name
         self.desc = desc
         self.timeseries: list[TimeSeries] = []
@@ -154,8 +154,9 @@ class SensorTimeSeries(object):
         mDict = {}
         md = MetadataHandler()
         spec = md.metricsDesc
+        type = 'histogram' if self.sensor == 'GPFSWaiters' else 'gauge'
         for name in metric_names:
-            ts = MetricTimeSeries(name, spec.get(name, "Desc not found"))
+            ts = MetricTimeSeries(name, spec.get(name, "Desc not found"), type)
             mDict[name] = ts
         self.metrics = mDict
 
