@@ -321,6 +321,12 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+        # query for GPFSWaiters sensor metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics_gpfs_waiters',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
 
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 

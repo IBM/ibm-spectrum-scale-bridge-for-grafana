@@ -61,7 +61,7 @@ class PrometheusExporter(object):
             resp.extend(header)
             for sts in metric.timeseries:
                 for _key, _value in sts.dps.items():
-                    sts_resp = SingleTimeSeriesResponse(name, _key, _value, sts.tags)
+                    sts_resp = SingleTimeSeriesResponse(name, _key, _value, sts.tags, metric.mtype)
                     self.logger.trace(f'sts_resp.str_expfmt output: {sts_resp.str_expfmt()}')
                     resp.extend(sts_resp.str_expfmt())
         return resp
@@ -201,6 +201,13 @@ class PrometheusExporter(object):
             resString = '\n'.join(resp) + '\n'
             return resString
 
+        # /metrics_gpfs_waiters
+        elif 'metrics_gpfs_waiters' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSWaiters'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
         # /metrics
         elif 'metrics' in cherrypy.request.script_name:
             resp = self.metrics()
@@ -238,14 +245,26 @@ class PrometheusExporter(object):
 
 class SingleTimeSeriesResponse():
 
-    def __init__(self, metricname, timestamp, value, tags):
+    def __init__(self, metricname, timestamp, value, tags, type):
         self.metric = metricname
         self.timestamp = timestamp * 1000
         self.value = value if value is not None else 0     # TODO check if we should return None or null
         self.tags = tags
+        self.type = type
 
-    def str_expfmt(self) -> str:
+    def str_expfmt(self) -> [str]:
         myset = []
+        mstring = ''
+
+        if self.type == 'histogram':
+            mstring = self._str_expfmt_histogram()
+        else:
+            mstring = self._str_expfmt_gauge()
+
+        myset.append(mstring)
+        return myset
+
+    def _str_expfmt_gauge(self) -> str:
 
         if self.tags:
             labels = ','.join('%s="%s"' % (k, v) for k, v in self.tags.items())
@@ -261,5 +280,30 @@ class SingleTimeSeriesResponse():
                                 value=repr(float(self.value)),
                                 timestamp=int(self.timestamp)
                                 )
-        myset.append(mstring)
-        return myset
+        return mstring
+
+    def _str_expfmt_histogram(self) -> str:
+
+        labels = ''
+
+        if self.tags:
+            for k, v in self.tags.items():
+                if k == 'waiters_time_threshold':
+                    k = 'le'
+                elif v == 'all':
+                    v = '+Inf'
+                if labels == '':
+                    labels = labels + '%s="%s"' % (k, v)
+                else:
+                    labels = labels + ',%s="%s"' % (k, v)
+
+        if labels:
+            fmtstr = '{name}{{{labels}}} {value} {timestamp}'
+        else:
+            fmtstr = '{name} {value} {timestamp}'
+        mstring = fmtstr.format(name=self.metric + '_bucket',
+                                labels=labels,
+                                value=repr(float(self.value)),
+                                timestamp=int(self.timestamp)
+                                )
+        return mstring
