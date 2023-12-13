@@ -124,3 +124,15 @@ scrape_configs:
       insecure_skip_verify: true
     static_configs:
     - targets: ['<grafana_bridge_ip>:9250']
+
+  - job_name: 'GPFSWaiters'
+    scrape_interval: 10s
+    honor_timestamps: true
+    metrics_path: '/metrics_gpfs_waiters'
+    scheme: https
+    tls_config:
+      cert_file: /etc/prometheus/certs/cert.pem
+      key_file: /etc/prometheus/certs/privkey.pem
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ['<grafana_bridge_ip>:9250']
