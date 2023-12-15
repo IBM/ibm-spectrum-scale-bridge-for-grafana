@@ -29,70 +29,10 @@ scrape_configs:
     static_configs:
       - targets: ["<prometheus_server_ip>:9090"]
 
-  - job_name: 'CPU'
-    scrape_interval: 1s
+  - job_name: 'GPFSFilesystem'
+    scrape_interval: 300s
     honor_timestamps: true
-    metrics_path: '/metrics_cpu'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cert.pem
-      key_file: /etc/prometheus/certs/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<grafana_bridge_ip>:9250']
-
-  - job_name: 'Load'
-    scrape_interval: 1s
-    honor_timestamps: true
-    metrics_path: '/metrics_load'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cert.pem
-      key_file: /etc/prometheus/certs/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<grafana_bridge_ip>:9250'] 
-
-  - job_name: 'Memory'
-    scrape_interval: 1s
-    honor_timestamps: true
-    metrics_path: '/metrics_memory'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cert.pem
-      key_file: /etc/prometheus/certs/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<grafana_bridge_ip>:9250']
-
-  - job_name: 'Network'
-    scrape_interval: 1s
-    honor_timestamps: true
-    metrics_path: '/metrics_network'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cert.pem
-      key_file: /etc/prometheus/certs/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<grafana_bridge_ip>:9250']
-
-  - job_name: 'Netstat'
-    scrape_interval: 1s
-    honor_timestamps: true
-    metrics_path: '/metrics_netstat'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cert.pem
-      key_file: /etc/prometheus/certs/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<grafana_bridge_ip>:9250']
-
-  - job_name: 'DiskFree'
-    scrape_interval: 600s
-    honor_timestamps: true
-    metrics_path: '/metrics_diskfree'
+    metrics_path: '/metrics_gpfs_filesystem'
     scheme: https
     tls_config:
       cert_file: /etc/prometheus/certs/cert.pem

@@ -145,44 +145,135 @@ class PrometheusExporter(object):
             # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
 
-        # /metrics_cpu
-        elif 'metrics_cpu' in cherrypy.request.script_name:
-            resp = self.metrics(['CPU'])
+        # /metrics_gpfs_disk
+        elif 'metrics_gpfs_disk' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSDisk'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
-        # /metrics_load
-        elif 'metrics_load' in cherrypy.request.script_name:
-            resp = self.metrics(['Load'])
+        # /metrics_gpfs_filesystem
+        elif 'metrics_gpfs_filesystem' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSFilesystem'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
-        # /metrics_memory
-        elif 'metrics_memory' in cherrypy.request.script_name:
-            resp = self.metrics(['Memory'])
+        # /metrics_gpfsnsddisk
+        elif 'metrics_gpfs_nsddisk' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSNSDDisk'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
-        # /metrics_network
-        elif 'metrics_network' in cherrypy.request.script_name:
-            resp = self.metrics(['Network'])
+        # /metrics_gpfs_poolio
+        elif 'metrics_gpfs_poolio' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSPoolIO'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
-        # /metrics_netstat
-        elif 'metrics_netstat' in cherrypy.request.script_name:
-            resp = self.metrics(['Netstat'])
+        # /metrics_gpfs_vfsx
+        elif 'metrics_gpfs_vfsx' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSVFSX'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
-        # /metrics_diskfree
-        elif 'metrics_diskfree' in cherrypy.request.script_name:
-            resp = self.metrics(['DiskFree'])
+        # /metrics_gpfsioc
+        elif 'metrics_gpfsioc' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSIOC'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_vio64
+        elif 'metrics_gpfs_vio64' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSVIO64'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_pddisk
+        elif 'metrics_gpfs_pddisk' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSPDDisk'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_vflush
+        elif 'metrics_gpfs_vflush' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSvFLUSH'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_node
+        elif 'metrics_gpfs_node' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSNode'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_nodeapi
+        elif 'metrics_gpfs_nodeapi' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSNodeAPI'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_filesystemapi
+        elif 'metrics_gpfs_filesystemapi' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSFilesystemAPI'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_lroc
+        elif 'metrics_gpfs_lroc' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSLROC'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_chms
+        elif 'metrics_gpfs_chms' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSCHMS'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_afm
+        elif 'metrics_gpfs_afm' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSAFM'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_afmfs
+        elif 'metrics_gpfs_afmfs' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSAFMFS'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_afmfset
+        elif 'metrics_gpfs_afmfset' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSAFMFSET'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_rpcs
+        elif 'metrics_gpfs_rpcs' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSRPCS'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_filesetquota
+        elif 'metrics_gpfs_filesetquota' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSFilesetQuota'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
@@ -201,9 +292,86 @@ class PrometheusExporter(object):
             resString = '\n'.join(resp) + '\n'
             return resString
 
+        # /metrics_gpfs_diskcap
+        elif 'metrics_gpfs_diskcap' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSDiskCap'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
         # /metrics_gpfs_waiters
         elif 'metrics_gpfs_waiters' in cherrypy.request.script_name:
             resp = self.metrics(['GPFSWaiters'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_event_producer
+        elif 'metrics_gpfs_event_producer' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSEventProducer'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_mutex
+        elif 'metrics_gpfs_mutex' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSMutex'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_condvar
+        elif 'metrics_gpfs_condvar' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSCondvar'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_qos
+        elif 'metrics_gpfs_qos' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSQoS'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_gpfs_fcm
+        elif 'metrics_gpfs_fcm' in cherrypy.request.script_name:
+            resp = self.metrics(['GPFSFCM'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_nfsio
+        elif 'metrics_nfsio' in cherrypy.request.script_name:
+            resp = self.metrics(['NFSIO'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_smb_stats
+        elif 'metrics_smb_stats' in cherrypy.request.script_name:
+            resp = self.metrics(['SMBStats'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_smb_globalstats
+        elif 'metrics_smb_globalstats' in cherrypy.request.script_name:
+            resp = self.metrics(['SMBGlobalStats'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_ctdb_stats
+        elif 'metrics_ctdb_stats' in cherrypy.request.script_name:
+            resp = self.metrics(['CTDBStats'])
+            cherrypy.response.headers['Content-Type'] = 'text/plain'
+            resString = '\n'.join(resp) + '\n'
+            return resString
+
+        # /metrics_ctdb_dbstats
+        elif 'metrics_ctdb_dbstats' in cherrypy.request.script_name:
+            resp = self.metrics(['CTDBDBStats'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
