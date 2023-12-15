@@ -145,7 +145,8 @@ def handle_error():
 
 
 def format_default_error_page(status=404, message="Bad Request",
-                              traceback=cherrypy.serving.request.show_tracebacks
+                              traceback=cherrypy.serving.request.show_tracebacks,
+                              version='1.0'
                               ):
     template = {}
     template['error'] = status
