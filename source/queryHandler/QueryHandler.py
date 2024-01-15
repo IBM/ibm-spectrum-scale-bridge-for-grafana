@@ -495,7 +495,7 @@ class QueryHandler2:
         res = self.__do_RESTCall('perfmon/data', 'GET', params)
 
         if res is None:
-            self.logger.error('QueryHandler: query response has no data results')
+            self.logger.debug('QueryHandler: query response has no data results')
             return None
         try:
             result = json.loads(res, strict=False)
@@ -528,7 +528,7 @@ class QueryHandler2:
                 raise PerfmonConnError("{} {}".format(_response.status_code, _response.reason))
             else:
                 msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
-                self.logger.warning(msg)
+                self.logger.debug(msg)
                 if _response.content:
                     contentMsg = _response.content.decode('utf-8', "strict")
                     self.logger.details(f'Response content:{contentMsg}')

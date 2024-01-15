@@ -261,7 +261,10 @@ def main(argv):
 
     if args.get('prometheus', None):
         bind_prometheus_server(args)
-        exporter = PrometheusExporter(logger, mdHandler, args.get('prometheus'))
+        exporter = PrometheusExporter(logger,
+                                      mdHandler,
+                                      args.get('prometheus'),
+                                      args.get('rawCounters', False))
         # query to force update of metadata (zimon feature)
         cherrypy.tree.mount(exporter, '/update',
                             {'/':
