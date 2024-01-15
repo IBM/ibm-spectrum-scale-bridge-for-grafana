@@ -86,6 +86,20 @@ class TimeSeries(object):
             else:
                 self.tags[_key] = _values.pop()
 
+    def reduce_dps_to_first_not_none(self, reverse_order=False):
+        """Reduce multiple data points(dps) of a single
+           TimeSeries to the first non null value in a sorted order.
+           Optionally the order of timestamps can be reversed.
+        """
+        if len(self.dps) > 1:
+            logger = getBridgeLogger()
+            timestamps = sorted(self.dps.keys(), reverse=reverse_order)
+            self.dps = next((
+                {timestmp: self.dps[timestmp]} for timestmp in timestamps if
+                self.dps[timestmp] is not None), {})
+            if len(self.dps) == 0:
+                logger.warning(f'Received null values in all data points for {self.metricname}')
+
 
 class MetricTimeSeries(object):
 
@@ -154,9 +168,17 @@ class SensorTimeSeries(object):
         mDict = {}
         md = MetadataHandler()
         spec = md.metricsDesc
-        type = 'histogram' if self.sensor == 'GPFSWaiters' else 'gauge'
+        metricsTypes = md.metaData.metricsType
+
+        mtype = 'gauge'
         for name in metric_names:
-            ts = MetricTimeSeries(name, spec.get(name, "Desc not found"), type)
+            if self.sensor == 'GPFSWaiters':
+                mtype = 'histogram'
+            elif metricsTypes.get(name, None) == "counter":
+                mtype = 'counter'
+            ts = MetricTimeSeries(name,
+                                  spec.get(name, "Desc not found"),
+                                  mtype)
             mDict[name] = ts
         self.metrics = mDict
 
@@ -310,6 +332,9 @@ class SensorCollector(SensorTimeSeries):
 
         res = self.md.qh.runQuery(self.query)
         if res is None:
+            self.logger.error(MSG['NoData'])
+            # self.stop_collect()
+            # raise cherrypy.HTTPError(400, MSG['NoData'])
             return
         self.logger.details("res.rows length: {}".format(len(res.rows)))
         if self.removeNoData:

@@ -32,10 +32,11 @@ from utils import execution_time
 class PrometheusExporter(object):
     exposed = True
 
-    def __init__(self, logger, mdHandler, port):
+    def __init__(self, logger, mdHandler, port, raw_data=False):
         self.logger = logger
         self.__md = mdHandler
         self.port = port
+        self.raw_data = raw_data
         self.static_sensors_list = ['CPU', 'Memory', 'GPFSFileset']
         self.cache_strategy = False
         self.caching_collectors = []
@@ -60,6 +61,8 @@ class PrometheusExporter(object):
             header = metric.str_descfmt()
             resp.extend(header)
             for sts in metric.timeseries:
+                if self.raw_data:
+                    sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
                     sts_resp = SingleTimeSeriesResponse(name, _key, _value, sts.tags, metric.mtype)
                     self.logger.trace(f'sts_resp.str_expfmt output: {sts_resp.str_expfmt()}')
@@ -121,8 +124,12 @@ class PrometheusExporter(object):
 
         attrs = {}
 
-        # if self.cache_strategy:
-        attrs = {'sensor': sensor, 'period': period, 'nsamples': 1}
+        if self.raw_data:
+            attrs = {'sensor': sensor, 'period': period,
+                     'nsamples': period, 'rawData': True}
+        else:
+            attrs = {'sensor': sensor, 'period': period,
+                     'nsamples': 1}
         request = QueryPolicy(**attrs)
         collector = SensorCollector(sensor, period, self.logger, request)
 
@@ -146,7 +153,7 @@ class PrometheusExporter(object):
             resp = self.md.update()
 
         # /metrics_gpfs_disk
-        elif 'metrics_gpfs_disk' in cherrypy.request.script_name:
+        elif '/metrics_gpfs_disk' == cherrypy.request.script_name:
             resp = self.metrics(['GPFSDisk'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
@@ -244,21 +251,21 @@ class PrometheusExporter(object):
             return resString
 
         # /metrics_gpfs_afm
-        elif 'metrics_gpfs_afm' in cherrypy.request.script_name:
+        elif '/metrics_gpfs_afm' == cherrypy.request.script_name:
             resp = self.metrics(['GPFSAFM'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
         # /metrics_gpfs_afmfs
-        elif 'metrics_gpfs_afmfs' in cherrypy.request.script_name:
+        elif '/metrics_gpfs_afmfs' == cherrypy.request.script_name:
             resp = self.metrics(['GPFSAFMFS'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
         # /metrics_gpfs_afmfset
-        elif 'metrics_gpfs_afmfset' in cherrypy.request.script_name:
+        elif '/metrics_gpfs_afmfset' == cherrypy.request.script_name:
             resp = self.metrics(['GPFSAFMFSET'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
@@ -293,7 +300,7 @@ class PrometheusExporter(object):
             return resString
 
         # /metrics_gpfs_diskcap
-        elif 'metrics_gpfs_diskcap' in cherrypy.request.script_name:
+        elif '/metrics_gpfs_diskcap' == cherrypy.request.script_name:
             resp = self.metrics(['GPFSDiskCap'])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
