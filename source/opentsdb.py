@@ -134,7 +134,7 @@ class OpenTsdbApi(object):
             args['filters'] = filters
             args['grouptags'] = grouptags
 
-        args['rowData'] = q.get('explicitTags', False)
+        args['rawData'] = q.get('explicitTags', False)
 
         args['sensor'] = sensor
         args['period'] = period
