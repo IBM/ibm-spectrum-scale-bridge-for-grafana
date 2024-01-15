@@ -91,7 +91,7 @@ class Query(object):
         self.timeRep = ' now'         # string time representation
         self.measurements = {}
         self.normalize_rates = True
-        self.rowData = False
+        self.rawData = False
         self.key = None
         self.sensor = None
 
@@ -200,7 +200,7 @@ class Query(object):
         else:
             dd = ''
 
-        if self.rowData:
+        if self.rawData:
             raw = '-z'
         else:
             raw = ''

@@ -167,7 +167,7 @@ class SensorTimeSeries(object):
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
-                      dsBucketSize=0, dsOp='', rowData=False),
+                      dsBucketSize=0, dsOp='', rawData=False),
                  ['sensor', 'period'])
 class QueryPolicy(object):
 
@@ -182,7 +182,7 @@ class QueryPolicy(object):
         '''Returns zimon query string '''
         query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
-        query.rowData = self.rowData
+        query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
             self.logger.error(MSG['QueryError'].
