@@ -42,6 +42,7 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'MetricErr': 'Metric {0} cannot be found. Please check if the corresponding sensor is configured',
        'InconsistentParams': 'Received parameters {} inconsistent with request parameters {}',
        'SensorDisabled': 'Sensor for metric {} is disabled',
+       'EndpointNotSupported': 'Endpoint {} you try to access is not supported',
        'NoData': 'Empty results received',  # Please check the pmcollector is properly configured and running.
        'NoSensorConfigData': 'No sensor configuration data parsed',
        'NoDataStartNextAttempt': 'No Metadata results received from the pmcollector. Start retry attempt {} in 60s (MAX_ATTEMPTS_COUNT:{})',
