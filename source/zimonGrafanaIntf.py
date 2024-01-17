@@ -39,6 +39,8 @@ from prometheus import PrometheusExporter
 from watcher import ConfigWatcher
 from cherrypy import _cperror
 
+ENDPOINTS = {}
+
 
 def processFormJSON(entity):
     ''' Used to generate JSON when the content
@@ -49,6 +51,16 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads(body.decode('utf-8'))
     else:
         cherrypy.serving.request.json = json.loads('{}')
+
+
+def load_endpoints(file_name):
+    dirname, _ = os.path.split(os.path.abspath(__file__))
+    conf_file = os.path.join(dirname, file_name)
+    if os.path.isfile(conf_file):
+        with open(conf_file) as f:
+            d = json.load(f)
+    api = file_name.split('_', 1)[0]
+    ENDPOINTS[api] = d
 
 
 def setup_cherrypy_logging(args):
@@ -86,7 +98,7 @@ def updateCherrypyConf(args):
 
     cherrypy.config.update(globalConfig)
 
-    dirname, filename = os.path.split(os.path.abspath(__file__))
+    dirname, _ = os.path.split(os.path.abspath(__file__))
     customconf = os.path.join(dirname, 'mycherrypy.conf')
     cherrypy.config.update(customconf)
     cherrypy.server.unsubscribe()
@@ -261,10 +273,14 @@ def main(argv):
 
     if args.get('prometheus', None):
         bind_prometheus_server(args)
+        load_endpoints('prometheus_endpoints.json')
         exporter = PrometheusExporter(logger,
                                       mdHandler,
                                       args.get('prometheus'),
                                       args.get('rawCounters', False))
+        exporter.endpoints.update(ENDPOINTS.get('prometheus',
+                                                {}))
+
         # query to force update of metadata (zimon feature)
         cherrypy.tree.mount(exporter, '/update',
                             {'/':
@@ -277,204 +293,13 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
-        # query for GPFSDisk sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_disk',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSFilesystem sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_filesystem',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSNSDDisk sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_nsddisk',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSPoolIO sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_poolio',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSVFSX sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_vfsx',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSIOC sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfsioc',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSVIO64 sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_vio64',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSPDDisk sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_pddisk',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSvFLUSH sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_vflush',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSNode sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_node',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSNodeAPI sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_nodeapi',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSFilesystemAPI sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_filesystemapi',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSLROC sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_lroc',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSCHMS sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_chms',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSAFM sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_afm',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSAFMFS sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_afmfs',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSAFMFSET sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_afmfset',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSRPCS sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_rpcs',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSFilesetQuota sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_filesetquota',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSFileset sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_fileset',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSPool sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_pool',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSDiskCap sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_diskcap',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSWaiters sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_waiters',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSEventProducer sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_event_producer',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSMutex sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_mutex',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSCondvar sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_condvar',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSQoS sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_qos',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for GPFSFCM sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_gpfs_fcm',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for NFSIO sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_nfsio',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for SMBStats sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_smb_stats',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for SMBGlobalStats sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_smb_globalstats',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for CTDBStats sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_ctdb_stats',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for CTDBDBStats sensor metrics (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics_ctdb_dbstats',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
+        if len(exporter.endpoints) > 0:
+            for endpoint in exporter.endpoints.keys():
+                cherrypy.tree.mount(exporter, endpoint,
+                                    {'/':
+                                     {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                     }
+                                    )
 
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
