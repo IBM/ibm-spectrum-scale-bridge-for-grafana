@@ -278,7 +278,8 @@ def main(argv):
                                       mdHandler,
                                       args.get('prometheus'),
                                       args.get('rawCounters', False))
-        exporter.endpoints.update(ENDPOINTS.get('prometheus',{}))
+        exporter.endpoints.update(ENDPOINTS.get('prometheus',
+                                                {}))
 
         # query to force update of metadata (zimon feature)
         cherrypy.tree.mount(exporter, '/update',
