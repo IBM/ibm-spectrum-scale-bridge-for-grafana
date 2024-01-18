@@ -86,11 +86,25 @@ class TimeSeries(object):
             else:
                 self.tags[_key] = _values.pop()
 
+    def reduce_dps_to_first_not_none(self, reverse_order=False):
+        """Reduce multiple data points(dps) of a single
+           TimeSeries to the first non null value in a sorted order.
+           Optionally the order of timestamps can be reversed.
+        """
+        if len(self.dps) > 1:
+            logger = getBridgeLogger()
+            timestamps = sorted(self.dps.keys(), reverse=reverse_order)
+            self.dps = next((
+                {timestmp: self.dps[timestmp]} for timestmp in timestamps if
+                self.dps[timestmp] is not None), {})
+            if len(self.dps) == 0:
+                logger.warning(f'Received null values in all data points for {self.metricname}')
+
 
 class MetricTimeSeries(object):
 
-    def __init__(self, name: str, desc: str):
-        self.mtype = 'gauge'
+    def __init__(self, name: str, desc: str, type: Optional[str] = None):
+        self.mtype = type or 'gauge'
         self.mname = name
         self.desc = desc
         self.timeseries: list[TimeSeries] = []
@@ -154,8 +168,17 @@ class SensorTimeSeries(object):
         mDict = {}
         md = MetadataHandler()
         spec = md.metricsDesc
+        metricsTypes = md.metaData.metricsType
+
+        mtype = 'gauge'
         for name in metric_names:
-            ts = MetricTimeSeries(name, spec.get(name, "Desc not found"))
+            if self.sensor == 'GPFSWaiters':
+                mtype = 'histogram'
+            elif metricsTypes.get(name, None) == "counter":
+                mtype = 'counter'
+            ts = MetricTimeSeries(name,
+                                  spec.get(name, "Desc not found"),
+                                  mtype)
             mDict[name] = ts
         self.metrics = mDict
 
@@ -166,7 +189,7 @@ class SensorTimeSeries(object):
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
-                      dsBucketSize=0, dsOp=''),
+                      dsBucketSize=0, dsOp='', rawData=False),
                  ['sensor', 'period'])
 class QueryPolicy(object):
 
@@ -181,6 +204,7 @@ class QueryPolicy(object):
         '''Returns zimon query string '''
         query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
+        query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
             self.logger.error(MSG['QueryError'].
@@ -308,6 +332,9 @@ class SensorCollector(SensorTimeSeries):
 
         res = self.md.qh.runQuery(self.query)
         if res is None:
+            self.logger.error(MSG['NoData'])
+            # self.stop_collect()
+            # raise cherrypy.HTTPError(400, MSG['NoData'])
             return
         self.logger.details("res.rows length: {}".format(len(res.rows)))
         if self.removeNoData:

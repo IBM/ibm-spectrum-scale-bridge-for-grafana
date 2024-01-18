@@ -1,0 +1,791 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_GNROCKSTAR.FSCC-ESS3500-1-A",
+      "label": "GNRockStar.fscc-ess3500-1-a",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.2"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 9,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "bytes_read: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$node1",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "rate",
+          "alias": "bytes_written: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node1",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "Node Selection 1: $node1",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "bytes_read: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node2",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "rate",
+          "alias": "bytes_written: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node2",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "Node selection 2: $node2",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "bytes_read: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node3",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "rate",
+          "alias": "bytes_written: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node3",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "Node Selection 3: $node3",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "bytes_read: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node4",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "A"
+        },
+        {
+          "aggregator": "rate",
+          "alias": "bytes_written: $tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$Filesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$node4",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "Node Selection 4: $node4",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "GNRockStar.fscc-ess3500-1-a",
+          "value": "GNRockStar.fscc-ess3500-1-a"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "DataSource",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+        },
+        "definition": "tag_values(gpfs_fs_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": true,
+        "name": "node1",
+        "options": [],
+        "query": "tag_values(gpfs_fs_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+        },
+        "definition": "tag_values(gpfs_fs_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": true,
+        "name": "node2",
+        "options": [],
+        "query": "tag_values(gpfs_fs_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+        },
+        "definition": "tag_values(gpfs_fs_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": true,
+        "name": "node3",
+        "options": [],
+        "query": "tag_values(gpfs_fs_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+        },
+        "definition": "tag_values(gpfs_fs_bytes_read, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": true,
+        "name": "node4",
+        "options": [],
+        "query": "tag_values(gpfs_fs_bytes_read, node)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_GNROCKSTAR.FSCC-ESS3500-1-A}"
+        },
+        "definition": "tag_values(gpfs_fs_bytes_read, gpfs_fs_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "Filesystem",
+        "options": [],
+        "query": "tag_values(gpfs_fs_bytes_read, gpfs_fs_name)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ESS compare Filesystem IOs with multiple nodes",
+  "uid": "a663cbd7-9ccc-4f1f-923f-be8315b17b27",
+  "version": 2,
+  "weekStart": ""
+}

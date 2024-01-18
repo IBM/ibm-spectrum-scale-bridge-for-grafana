@@ -91,6 +91,7 @@ class Query(object):
         self.timeRep = ' now'         # string time representation
         self.measurements = {}
         self.normalize_rates = True
+        self.rawData = False
         self.key = None
         self.sensor = None
 
@@ -199,15 +200,20 @@ class Query(object):
         else:
             dd = ''
 
-        if self.sensor is not None:
-            queryString = 'get -j {0} group {1} bucket_size {2} {3}'.format(
-                dd, self.sensor, self.bucket_size, self.timeRep)
-        elif self.key is not None:
-            queryString = 'get -j {0} {1} bucket_size {2} {3}'.format(
-                dd, self.key, self.bucket_size, self.timeRep)
+        if self.rawData:
+            raw = '-z'
         else:
-            queryString = 'get -j {0} metrics {1} bucket_size {2} {3}'.format(
-                dd, ','.join(self.metrics), self.bucket_size, self.timeRep)
+            raw = ''
+
+        if self.sensor is not None:
+            queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
+                dd, raw, self.sensor, self.bucket_size, self.timeRep)
+        elif self.key is not None:
+            queryString = 'get -j {0} {1} {2} bucket_size {3} {4}'.format(
+                dd, raw, self.key, self.bucket_size, self.timeRep)
+        else:
+            queryString = 'get -j {0} {1} metrics {2} bucket_size {3} {4}'.format(
+                dd, raw, ','.join(self.metrics), self.bucket_size, self.timeRep)
 
         if self.filters:
             queryString += ' from ' + ",".join(self.filters)
