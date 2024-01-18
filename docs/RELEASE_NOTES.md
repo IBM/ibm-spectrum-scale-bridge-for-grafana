@@ -1,3 +1,11 @@
+# Version 7.1.1 (01/18/2024)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.3 \
+
+Tested with Grafana version 9.5
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 7.1.0 (11/20/2023)
 Added a watch function observing changes in zimon sensor configuration and initiating the metadata refresh. \
 Added methods to get metric attributes
