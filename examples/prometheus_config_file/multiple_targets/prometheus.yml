@@ -65,18 +65,6 @@ scrape_configs:
     static_configs:
     - targets: ['<cluster1_grafana_bridge_ip>:9250']
 
-  - job_name: 'GPFSWaiters_cluster1'
-    scrape_interval: 10s
-    honor_timestamps: true
-    metrics_path: '/metrics_gpfs_waiters'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cluster1/cert.pem
-      key_file: /etc/prometheus/certs/cluster1/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<cluster1_grafana_bridge_ip>:9250']
-
   - job_name: 'GPFSFilesystem_cluster2'
     scrape_interval: 300s
     honor_timestamps: true
@@ -105,18 +93,6 @@ scrape_configs:
     scrape_interval: 300s
     honor_timestamps: true
     metrics_path: '/metrics_gpfs_pool'
-    scheme: https
-    tls_config:
-      cert_file: /etc/prometheus/certs/cluster2/cert.pem
-      key_file: /etc/prometheus/certs/cluster2/privkey.pem
-      insecure_skip_verify: true
-    static_configs:
-    - targets: ['<cluster2_grafana_bridge_ip>:9250']
-
-  - job_name: 'GPFSWaiters_cluster2'
-    scrape_interval: 10s
-    honor_timestamps: true
-    metrics_path: '/metrics_gpfs_waiters'
     scheme: https
     tls_config:
       cert_file: /etc/prometheus/certs/cluster2/cert.pem
