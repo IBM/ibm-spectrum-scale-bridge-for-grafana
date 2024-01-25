@@ -258,6 +258,12 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(api, '/sensorsconfig',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query for list of aggregators (openTSDB)
         cherrypy.tree.mount(api, '/api/aggregators',
                             {'/':
@@ -283,6 +289,12 @@ def main(argv):
 
         # query to force update of metadata (zimon feature)
         cherrypy.tree.mount(exporter, '/update',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(api, '/sensorsconfig',
                             {'/':
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }

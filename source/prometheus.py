@@ -153,6 +153,11 @@ class PrometheusExporter(object):
             # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
 
+        # /sensorsconfig
+        elif '/sensorsconfig' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.md.SensorsConfig
+
         elif self.endpoints and self.endpoints.get(cherrypy.request.script_name,
                                                    None):
             sensor = self.endpoints[cherrypy.request.script_name]
