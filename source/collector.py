@@ -32,7 +32,7 @@ from bridgeLogger import getBridgeLogger
 from utils import classattributes
 
 
-local_cache = []
+local_cache = set()
 
 
 class TimeSeries(object):
@@ -56,7 +56,7 @@ class TimeSeries(object):
                 'Single ts identifiers', ', '.join(ident)))
             found = False
             for filtersDict in filtersMap:
-                if all((value in filtersDict.values()) for value in ident):
+                if set(filtersDict.values()) == set(ident):
                     logger.trace(MSG['ReceivAttrValues'].format(
                         'filtersKeys', ', '.join(filtersDict.keys())))
                     if len(self.columnInfo.keys) == 1:
@@ -68,17 +68,16 @@ class TimeSeries(object):
                     break
             # detected zimon key, do we need refresh local TOPO?
             if not found:
-                already_reported = False
-                for cache_item in local_cache:
-                    if set(cache_item) == set(ident):
-                        logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
-                        already_reported = True
-                        break
-                if not already_reported:
+                cache_size = len(local_cache)
+                local_cache.union(ident)
+                updated_size = len(local_cache)
+                if updated_size > cache_size:
                     logger.trace(MSG['NewKeyDetected'].format(ident))
                     local_cache.append(ident)
                     md = MetadataHandler()
                     Thread(name='AdHocMetaDataUpdate', target=md.update).start()
+                else:
+                    logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
