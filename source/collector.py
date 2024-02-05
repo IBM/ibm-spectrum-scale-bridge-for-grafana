@@ -32,7 +32,7 @@ from bridgeLogger import getBridgeLogger
 from utils import classattributes
 
 
-local_cache = []
+local_cache = set()
 
 
 class TimeSeries(object):
@@ -56,7 +56,7 @@ class TimeSeries(object):
                 'Single ts identifiers', ', '.join(ident)))
             found = False
             for filtersDict in filtersMap:
-                if all((value in filtersDict.values()) for value in ident):
+                if set(filtersDict.values()) == set(ident):
                     logger.trace(MSG['ReceivAttrValues'].format(
                         'filtersKeys', ', '.join(filtersDict.keys())))
                     if len(self.columnInfo.keys) == 1:
@@ -68,17 +68,16 @@ class TimeSeries(object):
                     break
             # detected zimon key, do we need refresh local TOPO?
             if not found:
-                already_reported = False
-                for cache_item in local_cache:
-                    if set(cache_item) == set(ident):
-                        logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
-                        already_reported = True
-                        break
-                if not already_reported:
+                cache_size = len(local_cache)
+                local_cache.union(ident)
+                updated_size = len(local_cache)
+                if updated_size > cache_size:
                     logger.trace(MSG['NewKeyDetected'].format(ident))
                     local_cache.append(ident)
                     md = MetadataHandler()
                     Thread(name='AdHocMetaDataUpdate', target=md.update).start()
+                else:
+                    logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
@@ -357,10 +356,8 @@ class SensorCollector(SensorTimeSeries):
             for value, columnInfo in zip(row.values, res.columnInfos):
                 columnValues[columnInfo][row.tstamp] = value
 
-        timeseries = []
         for columnInfo, dps in columnValues.items():
             ts = TimeSeries(columnInfo, dps, self.filtersMap)
-            timeseries.append(ts)
             if self.metrics.get(columnInfo.keys[0].metric) is not None:
                 self.logger.trace(MSG['MetricInResults'].format(
                     columnInfo.keys[0].metric))
@@ -370,7 +367,7 @@ class SensorCollector(SensorTimeSeries):
                 self.logger.warning(MSG['MetricNotInResults'].format(
                     columnInfo.keys[0].metric))
                 mt = MetricTimeSeries(columnInfo.keys[0].metric, '')
-                mt.timeseries = timeseries
+                mt.timeseries.append(ts)
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
@@ -432,16 +429,16 @@ class SensorCollector(SensorTimeSeries):
 
         # check groupBy settings
         if self.request.grouptags:
-            filter_keys = self.md.metaData.getAllFilterKeysForSensor(
-                self.sensor)
+            filter_keys = set()
+            for filter in self.filtersMap:
+                filter_keys.update(filter.keys())
             if not filter_keys:
                 self.logger.error(MSG['GroupByErr'])
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
-            groupKeys = self.request.grouptags
-            if not all(key in filter_keys for key in groupKeys):
-                self.logger.error(MSG['AttrNotValid'].format('groupBy'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))
+            if not (set(self.request.grouptags)).issubset(filter_keys):
+                self.logger.error(MSG['AttrNotValid'].format('groupBy key'))
                 self.logger.error(MSG['ReceivAttrValues'].format(
-                    'groupBy', ", ".join(filter_keys)))
+                    'groupBy keys', ", ".join(filter_keys)))
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))
