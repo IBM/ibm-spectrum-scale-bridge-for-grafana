@@ -432,16 +432,16 @@ class SensorCollector(SensorTimeSeries):
 
         # check groupBy settings
         if self.request.grouptags:
-            filter_keys = self.md.metaData.getAllFilterKeysForSensor(
-                self.sensor)
+            filter_keys = set()
+            for filter in self.filtersMap:
+                filter_keys.update(filter.keys())
             if not filter_keys:
                 self.logger.error(MSG['GroupByErr'])
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
-            groupKeys = self.request.grouptags
-            if not all(key in filter_keys for key in groupKeys):
-                self.logger.error(MSG['AttrNotValid'].format('groupBy'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))
+            if not (set(self.request.grouptags)).issubset(filter_keys):
+                self.logger.error(MSG['AttrNotValid'].format('groupBy key'))
                 self.logger.error(MSG['ReceivAttrValues'].format(
-                    'groupBy', ", ".join(filter_keys)))
+                    'groupBy keys', ", ".join(filter_keys)))
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))
