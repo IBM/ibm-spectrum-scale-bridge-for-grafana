@@ -357,10 +357,8 @@ class SensorCollector(SensorTimeSeries):
             for value, columnInfo in zip(row.values, res.columnInfos):
                 columnValues[columnInfo][row.tstamp] = value
 
-        timeseries = []
         for columnInfo, dps in columnValues.items():
             ts = TimeSeries(columnInfo, dps, self.filtersMap)
-            timeseries.append(ts)
             if self.metrics.get(columnInfo.keys[0].metric) is not None:
                 self.logger.trace(MSG['MetricInResults'].format(
                     columnInfo.keys[0].metric))
@@ -370,7 +368,7 @@ class SensorCollector(SensorTimeSeries):
                 self.logger.warning(MSG['MetricNotInResults'].format(
                     columnInfo.keys[0].metric))
                 mt = MetricTimeSeries(columnInfo.keys[0].metric, '')
-                mt.timeseries = timeseries
+                mt.timeseries.append(ts)
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
