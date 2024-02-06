@@ -27,7 +27,10 @@ def test_case04():
     assert len(connection) > 0
     assert isinstance(connection, dict)
     assert len(connection) > 0
-    assert 'port' in connection.keys()
+    if version < "8.0":
+        assert 'port' in connection.keys()
+    else:
+        assert 'port' not in connection.keys()
 
 
 def test_case05():
@@ -53,15 +56,19 @@ def test_case08():
     cm = ConfigManager()
     result = cm.defaults
     elements = list(result.keys())
-    mandatoryItems = ['port', 'serverPort']
-    assert all(item in elements for item in mandatoryItems)
+    if version < "8.0":
+        mandatoryItems = {'port', 'serverPort'}
+        assert mandatoryItems.issubset(set(elements))
+    else:
+        assert 'port' not in set(elements)
 
 
 def test_case09():
-    cm = ConfigManager()
-    result = cm.defaults
-    value = int(result['port'])
-    assert value == 4242
+    if version < "8.0":
+        cm = ConfigManager()
+        result = cm.defaults
+        value = int(result['port'])
+        assert value == 4242
 
 
 def test_case10():
@@ -69,8 +76,11 @@ def test_case10():
     result = cm.defaults
     if version < "7.0":
         assert int(result['port']) == 4242 and int(result['serverPort']) == 9084
-    else:
+    elif version < "8.0":
         assert int(result['port']) == 4242 and int(result['serverPort']) == 9980
+    else:
+        assert result.get('port', None) is None
+        assert int(result['serverPort']) == 9980
 
 
 def test_case11():
