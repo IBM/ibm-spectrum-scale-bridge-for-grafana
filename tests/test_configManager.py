@@ -57,8 +57,8 @@ def test_case08():
     result = cm.defaults
     elements = list(result.keys())
     if version < "8.0":
-        mandatoryItems = ['port', 'serverPort']
-        assert all(item in elements for item in mandatoryItems)
+        mandatoryItems = {'port', 'serverPort'}
+        assert mandatoryItems.issubset(set(elements))
     else:
         assert 'port' not in set(elements)
 
@@ -79,7 +79,7 @@ def test_case10():
     elif version < "8.0":
         assert int(result['port']) == 4242 and int(result['serverPort']) == 9980
     else:
-        assert result.get('port', None) == None
+        assert result.get('port', None) is None
         assert int(result['serverPort']) == 9980
 
 
