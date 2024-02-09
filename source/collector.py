@@ -53,12 +53,12 @@ class TimeSeries(object):
             ident = [key.parent]
             ident.extend(key.identifier)
             logger.trace(MSG['ReceivAttrValues'].format(
-                'Single ts identifiers', ', '.join(ident)))
+                'Single ts identifiers', '|'.join(ident)))
             found = False
             for filtersDict in filtersMap:
                 if set(filtersDict.values()) == set(ident):
-                    logger.trace(MSG['ReceivAttrValues'].format(
-                        'filtersKeys', ', '.join(filtersDict.keys())))
+                    # logger.trace(MSG['ReceivAttrValues'].format(
+                    #    'filtersKeys', ', '.join(filtersDict.keys())))
                     if len(self.columnInfo.keys) == 1:
                         self.tags = filtersDict
                     else:
@@ -72,12 +72,11 @@ class TimeSeries(object):
                 local_cache.union(ident)
                 updated_size = len(local_cache)
                 if updated_size > cache_size:
-                    logger.trace(MSG['NewKeyDetected'].format(ident))
-                    local_cache.append(ident)
+                    logger.trace(MSG['NewKeyDetected'].format('|'.join(ident)))
                     md = MetadataHandler()
                     Thread(name='AdHocMetaDataUpdate', target=md.update).start()
                 else:
-                    logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
+                    logger.trace(MSG['NewKeyAlreadyReported'].format('|'.join(ident)))
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
@@ -426,7 +425,6 @@ class SensorCollector(SensorTimeSeries):
                     400, MSG['AttrNotValid'].format('filter'))
 
     def validate_group_tags(self):
-
         # check groupBy settings
         if self.request.grouptags:
             filter_keys = set()

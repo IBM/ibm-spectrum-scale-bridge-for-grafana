@@ -51,15 +51,16 @@ class OpenTsdbApi(object):
 
     def format_response(self, data: dict, jreq: dict) -> List[dict]:
         respList = []
-        for name, metric in data.items():
+        metrics = set(data.values())
+        for metric in metrics:
             for st in metric.timeseries:
-                res = SingleTimeSeriesResponse(jreq.get('inputQuery'), st.dps,
+                res = SingleTimeSeriesResponse(jreq.get('inputQuery'),
                                                jreq.get('showQuery'),
                                                jreq.get('globalAnnotations'),
                                                st.tags, st.aggregatedTags)
-                cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
-                self.logger.trace(f'OpenTSDB queryResponse: {str(res.__dict__)}')
-                respList.append(res.__dict__)
+                # self.logger.trace(f'OpenTSDB queryResponse for :
+                #                   {data.keys()[0]} with {len(st.dps)} datapoints')
+                respList.append(res.to_dict(st.dps))
         return respList
 
     def query(self, jreq: dict) -> List[dict]:
@@ -101,9 +102,9 @@ class OpenTsdbApi(object):
             self.logger.trace('Finished custom thread %r.' % collector.thread.name)
 
             coll_resp = self.format_response(collector.metrics, request_data)
-            cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+            # cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
             resp.extend(coll_resp)
-
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
     def build_collector(self, jreq: dict) -> SensorCollector:
@@ -371,16 +372,25 @@ class LookupResponse():
                         self.results.append(d)
 
 
-class SingleTimeSeriesResponse():
+class SingleTimeSeriesResponse(object):
 
-    def __init__(self, inputQuery, dps, showQuery=False,
+    def __init__(self, inputQuery, showQuery=False,
                  globalAnnotations=False, tags: dict = None,
                  aggrTags: list = None):
         self.metric = inputQuery.get('metric')
-        self.dps = dps
+        self.dps = defaultdict()
         if showQuery:
             self.query = inputQuery
         if globalAnnotations:
             self.globalAnnotations = []
         self.tags = tags or defaultdict(list)
         self.aggregatedTags = aggrTags or []
+
+    def to_dict(self, dps: dict = None):
+        ''' Converts the SingleTimeSeriesResponse object to dict. '''
+        res = self.__dict__
+        # Since a single Timeseries might have a huge number of datapoints (dps),
+        # first convert object to dict and then fetch the dict of dps to it
+        if dps:
+            res['dps'] = dps
+        return res
