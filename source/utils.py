@@ -53,7 +53,7 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
 
 
 def cond_execution_time(enabled: bool = False, skip_attribute: bool = False) -> Callable[[Callable[..., T]], Callable[..., T]]:
-    """ Conditionally logs the name of the given function f with 
+    """ Conditionally logs the name of the given function f with
         passed parameter values and the time it takes to execute it.
     """
     def outer(f: Callable[..., T]) -> Callable[..., T]:

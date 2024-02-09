@@ -30,7 +30,7 @@ try:
 except Exception:
     pass
 
-try: # for Python 3
+try:  # for Python 3
     from http.client import HTTPConnection
 except ImportError:
     from httplib import HTTPConnection
