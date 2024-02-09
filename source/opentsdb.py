@@ -22,10 +22,11 @@ Created on Oct 24, 2023
 
 import cherrypy
 import re
+import analytics
 from messages import ERR, MSG
 from collections import defaultdict
 from collector import SensorCollector, QueryPolicy
-from utils import getTimeMultiplier
+from utils import getTimeMultiplier, execution_time, cond_execution_time
 from typing import List
 
 
@@ -49,6 +50,7 @@ class OpenTsdbApi(object):
     def TOPO(self):
         return self.__md.metaData
 
+    @cond_execution_time(enabled=analytics.inspect)
     def format_response(self, data: dict, jreq: dict) -> List[dict]:
         respList = []
         metrics = set(data.values())
@@ -63,6 +65,7 @@ class OpenTsdbApi(object):
                 respList.append(res.to_dict(st.dps))
         return respList
 
+    @execution_time()
     def query(self, jreq: dict) -> List[dict]:
         resp = []
         collectors = []
@@ -107,6 +110,7 @@ class OpenTsdbApi(object):
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
+    @cond_execution_time(enabled=analytics.inspect)
     def build_collector(self, jreq: dict) -> SensorCollector:
 
         q = jreq.get('inputQuery')

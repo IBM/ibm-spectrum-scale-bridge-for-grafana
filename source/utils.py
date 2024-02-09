@@ -52,6 +52,37 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
     return outer
 
 
+def cond_execution_time(enabled: bool = False, skip_attribute: bool = False) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """ Conditionally logs the name of the given function f with 
+        passed parameter values and the time it takes to execute it.
+    """
+    def outer(f: Callable[..., T]) -> Callable[..., T]:
+        @wraps(f)
+        def wrapper(*args: Any, **kwargs: Any) -> T:
+            self = args[0]
+            if hasattr(self, 'logger'):
+                logger = self.logger
+            else:
+                from bridgeLogger import getBridgeLogger
+                logger = getBridgeLogger()
+            args_str = ', '.join(map(str, args[1:])) if len(args) > 1 else ''
+            kwargs_str = ', '.join(f'{k}={v}' for k, v in kwargs.items()) if len(kwargs) > 0 else ''
+            logger.trace(MSG['StartMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
+            t = time.time()
+            result = f(*args, **kwargs)
+            duration = time.time() - t
+            if not skip_attribute:
+                wrapper._execution_duration = duration  # type: ignore
+            logger.debug(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
+            logger.debug(MSG['TimerInfo'].format(f.__name__, duration))
+            return result
+        return wrapper
+
+    def no_outer(f: Callable[..., T]) -> Callable[..., T]:
+        return f
+    return outer if enabled else no_outer
+
+
 def classattributes(default_attr: dict, more_allowed_attr: list):
     """ class __init__decorator
         Parses kwargs attributes, for optional arguments uses default values,
