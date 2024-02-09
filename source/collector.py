@@ -22,6 +22,7 @@ Created on Okt 27, 2023
 
 import cherrypy
 import copy
+import analytics
 from queryHandler.Query import Query
 from messages import MSG
 from collections import defaultdict
@@ -29,7 +30,7 @@ from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
-from utils import classattributes
+from utils import classattributes, cond_execution_time
 
 
 local_cache = set()
@@ -46,6 +47,7 @@ class TimeSeries(object):
 
         self.parse_tags(filtersMap)
 
+    @cond_execution_time(enabled=analytics.inspect)
     def parse_tags(self, filtersMap):
         tagsDict = defaultdict(set)
         logger = getBridgeLogger()
@@ -106,6 +108,9 @@ class MetricTimeSeries(object):
         self.mname = name
         self.desc = desc
         self.timeseries: list[TimeSeries] = []
+
+    def __format__(self, spec):
+        return f'{self.mname}_mTS'
 
     def str_descfmt(self, original_counters=False) -> [str]:
         """Format MetricTimeSeries description rows
@@ -267,6 +272,9 @@ class SensorCollector(SensorTimeSeries):
 
         self.prepare_static_metrics_data()
 
+    def __format__(self, spec):
+        return f'{self.sensor}_Collector'
+
     @property
     def md(self):
         return MetadataHandler()
@@ -370,13 +378,14 @@ class SensorCollector(SensorTimeSeries):
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
+    @cond_execution_time(enabled=analytics.inspect)
     def prepare_static_metrics_data(self):
         incl_metrics = list(self.request.metricsaggr.keys()
                             ) if self.request.metricsaggr else None
         self.setup_static_metrics_data(incl_metrics)
 
+    @cond_execution_time(enabled=analytics.inspect)
     def validate_query_filters(self):
-
         # check filterBy settings
         if self.request.filters:
 
@@ -424,6 +433,7 @@ class SensorCollector(SensorTimeSeries):
                 raise cherrypy.HTTPError(
                     400, MSG['AttrNotValid'].format('filter'))
 
+    @cond_execution_time(enabled=analytics.inspect)
     def validate_group_tags(self):
         # check groupBy settings
         if self.request.grouptags:

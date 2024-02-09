@@ -20,6 +20,8 @@ Created on Jan 28, 2021
 @author: HWASSMAN
 '''
 
+import analytics
+from utils import cond_execution_time
 # catch import failure on AIX since we will not be shipping our third-party libraries on AIX
 try:
     import requests
@@ -28,6 +30,11 @@ try:
 except Exception:
     pass
 
+try:  # for Python 3
+    from http.client import HTTPConnection
+except ImportError:
+    from httplib import HTTPConnection
+HTTPConnection.debuglevel = analytics.urllib3_debug
 
 DEFAULT_HEADERS = {"Accept": "application/json",
                    "Content-type": "application/json"}
@@ -78,6 +85,7 @@ class perfHTTPrequestHelper(object):
         self.requestData = reqdata
         self.logger = logger
 
+    @cond_execution_time(enabled=analytics.inspect)
     def doRequest(self):
         if self.requestData and isinstance(self.requestData, requests.Request):
             _prepRequest = self.session.prepare_request(self.requestData)
