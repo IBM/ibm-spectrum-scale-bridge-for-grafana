@@ -394,4 +394,3 @@ class SingleTimeSeriesResponse(object):
         if dps:
             res['dps'] = dps
         return res
-
