@@ -176,8 +176,8 @@ class SensorTimeSeries(object):
         spec = md.metricsDesc
         metricsTypes = md.metaData.metricsType
 
-        mtype = 'gauge'
         for name in metric_names:
+            mtype = 'gauge'
             if self.sensor == 'GPFSWaiters':
                 mtype = 'histogram'
             elif metricsTypes.get(name, None) == "counter":
