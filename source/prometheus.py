@@ -57,7 +57,7 @@ class PrometheusExporter(object):
     def TOPO(self):
         return self.__md.metaData
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(enabled=analytics.inspect_special)
     def format_response(self, data) -> [str]:
         resp = []
         for name, metric in data.items():

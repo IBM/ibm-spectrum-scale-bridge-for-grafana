@@ -23,5 +23,12 @@ Created on Feb 09, 2024
 global inspect
 inspect = False
 
+global inspect_special
+inspect_special = False
+
 global urllib3_debug
 urllib3_debug = 0
+
+# measure requests Time-To-First-Byte (TTFB)
+global requests_elapsed_time
+requests_elapsed_time = False
