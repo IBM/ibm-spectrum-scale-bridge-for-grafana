@@ -523,6 +523,10 @@ class QueryHandler2:
             _response = _request.doRequest()
 
             if _response.status_code == 200:
+                # the r.elapsed is the Time-To-First-Byte (TTFB) while the call to requests.get()
+                # only terminates after the whole message has been received (Time-To-Last-Byte, TTLB).
+                if analytics.requests_elapsed_time:
+                    self.logger.debug(f'response elapsed time: {_response.elapsed.total_seconds()} for request: {str(params)}')
                 return _response.content.decode('utf-8', "strict")
             elif _response.status_code == 401:
                 self.logger.trace('Request headers:{}'.format(_response.request.headers))
@@ -532,7 +536,7 @@ class QueryHandler2:
                 raise PerfmonConnError("{} {}".format(_response.status_code, _response.reason))
             else:
                 msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
-                self.logger.trace(msg)
+                self.logger.details(msg)
                 if _response.content:
                     contentMsg = _response.content.decode('utf-8', "strict")
                     self.logger.trace(f'Response content:{contentMsg}')

@@ -47,7 +47,7 @@ class TimeSeries(object):
 
         self.parse_tags(filtersMap)
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(enabled=analytics.inspect_special)
     def parse_tags(self, filtersMap):
         tagsDict = defaultdict(set)
         logger = getBridgeLogger()
@@ -301,6 +301,7 @@ class SensorCollector(SensorTimeSeries):
                 '_Collector'
             self.thread = Thread(name=thread_name, target=self.collect)
             self.thread.start()
+            self.thread.name += '_' + str(self.thread.ident)
             self.logger.trace(
                 MSG['StartCustomThread'].format(self.thread.name))
 
@@ -378,13 +379,13 @@ class SensorCollector(SensorTimeSeries):
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(enabled=analytics.inspect_special)
     def prepare_static_metrics_data(self):
         incl_metrics = list(self.request.metricsaggr.keys()
                             ) if self.request.metricsaggr else None
         self.setup_static_metrics_data(incl_metrics)
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(enabled=analytics.inspect_special)
     def validate_query_filters(self):
         # check filterBy settings
         if self.request.filters:
@@ -433,7 +434,7 @@ class SensorCollector(SensorTimeSeries):
                 raise cherrypy.HTTPError(
                     400, MSG['AttrNotValid'].format('filter'))
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(enabled=analytics.inspect_special)
     def validate_group_tags(self):
         # check groupBy settings
         if self.request.grouptags:
