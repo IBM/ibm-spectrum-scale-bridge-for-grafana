@@ -513,9 +513,12 @@ class QueryHandler2:
 
         try:
             _auth = getAuthHandler(*self.apiKeyData)
-            _reqData = createRequestDataObj(self.logger, requestType, endpoint, self.server, self.port, auth=_auth, params=params)
-            _request = perfHTTPrequestHelper(self.logger, reqdata=_reqData)
-            _request.session.verify = self.caCert
+            _reqData = createRequestDataObj(self.logger, requestType, endpoint,
+                                            self.server, self.port, auth=_auth,
+                                            params=params)
+            _request = perfHTTPrequestHelper(self.logger,
+                                             reqdata=_reqData,
+                                             caCert=self.caCert)
             _response = _request.doRequest()
 
             if _response.status_code == 200:
