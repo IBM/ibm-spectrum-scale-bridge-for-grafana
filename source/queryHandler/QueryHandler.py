@@ -165,9 +165,10 @@ class QueryResult:
         self.rows = self.__parseRows()
 
         self.index_cache = {}  # (metric, id) -> row value index
-        self.ids = self._findIdentifiers()
+        self.ids = None
 
         if self.query and len(self.query.measurements) > 0:
+            self.ids = self._findIdentifiers()
             self._populate_index_cache()
             self._add_calculated_colunm_headers()
 
