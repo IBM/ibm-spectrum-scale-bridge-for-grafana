@@ -523,7 +523,7 @@ class QueryHandler2:
             _response = _request.doRequest()
 
             if _response.status_code == 200:
-                # the r.elapsed is the Time-To-First-Byte (TTFB) while the call to requests.get() 
+                # the r.elapsed is the Time-To-First-Byte (TTFB) while the call to requests.get()
                 # only terminates after the whole message has been received (Time-To-Last-Byte, TTLB).
                 if analytics.requests_elapsed_time:
                     self.logger.debug(f'response elapsed time: {_response.elapsed.total_seconds()} for request: {str(params)}')
