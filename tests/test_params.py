@@ -4,7 +4,7 @@ from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g, m, n, o, p, y, x
+    global a, b, c, d, e, f, g, m, n, o, p, y, x, r, s
     a = ConfigManager().defaults
     y = ConfigManager().defaults.copy()
     y['apiKeyValue'] = '/tmp/mykey'
@@ -14,13 +14,18 @@ def my_setup():
     f, g = parse_cmd_args(['-p', '8443', '-t', None, '-k', 'None', '-m', "None"])
     m, n = parse_cmd_args(['-d', 'yes'])
     o, p = parse_cmd_args(['-v', 'e40960c9-de0a-4c75-bc71-0bcae6db23b2'])
+    r, s = parse_cmd_args(['-p', '4242', '-e', '9250'])
 
 
 @with_setup(my_setup)
 def test_case01():
     result = merge_defaults_and_args(a, b)
     assert len(result.keys()) > 0
-    assert 'port' in result.keys()
+    if version < "8.0":
+        assert 'port' in result.keys()
+    else:
+        assert 'port' not in result.keys()
+        assert 'prometheus' not in result.keys()
     assert 'serverPort' in result.keys()
     assert 'apiKeyValue' not in result.keys()
 
@@ -138,10 +143,25 @@ def test_case12():
 @with_setup(my_setup)
 def test_case13():
     x = a.copy()
-    del x['port']
+    if version < "8.0":
+        del x['port']
     result = merge_defaults_and_args(x, b)
     valid, msg = checkApplicationPort(result)
     assert len(result.keys()) > 0
     assert 'port' not in result.keys()
+    if version >= "8.0":
+        assert 'prometheus' not in result.keys()
     assert valid == False
     assert len(msg) > 0
+
+
+@with_setup(my_setup)
+def test_case14():
+    if version >= "8.0":
+        result = merge_defaults_and_args(a, r)
+        valid, msg = checkApplicationPort(result)
+        assert len(result.keys()) > 0
+        assert 'port' in result.keys()
+        assert 'prometheus' in result.keys()
+        assert valid == True
+        assert len(msg) == 0

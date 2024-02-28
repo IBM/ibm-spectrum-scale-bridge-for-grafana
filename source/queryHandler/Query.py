@@ -189,16 +189,19 @@ class Query(object):
     def __str__(self):
         # dd = '-a' if self.includeDiskData else ''
         # Workaround for RTC Defect 280368: Zimon capacity query does not return all results (seen on CNSA)
-        if (self.metrics
-            and any(str(metric) in self.DISK_CAP_METRICS for metric in self.metrics)
-            ) or (self.sensor
-                  and self.sensor in ("GPFSDiskCap", "GPFSPoolCap", "GPFSInodeCap")
-                  ):
-            dd = '-ar'
-        elif self.includeDiskData:
+        dd = ''
+        if self.includeDiskData:
             dd = '-a'
-        else:
-            dd = ''
+        if self.metrics:
+            for metric in self.metrics:
+                if any(map(metric.__contains__, self.DISK_CAP_METRICS)):
+                    dd = '-ar'
+                    break
+        elif (self.sensor and self.sensor in ("GPFSDiskCap",
+                                              "GPFSPoolCap",
+                                              "GPFSInodeCap")
+              ):
+            dd = '-ar'
 
         if self.rawData:
             raw = '-z'

@@ -54,8 +54,8 @@ def configureLogging(logPath, logfile, loglevel=logging.INFO):
 
     logToFile = True if logfile else False
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(threadName)-30s - %(levelname)-8s - %(message)s')
-    formatter1 = logging.Formatter('%(asctime)s - %(threadName)-30s - %(levelname)-8s - %(message)s', datefmt='%Y-%m-%d %H:%M')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(threadName)-55s - %(levelname)-8s - %(message)s')
+    formatter1 = logging.Formatter('%(asctime)s - %(threadName)-40s - %(levelname)-8s - %(message)s', datefmt='%Y-%m-%d %H:%M')
 
     # prepare the logger
     logging.setLoggerClass(MyLogger)

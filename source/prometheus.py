@@ -22,11 +22,12 @@ Created on Oct 30, 2023
 
 import cherrypy
 import json
+import analytics
 from messages import MSG
 from typing import Optional
 from cherrypy.process.plugins import Monitor
 from collector import SensorCollector, QueryPolicy
-from utils import execution_time
+from utils import execution_time, cond_execution_time
 
 
 class PrometheusExporter(object):
@@ -56,16 +57,19 @@ class PrometheusExporter(object):
     def TOPO(self):
         return self.__md.metaData
 
+    @cond_execution_time(enabled=analytics.inspect_special)
     def format_response(self, data) -> [str]:
         resp = []
         for name, metric in data.items():
-            header = metric.str_descfmt()
+            header = metric.str_descfmt(original_counters=self.raw_data)
             resp.extend(header)
             for sts in metric.timeseries:
                 if self.raw_data:
                     sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
-                    sts_resp = SingleTimeSeriesResponse(name, _key, _value, sts.tags, metric.mtype)
+                    sts_resp = SingleTimeSeriesResponse(name, _key,
+                                                        _value, sts.tags,
+                                                        metric.mtype)
                     self.logger.trace(f'sts_resp.str_expfmt output: {sts_resp.str_expfmt()}')
                     resp.extend(sts_resp.str_expfmt())
         return resp
@@ -116,6 +120,7 @@ class PrometheusExporter(object):
                     frequency=collector.period,
                     name=thread_name).subscribe()
 
+    @cond_execution_time(enabled=analytics.inspect)
     def build_collector(self, sensor) -> SensorCollector:
 
         period = self.md.getSensorPeriod(sensor)
@@ -134,8 +139,8 @@ class PrometheusExporter(object):
         request = QueryPolicy(**attrs)
         collector = SensorCollector(sensor, period, self.logger, request)
 
-        self.logger.trace(f'request instance {str(request.__dict__)}')
-        self.logger.trace(f'Created Collector instance {str(collector.__dict__)}')
+        # self.logger.trace(f'request instance {str(request.__dict__)}')
+        # self.logger.trace(f'Created Collector instance {str(collector.__dict__)}')
         return collector
 
     def GET(self, **params):
@@ -152,6 +157,11 @@ class PrometheusExporter(object):
         if '/update' == cherrypy.request.script_name:
             # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
+
+        # /sensorsconfig
+        elif '/sensorsconfig' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.md.SensorsConfig
 
         elif self.endpoints and self.endpoints.get(cherrypy.request.script_name,
                                                    None):

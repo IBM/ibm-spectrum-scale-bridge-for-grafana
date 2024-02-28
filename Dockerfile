@@ -1,9 +1,9 @@
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.2
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.3
 FROM $BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="7.1.0"
+LABEL com.ibm.version="8.0.0-dev"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -28,9 +28,13 @@ ARG HTTPPROTOCOL=http
 ENV PROTOCOL=$HTTPPROTOCOL
 RUN echo "the HTTP/S protocol is set to $PROTOCOL"
 
-ARG HTTPPORT=4242
+ARG HTTPPORT=None
 ENV PORT=$HTTPPORT
-RUN echo "the HTTP/S port is set to $PORT" 
+RUN echo "the OpentTSDB API HTTP/S port is set to $PORT"
+
+ARG PROMPORT=None
+ENV PROMETHEUS=$PROMPORT
+RUN echo "the Prometheus API HTTPS port is set to $PROMETHEUS" 
 
 ARG PERFMONPORT=9980
 ENV SERVERPORT=$PERFMONPORT
@@ -125,8 +129,8 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 # Switch user
 USER $GID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH --tlsKeyFile $TLSKEYFILE --tlsCertFile $TLSCERTFILE --apiKeyName $APIKEYNAME --apiKeyValue $APIKEYVALUE"]
 
-EXPOSE 4242 8443
+EXPOSE 4242 8443 9250
 
 #CMD ["tail", "-f", "/dev/null"]

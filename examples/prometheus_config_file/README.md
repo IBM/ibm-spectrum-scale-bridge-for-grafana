@@ -62,3 +62,4 @@ You need to register the target in the prometheus.yml file to get the metrics fr
    systemctl enable prometheus
    ```
 
+For more configuration details, please read the content of the  'Prometheus setup' section in the project [wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki).

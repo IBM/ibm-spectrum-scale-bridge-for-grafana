@@ -209,7 +209,7 @@ class Topo(object):
         if (searchMetric.find("(") >= 0):
             searchMetric = searchMetric[searchMetric.find("(") + 1:-1]
         for sensor, metrics in self.__metricsDef.items():
-            if searchMetric in metrics.values():
+            if searchMetric in set(metrics.values()):
                 return sensor
         return None
 
@@ -245,7 +245,7 @@ class Topo(object):
         based on metadata topology returned from zimon "topo".
         '''
         filtersMaps = []
-        if searchSensor in self.allFiltersMaps.keys():
+        if searchSensor in set(self.allFiltersMaps.keys()):
             filtersMaps.extend(self.allFiltersMaps[searchSensor])
         return filtersMaps
 
@@ -282,13 +282,11 @@ class Topo(object):
         return keys
 
     def getAllFilterKeysForSensor(self, searchSensor):
-        keys = []
+        filter_keys = set()
         filtersMap = self.getAllFilterMapsForSensor(searchSensor)
-        for a in filtersMap:
-            keys.extend(list(a.keys()))
-        if len(keys) > 1:
-            return list(set(keys))
-        return keys
+        for filter in filtersMap:
+            filter_keys.update(filter.keys())
+        return list(filter_keys)
 
     def getAllFilterKeysForMeasurementsMetrics(self, searchMetrics):
         filterKeys = []

@@ -183,6 +183,8 @@ def main(argv):
         print(msg)
         return
 
+    registered_apps = []
+
     # prepare the logger
     logger = configureLogging(args.get('logPath'), args.get('logFile', None),
                               args.get('logLevel'))
@@ -258,6 +260,12 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(api, '/sensorsconfig',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query for list of aggregators (openTSDB)
         cherrypy.tree.mount(api, '/api/aggregators',
                             {'/':
@@ -270,6 +278,8 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+
+        registered_apps.append("OpenTSDB Api listening on Grafana queries")
 
     if args.get('prometheus', None):
         bind_prometheus_server(args)
@@ -287,6 +297,12 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(exporter, '/sensorsconfig',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query for all metrics (PrometheusExporter)
         cherrypy.tree.mount(exporter, '/metrics',
                             {'/':
@@ -300,6 +316,7 @@ def main(argv):
                                      {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                      }
                                     )
+        registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
 
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
@@ -310,6 +327,7 @@ def main(argv):
         cherrypy.engine.subscribe('stop', watcher.stop_watch)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
+        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)))
         logger.info("server started")
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()
@@ -327,7 +345,7 @@ def main(argv):
         cherrypy.engine.stop()
         cherrypy.engine.exit()
 
-    api = None
+    api = exporter = None
 
     logger.warning("server stopped")
 
