@@ -22,6 +22,7 @@ Created on Okt 27, 2023
 
 import cherrypy
 import copy
+import analytics
 from queryHandler.Query import Query
 from messages import MSG
 from collections import defaultdict
@@ -29,10 +30,10 @@ from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
-from utils import classattributes
+from utils import classattributes, cond_execution_time
 
 
-local_cache = []
+local_cache = set()
 
 
 class TimeSeries(object):
@@ -46,6 +47,7 @@ class TimeSeries(object):
 
         self.parse_tags(filtersMap)
 
+    @cond_execution_time(enabled=analytics.inspect_special)
     def parse_tags(self, filtersMap):
         tagsDict = defaultdict(set)
         logger = getBridgeLogger()
@@ -53,12 +55,12 @@ class TimeSeries(object):
             ident = [key.parent]
             ident.extend(key.identifier)
             logger.trace(MSG['ReceivAttrValues'].format(
-                'Single ts identifiers', ', '.join(ident)))
+                'Single ts identifiers', '|'.join(ident)))
             found = False
             for filtersDict in filtersMap:
-                if all((value in filtersDict.values()) for value in ident):
-                    logger.trace(MSG['ReceivAttrValues'].format(
-                        'filtersKeys', ', '.join(filtersDict.keys())))
+                if set(filtersDict.values()) == set(ident):
+                    # logger.trace(MSG['ReceivAttrValues'].format(
+                    #    'filtersKeys', ', '.join(filtersDict.keys())))
                     if len(self.columnInfo.keys) == 1:
                         self.tags = filtersDict
                     else:
@@ -68,17 +70,15 @@ class TimeSeries(object):
                     break
             # detected zimon key, do we need refresh local TOPO?
             if not found:
-                already_reported = False
-                for cache_item in local_cache:
-                    if set(cache_item) == set(ident):
-                        logger.trace(MSG['NewKeyAlreadyReported'].format(ident))
-                        already_reported = True
-                        break
-                if not already_reported:
-                    logger.trace(MSG['NewKeyDetected'].format(ident))
-                    local_cache.append(ident)
+                cache_size = len(local_cache)
+                local_cache.union(ident)
+                updated_size = len(local_cache)
+                if updated_size > cache_size:
+                    logger.trace(MSG['NewKeyDetected'].format('|'.join(ident)))
                     md = MetadataHandler()
                     Thread(name='AdHocMetaDataUpdate', target=md.update).start()
+                else:
+                    logger.trace(MSG['NewKeyAlreadyReported'].format('|'.join(ident)))
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
@@ -86,21 +86,41 @@ class TimeSeries(object):
             else:
                 self.tags[_key] = _values.pop()
 
+    def reduce_dps_to_first_not_none(self, reverse_order=False):
+        """Reduce multiple data points(dps) of a single
+           TimeSeries to the first non null value in a sorted order.
+           Optionally the order of timestamps can be reversed.
+        """
+        if len(self.dps) > 1:
+            logger = getBridgeLogger()
+            timestamps = sorted(self.dps.keys(), reverse=reverse_order)
+            self.dps = next((
+                {timestmp: self.dps[timestmp]} for timestmp in timestamps if
+                self.dps[timestmp] is not None), {})
+            if len(self.dps) == 0:
+                logger.warning(f'Received null values in all data points for {self.metricname}')
+
 
 class MetricTimeSeries(object):
 
-    def __init__(self, name: str, desc: str):
-        self.mtype = 'gauge'
+    def __init__(self, name: str, desc: str, type: Optional[str] = None):
+        self.mtype = type or 'gauge'
         self.mname = name
         self.desc = desc
         self.timeseries: list[TimeSeries] = []
 
-    def str_descfmt(self) -> [str]:
+    def __format__(self, spec):
+        return f'{self.mname}_mTS'
+
+    def str_descfmt(self, original_counters=False) -> [str]:
         """Format MetricTimeSeries description rows
             Output format:
                 '''# HELP {name} {desc}'''
                 '''# TYPE {name} {mtype}'''
         """
+        metric_type = self.mtype
+        if not original_counters and metric_type == 'counter':
+            metric_type = 'gauge'
 
         myset = []
 
@@ -111,7 +131,7 @@ class MetricTimeSeries(object):
         myset.append(expfmt)
         expfmt1 = '''# TYPE {name} {mtype}'''.format(
             name=self.mname,
-            mtype=self.mtype,
+            mtype=metric_type,
         )
         myset.append(expfmt1)
 
@@ -154,8 +174,17 @@ class SensorTimeSeries(object):
         mDict = {}
         md = MetadataHandler()
         spec = md.metricsDesc
+        metricsTypes = md.metaData.metricsType
+
         for name in metric_names:
-            ts = MetricTimeSeries(name, spec.get(name, "Desc not found"))
+            mtype = 'gauge'
+            if self.sensor == 'GPFSWaiters':
+                mtype = 'histogram'
+            elif metricsTypes.get(name, None) == "counter":
+                mtype = 'counter'
+            ts = MetricTimeSeries(name,
+                                  spec.get(name, "Desc not found"),
+                                  mtype)
             mDict[name] = ts
         self.metrics = mDict
 
@@ -166,7 +195,7 @@ class SensorTimeSeries(object):
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
-                      dsBucketSize=0, dsOp=''),
+                      dsBucketSize=0, dsOp='', rawData=False),
                  ['sensor', 'period'])
 class QueryPolicy(object):
 
@@ -181,6 +210,7 @@ class QueryPolicy(object):
         '''Returns zimon query string '''
         query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
+        query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
             self.logger.error(MSG['QueryError'].
@@ -242,6 +272,9 @@ class SensorCollector(SensorTimeSeries):
 
         self.prepare_static_metrics_data()
 
+    def __format__(self, spec):
+        return f'{self.sensor}_Collector'
+
     @property
     def md(self):
         return MetadataHandler()
@@ -268,6 +301,7 @@ class SensorCollector(SensorTimeSeries):
                 '_Collector'
             self.thread = Thread(name=thread_name, target=self.collect)
             self.thread.start()
+            self.thread.name += '_' + str(self.thread.ident)
             self.logger.trace(
                 MSG['StartCustomThread'].format(self.thread.name))
 
@@ -308,6 +342,9 @@ class SensorCollector(SensorTimeSeries):
 
         res = self.md.qh.runQuery(self.query)
         if res is None:
+            self.logger.error(MSG['NoData'])
+            # self.stop_collect()
+            # raise cherrypy.HTTPError(400, MSG['NoData'])
             return
         self.logger.details("res.rows length: {}".format(len(res.rows)))
         if self.removeNoData:
@@ -327,10 +364,8 @@ class SensorCollector(SensorTimeSeries):
             for value, columnInfo in zip(row.values, res.columnInfos):
                 columnValues[columnInfo][row.tstamp] = value
 
-        timeseries = []
         for columnInfo, dps in columnValues.items():
             ts = TimeSeries(columnInfo, dps, self.filtersMap)
-            timeseries.append(ts)
             if self.metrics.get(columnInfo.keys[0].metric) is not None:
                 self.logger.trace(MSG['MetricInResults'].format(
                     columnInfo.keys[0].metric))
@@ -340,17 +375,18 @@ class SensorCollector(SensorTimeSeries):
                 self.logger.warning(MSG['MetricNotInResults'].format(
                     columnInfo.keys[0].metric))
                 mt = MetricTimeSeries(columnInfo.keys[0].metric, '')
-                mt.timeseries = timeseries
+                mt.timeseries.append(ts)
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
+    @cond_execution_time(enabled=analytics.inspect_special)
     def prepare_static_metrics_data(self):
         incl_metrics = list(self.request.metricsaggr.keys()
                             ) if self.request.metricsaggr else None
         self.setup_static_metrics_data(incl_metrics)
 
+    @cond_execution_time(enabled=analytics.inspect_special)
     def validate_query_filters(self):
-
         # check filterBy settings
         if self.request.filters:
 
@@ -398,20 +434,20 @@ class SensorCollector(SensorTimeSeries):
                 raise cherrypy.HTTPError(
                     400, MSG['AttrNotValid'].format('filter'))
 
+    @cond_execution_time(enabled=analytics.inspect_special)
     def validate_group_tags(self):
-
         # check groupBy settings
         if self.request.grouptags:
-            filter_keys = self.md.metaData.getAllFilterKeysForSensor(
-                self.sensor)
+            filter_keys = set()
+            for filter in self.filtersMap:
+                filter_keys.update(filter.keys())
             if not filter_keys:
                 self.logger.error(MSG['GroupByErr'])
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
-            groupKeys = self.request.grouptags
-            if not all(key in filter_keys for key in groupKeys):
-                self.logger.error(MSG['AttrNotValid'].format('groupBy'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))
+            if not (set(self.request.grouptags)).issubset(filter_keys):
+                self.logger.error(MSG['AttrNotValid'].format('groupBy key'))
                 self.logger.error(MSG['ReceivAttrValues'].format(
-                    'groupBy', ", ".join(filter_keys)))
+                    'groupBy keys', ", ".join(filter_keys)))
                 raise cherrypy.HTTPError(
-                    400, MSG['AttrNotValid'].format('filter'))
+                    400, MSG['AttrNotValid'].format('groupBy key'))

@@ -8,7 +8,7 @@ Grafana Bridge is a standalone Python application. It translates the IBM Storage
 
 
 <p align="center">
-  <img src="/docs/grafana_bridge_overview.png" />
+  <img src="/docs/grafana-bridge-overview.png" />
 </p>
 
 
@@ -18,7 +18,10 @@ Grafana Bridge is a standalone Python application. It translates the IBM Storage
 
 * [Setup the grafana bridge on a classic IBM Storage Scale cluster](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Setup-the-IBM-Spectrum-Scale-Performance-Monitoring-Bridge-for-classic-IBM-Spectrum-Scale-devices)
 * [Run the grafana bridge in a docker container](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Running-the-IBM-Spectrum-Scale-Performance-Monitoring-Bridge-in-a-docker-container)
-* [Setup the grafana bridge for performance monitoring of a CNSA cluster in a k8s OCP environment](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Setup-Grafana-for-monitoring-a-CNSA-cluster--in-a-k8s-OCP-environment)
+* [Setup a Grafana environment for monitoring performance data of a CNSA cluster in a k8s OCP environment](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Setup-Grafana-for-monitoring-a-CNSA-cluster--in-a-k8s-OCP-environment)
+
+The ***latest*** article:
+* [How to setup Grafana instance to monitor multiple IBM Storage Scale clusters running in a cloud or mixed environment](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-setup-Grafana-instance-to-monitor-multiple-IBM-Storage-Scale-clusters-running-in-a-cloud-or-mixed-environment)
 
 Find more helpful information about the bridge usage in the project [Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki)
 

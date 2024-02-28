@@ -24,10 +24,11 @@ import json
 import operator
 import socket
 import time
+import analytics
 from collections import namedtuple, defaultdict
 from itertools import chain
 from typing import NamedTuple, Tuple
-from utils import execution_time
+from utils import cond_execution_time
 
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 
@@ -164,9 +165,10 @@ class QueryResult:
         self.rows = self.__parseRows()
 
         self.index_cache = {}  # (metric, id) -> row value index
-        self.ids = self._findIdentifiers()
+        self.ids = None
 
         if self.query and len(self.query.measurements) > 0:
+            self.ids = self._findIdentifiers()
             self._populate_index_cache()
             self._add_calculated_colunm_headers()
 
@@ -433,7 +435,7 @@ class QueryHandler2:
     def caCert(self):
         return self.__caCert
 
-    @execution_time()
+    @cond_execution_time(enabled=analytics.inspect)
     def getTopology(self, ignoreMetrics=False):
         '''
         Returns complete topology as a single JSON string
@@ -454,7 +456,6 @@ class QueryHandler2:
             self.logger.error(
                 'QueryHandler: getTopology response not valid json: {0} {1}'.format(res[:20], e))
 
-    @execution_time()
     def getAvailableMetrics(self):
         '''
         Returns output from topo -m
@@ -484,7 +485,7 @@ class QueryHandler2:
             self.logger.error(
                 'QueryHandler: deleteKeysFromTopology response not valid json: {0} {1}'.format(response[:20], e))
 
-    @execution_time()
+    @cond_execution_time(enabled=analytics.inspect)
     def runQuery(self, query):
         '''
         runQuery: executes the given query based on the arguments.
@@ -495,7 +496,7 @@ class QueryHandler2:
         res = self.__do_RESTCall('perfmon/data', 'GET', params)
 
         if res is None:
-            self.logger.error('QueryHandler: query response has no data results')
+            self.logger.debug('QueryHandler: query response has no data results')
             return None
         try:
             result = json.loads(res, strict=False)
@@ -509,29 +510,36 @@ class QueryHandler2:
         Forward query request to the HTTPRequest client interface
         '''
 
-        self.logger.trace("__do_RESTcall invoke __ params: {} {} {}".format(endpoint, requestType, str(params)))
+        # self.logger.trace("__do_RESTcall invoke __ params: {} {} {}".format(endpoint, requestType, str(params)))
 
         try:
             _auth = getAuthHandler(*self.apiKeyData)
-            _reqData = createRequestDataObj(self.logger, requestType, endpoint, self.server, self.port, auth=_auth, params=params)
-            _request = perfHTTPrequestHelper(self.logger, reqdata=_reqData)
-            _request.session.verify = self.caCert
+            _reqData = createRequestDataObj(self.logger, requestType, endpoint,
+                                            self.server, self.port, auth=_auth,
+                                            params=params)
+            _request = perfHTTPrequestHelper(self.logger,
+                                             reqdata=_reqData,
+                                             caCert=self.caCert)
             _response = _request.doRequest()
 
             if _response.status_code == 200:
+                # the r.elapsed is the Time-To-First-Byte (TTFB) while the call to requests.get()
+                # only terminates after the whole message has been received (Time-To-Last-Byte, TTLB).
+                if analytics.requests_elapsed_time:
+                    self.logger.debug(f'response elapsed time: {_response.elapsed.total_seconds()} for request: {str(params)}')
                 return _response.content.decode('utf-8', "strict")
             elif _response.status_code == 401:
-                self.logger.debug('Request headers:{}'.format(_response.request.headers))
-                self.logger.debug('Request url:{}'.format(_response.request.url))
+                self.logger.trace('Request headers:{}'.format(_response.request.headers))
+                self.logger.trace('Request url:{}'.format(_response.request.url))
                 msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
                 self.logger.details(msg)
                 raise PerfmonConnError("{} {}".format(_response.status_code, _response.reason))
             else:
                 msg = "Perfmon RESTcall error __ Server responded: {} {}".format(_response.status_code, _response.reason)
-                self.logger.warning(msg)
+                self.logger.details(msg)
                 if _response.content:
                     contentMsg = _response.content.decode('utf-8', "strict")
-                    self.logger.details(f'Response content:{contentMsg}')
+                    self.logger.trace(f'Response content:{contentMsg}')
                 return None
         except TypeError as e:
             self.logger.exception(e)

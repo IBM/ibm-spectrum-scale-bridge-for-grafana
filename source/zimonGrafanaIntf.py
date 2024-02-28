@@ -35,8 +35,11 @@ from bridgeLogger import configureLogging, getBridgeLogger
 from confParser import getSettings
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
+from prometheus import PrometheusExporter
 from watcher import ConfigWatcher
 from cherrypy import _cperror
+
+ENDPOINTS = {}
 
 
 def processFormJSON(entity):
@@ -48,6 +51,16 @@ def processFormJSON(entity):
         cherrypy.serving.request.json = json.loads(body.decode('utf-8'))
     else:
         cherrypy.serving.request.json = json.loads('{}')
+
+
+def load_endpoints(file_name):
+    dirname, _ = os.path.split(os.path.abspath(__file__))
+    conf_file = os.path.join(dirname, file_name)
+    if os.path.isfile(conf_file):
+        with open(conf_file) as f:
+            d = json.load(f)
+    api = file_name.split('_', 1)[0]
+    ENDPOINTS[api] = d
 
 
 def setup_cherrypy_logging(args):
@@ -85,7 +98,7 @@ def updateCherrypyConf(args):
 
     cherrypy.config.update(globalConfig)
 
-    dirname, filename = os.path.split(os.path.abspath(__file__))
+    dirname, _ = os.path.split(os.path.abspath(__file__))
     customconf = os.path.join(dirname, 'mycherrypy.conf')
     cherrypy.config.update(customconf)
     cherrypy.server.unsubscribe()
@@ -104,13 +117,16 @@ def bind_opentsdb_server(args):
     opentsdb_server.subscribe()
 
 
-def updateCherrypySslConf(args):
+def bind_prometheus_server(args):
+    prometheus_server = cherrypy._cpserver.Server()
+    prometheus_server.socket_port = args.get('prometheus')
+    prometheus_server._socket_host = '0.0.0.0'
     certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
     keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
-    sslConfig = {'global': {'server.ssl_module': 'builtin',
-                            'server.ssl_certificate': certPath,
-                            'server.ssl_private_key': keyPath}}
-    cherrypy.config.update(sslConfig)
+    prometheus_server.ssl_module = 'builtin'
+    prometheus_server.ssl_certificate = certPath
+    prometheus_server.ssl_private_key = keyPath
+    prometheus_server.subscribe()
 
 
 def resolveAPIKeyValue(storedKey):
@@ -141,7 +157,8 @@ def handle_error():
 
 
 def format_default_error_page(status=404, message="Bad Request",
-                              traceback=cherrypy.serving.request.show_tracebacks
+                              traceback=cherrypy.serving.request.show_tracebacks,
+                              version='1.0'
                               ):
     template = {}
     template['error'] = status
@@ -165,6 +182,8 @@ def main(argv):
     if not args:
         print(msg)
         return
+
+    registered_apps = []
 
     # prepare the logger
     logger = configureLogging(args.get('logPath'), args.get('logFile', None),
@@ -212,9 +231,9 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
-    if args.get('port'):
+    if args.get('port', None):
         bind_opentsdb_server(args)
-        api = OpenTsdbApi(logger, mdHandler)
+        api = OpenTsdbApi(logger, mdHandler, args.get('port'))
 
         cherrypy.tree.mount(api, '/api/query',
                             {'/':
@@ -241,6 +260,12 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(api, '/sensorsconfig',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query for list of aggregators (openTSDB)
         cherrypy.tree.mount(api, '/api/aggregators',
                             {'/':
@@ -254,6 +279,45 @@ def main(argv):
                              }
                             )
 
+        registered_apps.append("OpenTSDB Api listening on Grafana queries")
+
+    if args.get('prometheus', None):
+        bind_prometheus_server(args)
+        load_endpoints('prometheus_endpoints.json')
+        exporter = PrometheusExporter(logger,
+                                      mdHandler,
+                                      args.get('prometheus'),
+                                      args.get('rawCounters', False))
+        exporter.endpoints.update(ENDPOINTS.get('prometheus',
+                                                {}))
+
+        # query to force update of metadata (zimon feature)
+        cherrypy.tree.mount(exporter, '/update',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for list configured zimon sensors
+        cherrypy.tree.mount(exporter, '/sensorsconfig',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        # query for all metrics (PrometheusExporter)
+        cherrypy.tree.mount(exporter, '/metrics',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        if len(exporter.endpoints) > 0:
+            for endpoint in exporter.endpoints.keys():
+                cherrypy.tree.mount(exporter, endpoint,
+                                    {'/':
+                                     {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                     }
+                                    )
+        registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
+
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
@@ -263,6 +327,7 @@ def main(argv):
         cherrypy.engine.subscribe('stop', watcher.stop_watch)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
+        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)))
         logger.info("server started")
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()
@@ -280,7 +345,7 @@ def main(argv):
         cherrypy.engine.stop()
         cherrypy.engine.exit()
 
-    api = None
+    api = exporter = None
 
     logger.warning("server stopped")
 

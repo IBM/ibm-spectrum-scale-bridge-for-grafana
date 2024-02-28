@@ -14,7 +14,7 @@ def my_setup():
     e = ['-c', '10', '-t', '/opt/registry/certs']
     f = ['-c', '10', '-s', '9.155.108.199', '-p', '8443', '-t', '/opt/registry/certs', '--tlsKeyFile', 'privkey.pem', '--tlsCertFile', 'cert.pem']
     g = ['-p', '4242', '-P', '9084']
-    h = ['-d', 'no']
+    h = ['-p', '4242', '-e', '9250', '-d', 'no']
     k = ['-p', '4243', '-r', 'https']
 
 
@@ -35,8 +35,12 @@ def test_case03():
     args, msg = parse_cmd_args([])
     result = vars(args)
     elements = list(result.keys())
-    mandatoryItems = ['port', 'serverPort']
-    assert all(item in elements for item in mandatoryItems)
+    if version < "8.0":
+        mandatoryItems = ['port', 'serverPort']
+        assert all(item in elements for item in mandatoryItems)
+    else:
+        mandatoryItems = ['server', 'serverPort']
+        assert all(item in elements for item in mandatoryItems)
 
 
 @with_setup(my_setup)
@@ -73,17 +77,27 @@ def test_case06():
 
 @with_setup(my_setup)
 def test_case07():
-    args, msg = parse_cmd_args(a)
-    result = vars(args)
-    assert len(result.keys()) > 0
-    assert 'port' in result.keys()
-    assert 'protocol' in result.keys()
-    assert result.get('port') == 8443
-    assert result.get('protocol') is None
+    if version < "8.0":
+        args, msg = parse_cmd_args(a)
+        result = vars(args)
+        assert len(result.keys()) > 0
+        assert 'port' in result.keys()
+        assert 'protocol' in result.keys()
+        assert result.get('port') == 8443
+        assert result.get('protocol') is None
+    else:
+        args, msg = parse_cmd_args(a)
+        result = vars(args)
+        assert len(result.keys()) > 0
+        assert 'port' in result.keys()
+        assert 'protocol' in result.keys()
+        assert result.get('port') == '8443'
+        assert result.get('protocol') is None
 
 
+@with_setup(my_setup)
 def test_case08():
-    args, msg = parse_cmd_args([])
+    args, msg = parse_cmd_args(a)
     result = vars(args)
     assert 'includeDiskData' in result.keys()
     assert result.get('includeDiskData') is None

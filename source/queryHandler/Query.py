@@ -91,6 +91,7 @@ class Query(object):
         self.timeRep = ' now'         # string time representation
         self.measurements = {}
         self.normalize_rates = True
+        self.rawData = False
         self.key = None
         self.sensor = None
 
@@ -188,26 +189,34 @@ class Query(object):
     def __str__(self):
         # dd = '-a' if self.includeDiskData else ''
         # Workaround for RTC Defect 280368: Zimon capacity query does not return all results (seen on CNSA)
-        if (self.metrics
-            and any(str(metric) in self.DISK_CAP_METRICS for metric in self.metrics)
-            ) or (self.sensor
-                  and self.sensor in ("GPFSDiskCap", "GPFSPoolCap", "GPFSInodeCap")
-                  ):
-            dd = '-ar'
-        elif self.includeDiskData:
+        dd = ''
+        if self.includeDiskData:
             dd = '-a'
+        if self.metrics:
+            for metric in self.metrics:
+                if any(map(metric.__contains__, self.DISK_CAP_METRICS)):
+                    dd = '-ar'
+                    break
+        elif (self.sensor and self.sensor in ("GPFSDiskCap",
+                                              "GPFSPoolCap",
+                                              "GPFSInodeCap")
+              ):
+            dd = '-ar'
+
+        if self.rawData:
+            raw = '-z'
         else:
-            dd = ''
+            raw = ''
 
         if self.sensor is not None:
-            queryString = 'get -j {0} group {1} bucket_size {2} {3}'.format(
-                dd, self.sensor, self.bucket_size, self.timeRep)
+            queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
+                dd, raw, self.sensor, self.bucket_size, self.timeRep)
         elif self.key is not None:
-            queryString = 'get -j {0} {1} bucket_size {2} {3}'.format(
-                dd, self.key, self.bucket_size, self.timeRep)
+            queryString = 'get -j {0} {1} {2} bucket_size {3} {4}'.format(
+                dd, raw, self.key, self.bucket_size, self.timeRep)
         else:
-            queryString = 'get -j {0} metrics {1} bucket_size {2} {3}'.format(
-                dd, ','.join(self.metrics), self.bucket_size, self.timeRep)
+            queryString = 'get -j {0} {1} metrics {2} bucket_size {3} {4}'.format(
+                dd, raw, ','.join(self.metrics), self.bucket_size, self.timeRep)
 
         if self.filters:
             queryString += ' from ' + ",".join(self.filters)
