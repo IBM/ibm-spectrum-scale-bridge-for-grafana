@@ -40,7 +40,6 @@ from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
 from watcher import ConfigWatcher
 from cherrypy import _cperror
-from cherrypy.lib import cpstats
 from cherrypy.lib.cpstats import StatsPage
 
 ENDPOINTS = {}
