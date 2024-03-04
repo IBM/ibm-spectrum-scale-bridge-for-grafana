@@ -26,6 +26,8 @@ import sys
 import os
 import errno
 import logging
+import analytics
+
 from logging import handlers
 from queryHandler.QueryHandler import PerfmonConnError
 from queryHandler import SensorConfig
@@ -38,6 +40,7 @@ from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
 from watcher import ConfigWatcher
 from cherrypy import _cperror
+from cherrypy.lib.cpstats import StatsPage
 
 ENDPOINTS = {}
 
@@ -114,6 +117,7 @@ def bind_opentsdb_server(args):
         opentsdb_server.ssl_module = 'builtin'
         opentsdb_server.ssl_certificate = certPath
         opentsdb_server.ssl_private_key = keyPath
+    opentsdb_server.statistics = analytics.cherrypy_internal_stats
     opentsdb_server.subscribe()
 
 
@@ -126,6 +130,7 @@ def bind_prometheus_server(args):
     prometheus_server.ssl_module = 'builtin'
     prometheus_server.ssl_certificate = certPath
     prometheus_server.ssl_private_key = keyPath
+    prometheus_server.statistics = analytics.cherrypy_internal_stats
     prometheus_server.subscribe()
 
 
@@ -278,7 +283,6 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
-
         registered_apps.append("OpenTSDB Api listening on Grafana queries")
 
     if args.get('prometheus', None):
@@ -317,6 +321,7 @@ def main(argv):
                                      }
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
+        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
 
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 

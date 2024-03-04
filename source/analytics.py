@@ -32,3 +32,6 @@ urllib3_debug = 0
 # measure requests Time-To-First-Byte (TTFB)
 global requests_elapsed_time
 requests_elapsed_time = False
+
+global cherrypy_internal_stats
+cherrypy_internal_stats = False
