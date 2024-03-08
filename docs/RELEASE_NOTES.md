@@ -1,3 +1,11 @@
+# Version 7.1.3 (03/08/2024)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.3-1610 \
+
+Tested with Grafana version 9.5
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 7.1.2 (02/28/2024)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.3-1552 \
 
