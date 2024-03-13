@@ -53,6 +53,7 @@ def close_session():
     global session
     if session:
         session.close()
+        session = None
 
 
 def getAuthHandler(keyName, keyValue):
