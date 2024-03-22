@@ -28,7 +28,7 @@ from typing import Optional
 from cherrypy.process.plugins import Monitor
 from collector import SensorCollector, QueryPolicy
 from utils import execution_time, cond_execution_time
-
+from __version__ import __version__
 
 class PrometheusExporter(object):
     exposed = True
@@ -143,6 +143,33 @@ class PrometheusExporter(object):
         # self.logger.trace(f'Created Collector instance {str(collector.__dict__)}')
         return collector
 
+    @execution_time()
+    def overview(self):
+        '''Render simple overview of what this Exporter responds to'''
+        import textwrap
+        def readable(name):
+            import string
+            return string.capwords(name[1:], '_').replace('Gpfs', 'GPFS')
+        handlers = ['/metrics', '/sensorsconfig', '/update'] + list(self.endpoints.keys())
+        links = [f'<li><a href="{handler}">{readable(handler)}</a></li>' for handler in handlers]
+        linklist = '\n'.join(links)
+        return textwrap.dedent(f"""\
+            <html>
+                <head><title>IBM Storage Scale Exporter</title></head>
+                <body>
+                    <header><h1>IBM Storage Scale Exporter</h1> </header>
+                    <main>
+                        <p>{MSG['BridgeVersionInfo'].format(__version__)}</p>
+                        <div>
+                          <ul>
+                          {linklist}
+                          </ul>
+                        </div>
+                    </main>
+                </body>
+            </html>""")
+
+        
     def GET(self, **params):
         '''Handle partial URLs such as /metrics_cpu
            TODO: add more explanation
@@ -153,8 +180,14 @@ class PrometheusExporter(object):
         if int(conn[1]) != int(self.port):
             raise cherrypy.HTTPError(400, MSG[400])
 
+        # apex
+        if not cherrypy.request.script_name:
+            cherrypy.response.headers['Content-Type'] = 'text/html'
+            return self.overview()
+            
+        
         # /update
-        if '/update' == cherrypy.request.script_name:
+        elif '/update' == cherrypy.request.script_name:
             # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.md.update()
 
