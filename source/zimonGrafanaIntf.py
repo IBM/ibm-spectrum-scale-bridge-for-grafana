@@ -125,11 +125,12 @@ def bind_prometheus_server(args):
     prometheus_server = cherrypy._cpserver.Server()
     prometheus_server.socket_port = args.get('prometheus')
     prometheus_server._socket_host = '0.0.0.0'
-    certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
-    keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
-    prometheus_server.ssl_module = 'builtin'
-    prometheus_server.ssl_certificate = certPath
-    prometheus_server.ssl_private_key = keyPath
+    if args.get('protocol') == "https":
+        certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
+        keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
+        prometheus_server.ssl_module = 'builtin'
+        prometheus_server.ssl_certificate = certPath
+        prometheus_server.ssl_private_key = keyPath
     prometheus_server.statistics = analytics.cherrypy_internal_stats
     prometheus_server.subscribe()
 
@@ -295,6 +296,12 @@ def main(argv):
         exporter.endpoints.update(ENDPOINTS.get('prometheus',
                                                 {}))
 
+        # query to force update of metadata (zimon feature)
+        cherrypy.tree.mount(exporter, '/',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query to force update of metadata (zimon feature)
         cherrypy.tree.mount(exporter, '/update',
                             {'/':

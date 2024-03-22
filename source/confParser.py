@@ -36,11 +36,7 @@ def checkFileExists(path, filename):
 
 
 def checkTLSsettings(args):
-    if args.get('prometheus') and (not args.get('tlsKeyPath') or not
-                                   args.get('tlsKeyFile') or not
-                                   args.get('tlsCertFile')):
-        return False, MSG['MissingSSLCert']
-    elif args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not
+    if args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not
                                               args.get('tlsKeyFile') or not
                                               args.get('tlsCertFile')
                                               ):
