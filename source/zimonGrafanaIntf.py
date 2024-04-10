@@ -43,6 +43,7 @@ from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
 
 ENDPOINTS = {}
+AUTH_DICT = {}
 
 
 def processFormJSON(entity):
@@ -95,9 +96,15 @@ def setup_cherrypy_logging(args):
 
 def updateCherrypyConf(args):
 
-    globalConfig = {'global': {'error_page.default': format_default_error_page,
-                               'request.error_response': handle_error},
-                    }
+    global_settings = {'error_page.default': format_default_error_page,
+                       'request.error_response': handle_error}
+    if args.get('enabled', False):
+        global_settings.update({'tools.auth_basic.on': True,
+                                'tools.auth_basic.realm': "localhost",
+                                'tools.auth_basic.checkpassword': check_basic_auth,
+                                'tools.auth_basic.accept_charset': "UTF-8"
+                                })
+    globalConfig = {'global': global_settings}
 
     cherrypy.config.update(globalConfig)
 
@@ -105,6 +112,16 @@ def updateCherrypyConf(args):
     customconf = os.path.join(dirname, 'mycherrypy.conf')
     cherrypy.config.update(customconf)
     cherrypy.server.unsubscribe()
+
+
+def check_basic_auth(realm, username, password):
+    if (username and password and
+            username in AUTH_DICT and
+            AUTH_DICT[username] == password):
+        return True
+    logger = getBridgeLogger()
+    logger.details(MSG['AuthValidationError'])
+    return False
 
 
 def bind_opentsdb_server(args):
@@ -125,23 +142,24 @@ def bind_prometheus_server(args):
     prometheus_server = cherrypy._cpserver.Server()
     prometheus_server.socket_port = args.get('prometheus')
     prometheus_server._socket_host = '0.0.0.0'
-    certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
-    keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
-    prometheus_server.ssl_module = 'builtin'
-    prometheus_server.ssl_certificate = certPath
-    prometheus_server.ssl_private_key = keyPath
+    if args.get('protocol') == "https":
+        certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
+        keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
+        prometheus_server.ssl_module = 'builtin'
+        prometheus_server.ssl_certificate = certPath
+        prometheus_server.ssl_private_key = keyPath
     prometheus_server.statistics = analytics.cherrypy_internal_stats
     prometheus_server.subscribe()
 
 
-def resolveAPIKeyValue(storedKey):
-    keyValue = None
-    if "/" in str(storedKey):
-        with open(storedKey) as file:
-            keyValue = file.read().rstrip()
-        return keyValue
+def resolve_path_to_value(stored_key):
+    path_value = None
+    if "/" in str(stored_key):
+        with open(stored_key) as file:
+            path_value = file.read().rstrip()
+        return path_value
     else:
-        return storedKey
+        return stored_key
 
 
 def refresh_metadata(refresh_all=False):
@@ -190,6 +208,9 @@ def main(argv):
 
     registered_apps = []
 
+    if args.get('enabled', False):
+        AUTH_DICT[args.get('username')] = resolve_path_to_value(args.get('password'))
+
     # prepare the logger
     logger = configureLogging(args.get('logPath'), args.get('logFile', None),
                               args.get('logLevel'))
@@ -210,7 +231,7 @@ def main(argv):
         mdHandler = MetadataHandler(logger=logger, server=args.get('server'),
                                     port=args.get('serverPort'),
                                     apiKeyName=args.get('apiKeyName'),
-                                    apiKeyValue=resolveAPIKeyValue(args.get('apiKeyValue')),
+                                    apiKeyValue=resolve_path_to_value(args.get('apiKeyValue')),
                                     caCertPath=args.get('caCertPath'),
                                     includeDiskData=args.get('includeDiskData'),
                                     sleepTime=args.get('retryDelay', None)
