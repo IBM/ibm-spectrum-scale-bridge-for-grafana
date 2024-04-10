@@ -115,9 +115,9 @@ def updateCherrypyConf(args):
 
 
 def check_basic_auth(realm, username, password):
-    if (username and password and
-            username in AUTH_DICT and
-            AUTH_DICT[username] == password):
+    if (username and password
+        and username in AUTH_DICT
+            and AUTH_DICT[username] == password):
         return True
     logger = getBridgeLogger()
     logger.details(MSG['AuthValidationError'])

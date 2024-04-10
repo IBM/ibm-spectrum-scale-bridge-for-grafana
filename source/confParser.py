@@ -205,9 +205,9 @@ class Password(argparse.Action):
     def __call__(self, parser, namespace, values, option_string):
         if values is None:
             if self.dest == 'password':
-                print(f'Enter your basic auth password')
+                print('Enter your basic auth password')
             else:
-                print(f'Enter your apiKey value')
+                print('Enter your apiKey value')
             values = getpass.getpass()
 
         setattr(namespace, self.dest, values)
