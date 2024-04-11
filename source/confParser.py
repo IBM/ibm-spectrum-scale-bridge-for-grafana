@@ -21,6 +21,8 @@ Created on Feb 15, 2021
 '''
 
 import argparse
+import base64
+import binascii
 import os
 from messages import MSG
 from metaclasses import Singleton
@@ -36,14 +38,10 @@ def checkFileExists(path, filename):
 
 
 def checkTLSsettings(args):
-    if args.get('prometheus') and (not args.get('tlsKeyPath') or not
-                                   args.get('tlsKeyFile') or not
-                                   args.get('tlsCertFile')):
-        return False, MSG['MissingSSLCert']
-    elif args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not
-                                              args.get('tlsKeyFile') or not
-                                              args.get('tlsCertFile')
-                                              ):
+    if args.get('protocol') == "https" and (not args.get('tlsKeyPath') or not
+                                            args.get('tlsKeyFile') or not
+                                            args.get('tlsCertFile')
+                                            ):
         return False, MSG['MissingParm']
     elif args.get('protocol') == "https" and not os.path.exists(args.get('tlsKeyPath')):
         return False, MSG['KeyPathError']
@@ -53,6 +51,23 @@ def checkTLSsettings(args):
             ) or (not checkFileExists(
                 args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
             return False, MSG['CertError']
+    return True, ''
+
+
+def checkBasicAuthsettings(args):
+    if args.get('enabled') and (not args.get('username') or not
+                                args.get('password')
+                                ):
+        return False, MSG['MissingParm']
+    elif args.get('enabled') and ("/" in str(args.get('password')) and not
+                                  os.path.isfile(args.get('password'))
+                                  ):
+        return False, MSG['FileNotFound'].format(args.get('password'))
+    elif args.get('enabled') and "/" not in str(args.get('password')):
+        try:
+            base64.b64decode(args.get('password'), validate=True)
+        except binascii.Error:
+            return False, MSG['WrongFormat'].format("basic auth password")
     return True, ''
 
 
@@ -78,7 +93,6 @@ def checkCAsettings(args):
 
 def getSettings(argv):
     settings = {}
-    msg = ''
     defaults = ConfigManager().defaults
     args, msg = parse_cmd_args(argv)
     if args and defaults:
@@ -93,6 +107,10 @@ def getSettings(argv):
         return None, msg
     # check API key settings
     valid, msg = checkAPIsettings(settings)
+    if not valid:
+        return None, msg
+    # check basic auth settings
+    valid, msg = checkBasicAuthsettings(settings)
     if not valid:
         return None, msg
     # check TLS settings
@@ -186,7 +204,10 @@ class Password(argparse.Action):
 
     def __call__(self, parser, namespace, values, option_string):
         if values is None:
-            print('Enter your apiKey value')
+            if self.dest == 'password':
+                print('Enter your basic auth password')
+            else:
+                print('Enter your apiKey value')
             values = getpass.getpass()
 
         setattr(namespace, self.dest, values)
@@ -213,6 +234,12 @@ def parse_cmd_args(argv):
                         help='port number listening on OpenTSDB API HTTP(S) connections (Default from config.ini: 4242, if enabled)')
     parser.add_argument('-r', '--protocol', action="store", choices=["http", "https"], default=None,
                         help='Connection protocol HTTP/HTTPS (Default from config.ini: "http")')
+    parser.add_argument('-b', '--enabled', action="store", choices=["True", "False"], default=None,
+                        help='Controls if HTTP/S basic authentication should be enabled or not (Default from config.ini: "True")')
+    parser.add_argument('-u', '--username', action="store", default=None,
+                        help='HTTP/S basic authentication user name(Default from config.ini: \'scale_admin\')')
+    parser.add_argument('-a', '--password', action=Password, nargs='?', dest='password', default=None,
+                        help='Enter your HTTP/S basic authentication password:')
     parser.add_argument('-t', '--tlsKeyPath', action="store", default=None,
                         help='Directory path of tls privkey.pem and cert.pem file location (Required only for HTTPS ports 8443/9250)')
     parser.add_argument('-k', '--tlsKeyFile', action="store", default=None,

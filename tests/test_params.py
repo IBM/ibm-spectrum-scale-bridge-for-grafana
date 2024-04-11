@@ -1,4 +1,7 @@
-from source.confParser import ConfigManager, merge_defaults_and_args, parse_cmd_args, checkCAsettings, checkApplicationPort
+from source.confParser import (ConfigManager, merge_defaults_and_args,
+                               parse_cmd_args, checkCAsettings,
+                               checkApplicationPort,
+                               checkBasicAuthsettings)
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
 
@@ -26,8 +29,11 @@ def test_case01():
     else:
         assert 'port' not in result.keys()
         assert 'prometheus' not in result.keys()
+        assert 'username' in result.keys()
+        assert 'enabled' in result.keys()
     assert 'serverPort' in result.keys()
     assert 'apiKeyValue' not in result.keys()
+    assert 'protocol' in result.keys()
 
 
 @with_setup(my_setup)
@@ -65,7 +71,7 @@ def test_case05():
     result = merge_defaults_and_args(a, f)
     assert len(result.keys()) > 0
     assert 'includeDiskData' in result.keys()
-    assert result.get('includeDiskData') == False
+    assert result.get('includeDiskData') is False
 
 
 @with_setup(my_setup)
@@ -73,7 +79,7 @@ def test_case06():
     result = merge_defaults_and_args(a, m)
     assert len(result.keys()) > 0
     assert 'includeDiskData' in result.keys()
-    assert result.get('includeDiskData') == True
+    assert result.get('includeDiskData') is True
 
 
 @with_setup(my_setup)
@@ -136,7 +142,7 @@ def test_case12():
     assert len(result.keys()) > 0
     assert 'caCertPath' in result.keys()
     assert isinstance(result.get('caCertPath'), str)
-    assert valid == False
+    assert not valid
     assert len(msg) > 0
 
 
@@ -151,7 +157,7 @@ def test_case13():
     assert 'port' not in result.keys()
     if version >= "8.0":
         assert 'prometheus' not in result.keys()
-    assert valid == False
+    assert not valid
     assert len(msg) > 0
 
 
@@ -163,5 +169,33 @@ def test_case14():
         assert len(result.keys()) > 0
         assert 'port' in result.keys()
         assert 'prometheus' in result.keys()
-        assert valid == True
+        assert valid
+        assert len(msg) == 0
+
+
+@with_setup(my_setup)
+def test_case15():
+    if version >= "8.0":
+        result = merge_defaults_and_args(a, r)
+        valid, msg = checkBasicAuthsettings(result)
+        assert len(result.keys()) > 0
+        assert 'enabled' in result.keys()
+        assert 'username' in result.keys()
+        assert 'password' not in result.keys()
+        assert not valid
+        assert len(msg) > 0
+
+
+@with_setup(my_setup)
+def test_case16():
+    if version >= "8.0":
+        x = a.copy()
+        del x['enabled']
+        result = merge_defaults_and_args(x, r)
+        valid, msg = checkBasicAuthsettings(result)
+        assert len(result.keys()) > 0
+        assert 'enabled' not in result.keys()
+        assert 'username' in result.keys()
+        assert 'password' not in result.keys()
+        assert valid
         assert len(msg) == 0

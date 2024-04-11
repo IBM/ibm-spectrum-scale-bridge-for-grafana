@@ -74,5 +74,7 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'StopCustomThread': 'Stopped custom thread {}',
        'MetricInResults': 'Metric {} is in Collector.metrcs',
        'MetricNotInResults': 'Metric {} is not in Collector.metrcs',
-       'ConnApplications': 'Registered applications: \n {}'
+       'ConnApplications': 'Registered applications: \n {}',
+       'WrongFormat': 'The {} specified in wrong format.',
+       'AuthValidationError': 'Basic auth data not valid'
        }
