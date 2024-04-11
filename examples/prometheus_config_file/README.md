@@ -51,6 +51,13 @@ You need to register the target in the prometheus.yml file to get the metrics fr
     - targets: ['<grafana_bridge_ip>:9250']
    ```
 
+   5. If HTTP/S Basic Authentication is enabled, replace the sample password with one you have generated
+   ```
+   basic_auth:
+      username: 'scale_admin'
+      password: 'TXlWZXJ5U3Ryb25nUGFzc3cwcmQhCg=='
+   ```
+
 
 # Start Prometheus server
 
