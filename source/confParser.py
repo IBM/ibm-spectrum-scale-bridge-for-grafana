@@ -234,6 +234,8 @@ def parse_cmd_args(argv):
                         help='port number listening on OpenTSDB API HTTP(S) connections (Default from config.ini: 4242, if enabled)')
     parser.add_argument('-r', '--protocol', action="store", choices=["http", "https"], default=None,
                         help='Connection protocol HTTP/HTTPS (Default from config.ini: "http")')
+    parser.add_argument('-b', '--enabled', action="store", choices=["True", "False"], default=None,
+                        help='Controls if HTTP/S basic authentication should be enabled or not (Default from config.ini: "True")')
     parser.add_argument('-u', '--username', action="store", default=None,
                         help='HTTP/S basic authentication user name(Default from config.ini: \'scale_admin\')')
     parser.add_argument('-a', '--password', action=Password, nargs='?', dest='password', default=None,

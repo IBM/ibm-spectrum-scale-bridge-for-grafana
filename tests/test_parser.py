@@ -13,7 +13,7 @@ def test_case02():
 
 
 def test_case03():
-    result = os.system('python ./source/zimonGrafanaIntf.py -b')
+    result = os.system('python ./source/zimonGrafanaIntf.py -w')
     assert result > 0
 
 
