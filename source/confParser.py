@@ -50,7 +50,7 @@ def checkTLSsettings(args):
             args.get('tlsKeyPath'), args.get('tlsCertFile'))
             ) or (not checkFileExists(
                 args.get('tlsKeyPath'), args.get('tlsKeyFile'))):
-            return False, MSG['CertError']
+            return False, MSG['MissingFileFromPathError']
     return True, ''
 
 
@@ -62,7 +62,7 @@ def checkBasicAuthsettings(args):
     elif args.get('enabled') and ("/" in str(args.get('password')) and not
                                   os.path.isfile(args.get('password'))
                                   ):
-        return False, MSG['FileNotFound'].format(args.get('password'))
+        return False, MSG['FileNotFound'].format("mandatory for basic auth")
     elif args.get('enabled') and "/" not in str(args.get('password')):
         try:
             base64.b64decode(args.get('password'), validate=True)
@@ -87,7 +87,7 @@ def checkAPIsettings(args):
 
 def checkCAsettings(args):
     if args.get('caCertPath') and args['caCertPath'] != False and not (os.path.exists(args['caCertPath'])):
-        return False, MSG['FileNotFound'].format(args.get('caCertPath'))
+        return False, MSG['FileNotFound'].format("mandatory for CA validation")
     return True, ''
 
 

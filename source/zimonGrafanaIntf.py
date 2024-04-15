@@ -227,7 +227,7 @@ def main(argv):
         logger.details('zimonGrafanaItf invoked with parameters:\n %s',
                        "\n".join("{}={}".format(k, v)
                                  for k, v in args.items() if not
-                                 k == 'apiKeyValue'))
+                                 k in ['apiKeyValue', 'password']))
         mdHandler = MetadataHandler(logger=logger, server=args.get('server'),
                                     port=args.get('serverPort'),
                                     apiKeyName=args.get('apiKeyName'),
