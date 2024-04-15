@@ -342,7 +342,8 @@ def main(argv):
                                      }
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
-    cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
+    if analytics.cherrypy_internal_stats:
+        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
