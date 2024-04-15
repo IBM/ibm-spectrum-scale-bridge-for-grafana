@@ -226,8 +226,8 @@ def main(argv):
         logger.info("%s", MSG['BridgeVersionInfo'].format(__version__))
         logger.details('zimonGrafanaItf invoked with parameters:\n %s',
                        "\n".join("{}={}".format(k, v)
-                                 for k, v in args.items() if not
-                                 k in ['apiKeyValue', 'password']))
+                                 for k, v in args.items() if
+                                 k not in ['apiKeyValue', 'password']))
         mdHandler = MetadataHandler(logger=logger, server=args.get('server'),
                                     port=args.get('serverPort'),
                                     apiKeyName=args.get('apiKeyName'),
