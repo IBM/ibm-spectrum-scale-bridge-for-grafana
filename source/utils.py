@@ -40,13 +40,15 @@ def execution_time(skip_attribute: bool = False) -> Callable[[Callable[..., T]],
             args_str = ', '.join(map(str, args[1:])) if len(args) > 1 else ''
             kwargs_str = ', '.join(f'{k}={v}' for k, v in kwargs.items()) if len(kwargs) > 0 else ''
             self.logger.trace(MSG['StartMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
-            t = time.time()
+            t1 = time.perf_counter(), time.process_time()
             result = f(*args, **kwargs)
-            duration = time.time() - t
+            t2 = time.perf_counter(), time.process_time()
+            duration = t2[0] - t1[0]
+            cpu_time = t2[1] - t1[1]
             if not skip_attribute:
                 wrapper._execution_duration = duration  # type: ignore
             self.logger.debug(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
-            self.logger.debug(MSG['TimerInfo'].format(f.__name__, duration))
+            self.logger.debug(MSG['TimerInfo'].format(f.__name__, duration, cpu_time))
             return result
         return wrapper
     return outer
@@ -68,13 +70,15 @@ def cond_execution_time(enabled: bool = False, skip_attribute: bool = False) -> 
             args_str = ', '.join(map(str, args[1:])) if len(args) > 1 else ''
             kwargs_str = ', '.join(f'{k}={v}' for k, v in kwargs.items()) if len(kwargs) > 0 else ''
             logger.trace(MSG['StartMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
-            t = time.time()
+            t1 = time.perf_counter(), time.process_time()
             result = f(*args, **kwargs)
-            duration = time.time() - t
+            t2 = time.perf_counter(), time.process_time()
+            duration = t2[0] - t1[0]
+            cpu_time = t2[1] - t1[1]
             if not skip_attribute:
                 wrapper._execution_duration = duration  # type: ignore
             logger.debug(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
-            logger.debug(MSG['TimerInfo'].format(f.__name__, duration))
+            logger.debug(MSG['TimerInfo'].format(f.__name__, duration, cpu_time))
             return result
         return wrapper
 
