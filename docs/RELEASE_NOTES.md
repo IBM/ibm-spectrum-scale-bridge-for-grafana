@@ -1,3 +1,15 @@
+# Version 8.0.0 (04/26/2024)
+The Grafana Bridge has been refactored to allow several APIs to be registered and run as standalone plugins. The OpenTSDB API now needs to be explicitly registered via port configuration in config.ini before it can be used with Grafana. 
+Added the new Prometheus Exporter plugin which collects metrics and exposes them in a format that can be scraped by the Prometheus timeseries database. This plugin also needs to be enabled via port configuration. 
+Added Prometheus server configuration file examples. 
+Added a Client Basic Authentication over HTTP/S support. 
+Added features to collect and report the internal performance statistics of grafana-bridge. 
+
+Tested with Grafana version 10.2.3
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 7.1.3 (03/08/2024)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.3-1610 \
 
