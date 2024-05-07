@@ -1,6 +1,6 @@
 '''
 ##############################################################################
-# Copyright 2021 IBM Corp.
+# Copyright 2024 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,4 +20,4 @@ Created on Feb 17, 2021
 @author: HWASSMAN
 '''
 
-__version__ = '7.1.3'
+__version__ = '7.1.4'
