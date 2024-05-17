@@ -46,8 +46,7 @@ def my_setup():
                                 },
                                {'filter': 'scale-11|scale-12',
                                 'groupBy': False, 'tagk': 'node', 'type': 'pm_filter'
-                                }
-                                    ],
+                                }],
                            'metric': 'gpfs_fs_bytes_read', 'refId': 'A', 'downsample': '15m-sum', 'index': 0
                            }
             }
