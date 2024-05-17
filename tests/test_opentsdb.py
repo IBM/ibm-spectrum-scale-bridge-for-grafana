@@ -59,6 +59,20 @@ def test_case01():
         logger = logging.getLogger(__name__)
         opentsdb = OpenTsdbApi(logger, md_instance, '9999')
         resp = opentsdb.format_response(data, jreq)
-        assert len(resp) > 0
         assert isinstance(resp, list)
+        assert len(resp) > 0
+        assert len(resp) == 2
+
+
+@with_setup(my_setup)
+def test_case02():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        resp = opentsdb.format_response(data, jreq)
         assert resp[0].get('metric') == "gpfs_fs_bytes_read"
+        assert resp[0].get('query') == jreq.get('inputQuery')
+        assert 'gpfs_fs_name' in resp[0].get('tags')
+        assert 'node' in resp[0].get('tags')
+        assert 'gpfs_cluster_name' in resp[0].get('tags')
