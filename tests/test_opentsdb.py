@@ -12,7 +12,7 @@ def my_setup():
     key1 = Key._from_string('scale-11|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
     key2 = Key._from_string('scale-11|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
 
-    col1 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2, 
+    col1 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2,
                       keys=(key1,), column=6)
     col2 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2,
                       keys=(key2,), column=6)
@@ -21,12 +21,12 @@ def my_setup():
                   {'node': 'scale-12', 'gpfs_cluster_name': 'scale-cluster-1.vmlocal', 'gpfs_fs_name': 'localFS'}]
 
     dps1 = {1715963000: 0, 1715963010: 0, 1715963020: 0, 1715963030: 0, 1715963040: 0, 1715963050: 0,
-           1715963060: 0, 1715963070: 0, 1715963080: 0, 1715963090: 0, 1715963100: 0, 1715963110: 0,
-           1715963120: 0, 1715963130: 0, 1715963140: 0, 1715963150: 0, 1715963160: 0, 1715963170: 0}
+            1715963060: 0, 1715963070: 0, 1715963080: 0, 1715963090: 0, 1715963100: 0, 1715963110: 0,
+            1715963120: 0, 1715963130: 0, 1715963140: 0, 1715963150: 0, 1715963160: 0, 1715963170: 0}
 
     dps2 = {1715963000: 0, 1715963010: 0, 1715963020: 0, 1715963030: 0, 1715963040: 0, 1715963050: 0,
-           1715963060: 0, 1715963070: 0, 1715963080: 0, 1715963090: 0, 1715963100: 0, 1715963110: 0,
-           1715963120: 0, 1715963130: 0, 1715963140: 0, 1715963150: 0, 1715963160: 0, 1715963170: 0}
+            1715963060: 0, 1715963070: 0, 1715963080: 0, 1715963090: 0, 1715963100: 0, 1715963110: 0,
+            1715963120: 0, 1715963130: 0, 1715963140: 0, 1715963150: 0, 1715963160: 0, 1715963170: 0}
 
     ts1 = TimeSeries(col1, dps1, filtersMap)
     ts2 = TimeSeries(col2, dps2, filtersMap)
@@ -47,7 +47,7 @@ def my_setup():
                                {'filter': 'scale-11|scale-12',
                                 'groupBy': False, 'tagk': 'node', 'type': 'pm_filter'
                                 }
-                                       ], 
+                                    ],
                            'metric': 'gpfs_fs_bytes_read', 'refId': 'A', 'downsample': '15m-sum', 'index': 0
                            }
             }
