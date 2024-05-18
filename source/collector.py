@@ -30,7 +30,7 @@ from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
-from utils import classattributes, cond_execution_time
+from utils import classattributes, cond_execution_time, get_runtime_statistics
 
 
 local_cache = set()
@@ -86,6 +86,7 @@ class TimeSeries(object):
             else:
                 self.tags[_key] = _values.pop()
 
+    @get_runtime_statistics(enabled=analytics.runtime_profiling)
     def reduce_dps_to_first_not_none(self, reverse_order=False):
         """Reduce multiple data points(dps) of a single
            TimeSeries to the first non null value in a sorted order.

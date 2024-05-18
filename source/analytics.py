@@ -35,3 +35,6 @@ requests_elapsed_time = False
 
 global cherrypy_internal_stats
 cherrypy_internal_stats = False
+
+global runtime_profiling
+runtime_profiling = False
