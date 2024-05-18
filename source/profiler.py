@@ -41,14 +41,14 @@ class Profiler(metaclass=Singleton):
     def run(self, func, *args, **kwargs):
         """Dump profile data into self.path."""
         with Profile() as profile:
-                filename = f"profiling_{func.__name__}.prof"
-                result = func(*args, **kwargs)
-                (
-                    Stats(profile)
-                    .strip_dirs()
-                    .sort_stats(SortKey.CALLS)
-                    .dump_stats(os.path.join(self.path, filename))
-                )
+            filename = f"profiling_{func.__name__}.prof"
+            result = func(*args, **kwargs)
+            (
+                Stats(profile)
+                .strip_dirs()
+                .sort_stats(SortKey.CALLS)
+                .dump_stats(os.path.join(self.path, filename))
+            )
         return result
 
     def statfiles(self):
@@ -68,7 +68,7 @@ class Profiler(metaclass=Singleton):
         return response
 
     def GET(self, **params):
-        """ Forward GET REST HTTP/s API incoming requests to Profiler 
+        """ Forward GET REST HTTP/s API incoming requests to Profiler
             available endpoints:
                             /profiling
         """
