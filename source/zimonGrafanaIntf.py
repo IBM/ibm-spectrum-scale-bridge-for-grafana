@@ -38,6 +38,7 @@ from confParser import getSettings
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
+from profiler import Profiler
 from watcher import ConfigWatcher
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
@@ -342,6 +343,13 @@ def main(argv):
                                      }
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
+    profiler = Profiler(args.get('logPath'))
+    # query for list configured zimon sensors
+    cherrypy.tree.mount(profiler, '/profiling',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
     if analytics.cherrypy_internal_stats:
         cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
