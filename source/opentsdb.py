@@ -293,18 +293,6 @@ class OpenTsdbApi(object):
         elif 'lookup' in cherrypy.request.script_name:
             resp = self.lookup(params)
 
-        # /api/update
-        elif 'update' in cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.update()
-            # resp = json.dumps(resp)
-
-        # /sensorsconfig
-        elif '/sensorsconfig' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.SensorsConfig
-            # resp = json.dumps(resp)
-
         elif 'aggregators' in cherrypy.request.script_name:
             resp = ["noop", "sum", "avg", "max", "min", "rate"]
 

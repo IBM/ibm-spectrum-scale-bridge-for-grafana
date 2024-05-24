@@ -153,18 +153,8 @@ class PrometheusExporter(object):
         if int(conn[1]) != int(self.port):
             raise cherrypy.HTTPError(400, MSG[400])
 
-        # /update
-        if '/update' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.update()
-
-        # /sensorsconfig
-        elif '/sensorsconfig' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.SensorsConfig
-
-        elif self.endpoints and self.endpoints.get(cherrypy.request.script_name,
-                                                   None):
+        if self.endpoints and self.endpoints.get(cherrypy.request.script_name,
+                                                 None):
             sensor = self.endpoints[cherrypy.request.script_name]
             resp = self.metrics([sensor])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
