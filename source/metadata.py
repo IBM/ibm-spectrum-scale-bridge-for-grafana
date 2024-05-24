@@ -35,6 +35,7 @@ local_cache = []
 
 
 class MetadataHandler(metaclass=Singleton):
+    exposed = True
 
     def __init__(self, **kwargs):
         self.__qh = None
@@ -145,6 +146,33 @@ class MetadataHandler(metaclass=Singleton):
                 self.logger.info(MSG['ReceivAttrValues'].format('sensors', ", ".join(sensors)))
                 return
         raise ValueError(MSG['NoData'])
+
+    @cherrypy.tools.json_out()  # @UndefinedVariable
+    def GET(self, **params):
+        """ Forward GET REST HTTP/s API incoming requests to Metadata Handler
+            available endpoints:
+                            /metadata/update
+                            /metadata/sensorsconfig
+        """
+        resp = []
+
+        # /metadata/update
+        if '/metadata/update' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.update()
+            # resp = json.dumps(resp)
+
+        # /metadata/sensorsconfig
+        elif '/metadata/sensorsconfig' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.SensorsConfig
+            # resp = json.dumps(resp)
+
+        del cherrypy.response.headers['Allow']
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+        # cherrypy.response.headers['Content-Type'] = 'application/json'
+        # resp = json.dumps(resp)
+        return resp
 
     @execution_time()
     def update(self, refresh_all=False):

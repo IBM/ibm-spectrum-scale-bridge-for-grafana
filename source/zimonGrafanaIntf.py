@@ -258,6 +258,19 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
+    # query to force update of metadata (zimon)
+    cherrypy.tree.mount(mdHandler, '/metadata/update',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    # query for list configured zimon sensors
+    cherrypy.tree.mount(mdHandler, '/metadata/sensorsconfig',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+
     if args.get('port', None):
         bind_opentsdb_server(args)
         api = OpenTsdbApi(logger, mdHandler, args.get('port'))
@@ -277,18 +290,6 @@ def main(argv):
                             )
         # query for tag name and value, given a metric (openTSDB)
         cherrypy.tree.mount(api, '/api/search/lookup',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query to force update of metadata (zimon feature)
-        cherrypy.tree.mount(api, '/api/update',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for list configured zimon sensors
-        cherrypy.tree.mount(api, '/sensorsconfig',
                             {'/':
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
@@ -316,19 +317,6 @@ def main(argv):
                                       args.get('rawCounters', False))
         exporter.endpoints.update(ENDPOINTS.get('prometheus',
                                                 {}))
-
-        # query to force update of metadata (zimon feature)
-        cherrypy.tree.mount(exporter, '/update',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for list configured zimon sensors
-        cherrypy.tree.mount(exporter, '/sensorsconfig',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
         # query for all metrics (PrometheusExporter)
         cherrypy.tree.mount(exporter, '/metrics',
                             {'/':
@@ -343,8 +331,9 @@ def main(argv):
                                      }
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
+
     profiler = Profiler(args.get('logPath'))
-    # query for list configured zimon sensors
+    # query for print out profiling report
     cherrypy.tree.mount(profiler, '/profiling',
                         {'/':
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
