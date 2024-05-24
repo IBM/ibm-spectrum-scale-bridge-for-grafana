@@ -154,7 +154,7 @@ class PrometheusExporter(object):
             raise cherrypy.HTTPError(400, MSG[400])
 
         if self.endpoints and self.endpoints.get(cherrypy.request.script_name,
-                                                   None):
+                                                 None):
             sensor = self.endpoints[cherrypy.request.script_name]
             resp = self.metrics([sensor])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
