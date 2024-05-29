@@ -35,6 +35,7 @@ from __version__ import __version__
 from messages import ERR, MSG
 from bridgeLogger import configureLogging, getBridgeLogger
 from confParser import getSettings
+from confgenerator import PrometheusConfigGenerator
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
@@ -258,6 +259,7 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
+    # register MetaData Handler endpoints
     # query to force update of metadata (zimon)
     cherrypy.tree.mount(mdHandler, '/metadata/update',
                         {'/':
@@ -271,6 +273,7 @@ def main(argv):
                          }
                         )
 
+    # register OpenTSDB API endpoints
     if args.get('port', None):
         bind_opentsdb_server(args)
         api = OpenTsdbApi(logger, mdHandler, args.get('port'))
@@ -308,6 +311,7 @@ def main(argv):
                             )
         registered_apps.append("OpenTSDB Api listening on Grafana queries")
 
+    # register Prometheus Exporter API endpoints
     if args.get('prometheus', None):
         bind_prometheus_server(args)
         load_endpoints('prometheus_endpoints.json')
@@ -332,6 +336,22 @@ def main(argv):
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
 
+        # register Prometheus config generator endpoints (only if PyYaml available)
+        try:
+            conf_generator = PrometheusConfigGenerator(logger,
+                                                       mdHandler,
+                                                       args,
+                                                       ENDPOINTS.get('prometheus', {}))
+            cherrypy.tree.mount(conf_generator, '/prometheus.yml',
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
+            registered_apps.append("Prometheus Config Generator Api")
+        except ImportError:
+            logger.warning("Prometheus Config Generator Api requires python PyYaml packages. Skip registering API.")
+
+    # register Profiler reporter endpoint
     profiler = Profiler(args.get('logPath'))
     # query for print out profiling report
     cherrypy.tree.mount(profiler, '/profiling',
@@ -339,8 +359,15 @@ def main(argv):
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                          }
                         )
+
+    # register cherrypy stats plugin endpoint
     if analytics.cherrypy_internal_stats:
-        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
+        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
