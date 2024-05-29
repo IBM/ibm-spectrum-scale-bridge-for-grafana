@@ -339,16 +339,16 @@ def main(argv):
         # register Prometheus config generator endpoints (only if PyYaml available)
         try:
             conf_generator = PrometheusConfigGenerator(logger,
-                                                   mdHandler,
-                                                   args,
-                                                   ENDPOINTS.get('prometheus',{}))
+                                                       mdHandler,
+                                                       args,
+                                                       ENDPOINTS.get('prometheus', {}))
             cherrypy.tree.mount(conf_generator, '/prometheus.yml',
                                 {'/':
                                  {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                  }
                                 )
             registered_apps.append("Prometheus Config Generator Api")
-        except ImportError as e:
+        except ImportError:
             logger.warning("Prometheus Config Generator Api requires python PyYaml packages. Skip registering API.")
 
     # register Profiler reporter endpoint

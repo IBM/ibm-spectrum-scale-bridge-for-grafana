@@ -2,7 +2,6 @@ import logging
 import os
 from unittest import mock
 from nose2.tools.decorators import with_setup
-from source.queryHandler.QueryHandler import ColumnInfo, Key
 from source.profiler import Profiler
 from source.metadata import MetadataHandler
 from source.confgenerator import PrometheusConfigGenerator
@@ -68,7 +67,7 @@ def test_case01():
     with mock.patch('source.metadata.MetadataHandler._MetadataHandler__initializeTables') as md_init:
         with mock.patch('source.metadata.MetadataHandler._MetadataHandler__getSupportedMetrics') as md_supp:
             with mock.patch('source.metadata.MetadataHandler.SensorsConfig', return_value=sensors_conf) as md_sensConf:
-                with mock.patch('source.confgenerator.PrometheusConfigGenerator.host_ip', return_value='127.0.0.1') as pc_ip:
+                with mock.patch('source.confgenerator.PrometheusConfigGenerator.host_ip', return_value='127.0.0.1'):
                     logger = logging.getLogger(__name__)
                     args['logger'] = logger
                     md = MetadataHandler(**args)
@@ -86,7 +85,7 @@ def test_case02():
     with mock.patch('source.metadata.MetadataHandler._MetadataHandler__initializeTables') as md_init:
         with mock.patch('source.metadata.MetadataHandler._MetadataHandler__getSupportedMetrics') as md_supp:
             with mock.patch('source.metadata.MetadataHandler.SensorsConfig', return_value=sensors_conf) as md_sensConf:
-                with mock.patch('source.confgenerator.PrometheusConfigGenerator.host_ip', return_value='127.0.0.1') as pc_ip:
+                with mock.patch('source.confgenerator.PrometheusConfigGenerator.host_ip', return_value='127.0.0.1'):
                     logger = logging.getLogger(__name__)
                     args['logger'] = logger
                     md = MetadataHandler(**args)

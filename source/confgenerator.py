@@ -29,7 +29,6 @@ try:
     import yaml
 except ImportError as e:
     yaml = e
-import analytics
 from messages import MSG, ERR
 
 
