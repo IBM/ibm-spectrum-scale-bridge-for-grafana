@@ -24,7 +24,7 @@ import cherrypy
 import copy
 import analytics
 from queryHandler.Query import Query
-from messages import MSG
+from messages import MSG, ERR
 from collections import defaultdict
 from typing import Optional, Any, List
 from threading import Thread
@@ -216,7 +216,7 @@ class QueryPolicy(object):
         if not self.metricsaggr and not self.sensor:
             self.logger.error(MSG['QueryError'].
                               format('Missing metric or sensor name'))
-            raise cherrypy.HTTPError(400, MSG[400])
+            raise cherrypy.HTTPError(400, ERR[400])
 
         if self.metricsaggr:
             for key, value in self.metricsaggr.items():

@@ -283,7 +283,9 @@ class OpenTsdbApi(object):
 
         conn = cherrypy.request.headers.get('Host').split(':')
         if int(conn[1]) != int(self.port):
-            raise cherrypy.HTTPError(400, MSG[400])
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         # /api/suggest
         if 'suggest' in cherrypy.request.script_name:
@@ -307,6 +309,11 @@ class OpenTsdbApi(object):
             supportedFilters['pm_filter'] = filterDesc
             resp = supportedFilters
 
+        else:
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
+
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         # cherrypy.response.headers['Content-Type'] = 'application/json'
@@ -327,7 +334,7 @@ class OpenTsdbApi(object):
             jreq = cherrypy.request.json
             if jreq.get('queries') is None:
                 self.logger.error(MSG['QueryError'].format('empty'))
-                raise cherrypy.HTTPError(400, MSG[400])
+                raise cherrypy.HTTPError(400, ERR[400])
 
             return self.query(jreq)
 

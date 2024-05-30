@@ -26,7 +26,7 @@ from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
 from utils import execution_time
-from messages import MSG
+from messages import ERR, MSG
 from metaclasses import Singleton
 from time import sleep
 
@@ -186,7 +186,7 @@ class MetadataHandler(metaclass=Singleton):
         self.__metaData = Topo(self.qh.getTopology())
         if not (self.metaData and self.metaData.topo):
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
-            raise cherrypy.HTTPError(404, MSG[404])
+            raise cherrypy.HTTPError(404, ERR[404])
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         return ({'msg': MSG['MetaSuccess']})
