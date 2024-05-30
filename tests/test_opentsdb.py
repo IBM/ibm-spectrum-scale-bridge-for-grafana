@@ -87,7 +87,7 @@ def test_case03():
         logger = logging.getLogger(__name__)
         opentsdb = OpenTsdbApi(logger, md_instance, '9999')
         profiler = Profiler()
-        resp = profiler.run(opentsdb.format_response,*(data, jreq))
+        resp = profiler.run(opentsdb.format_response, *(data, jreq))
         # resp = opentsdb.format_response(data, jreq)
         assert resp is not None
         assert os.path.exists(os.path.join(profiler.path, "profiling_format_response.prof"))
