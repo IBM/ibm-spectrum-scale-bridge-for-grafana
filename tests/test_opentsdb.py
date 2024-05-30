@@ -1,7 +1,9 @@
 import logging
+import os
 from unittest import mock
 from nose2.tools.decorators import with_setup
 from source.queryHandler.QueryHandler import ColumnInfo, Key
+from source.profiler import Profiler
 from source.collector import MetricTimeSeries, TimeSeries
 from source.opentsdb import OpenTsdbApi
 
@@ -76,3 +78,19 @@ def test_case02():
         assert 'gpfs_fs_name' in resp[0].get('tags')
         assert 'node' in resp[0].get('tags')
         assert 'gpfs_cluster_name' in resp[0].get('tags')
+
+
+@with_setup(my_setup)
+def test_case03():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        profiler = Profiler()
+        resp = profiler.run(opentsdb.format_response, *(data, jreq))
+        # resp = opentsdb.format_response(data, jreq)
+        assert resp is not None
+        assert os.path.exists(os.path.join(profiler.path, "profiling_format_response.prof"))
+        response = profiler.stats(os.path.join(profiler.path, "profiling_format_response.prof"))
+        assert response is not None
+        print('\n'.join(response) + '\n')
