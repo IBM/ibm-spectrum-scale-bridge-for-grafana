@@ -111,6 +111,8 @@ class PrometheusConfigGenerator(object):
 
         conn = cherrypy.request.headers.get('Host').split(':')
         if int(conn[1]) != int(self.attr.get('prometheus')):
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
             raise cherrypy.HTTPError(400, ERR[400])
 
         # generate prometheus.yml
@@ -122,9 +124,7 @@ class PrometheusConfigGenerator(object):
 
         else:
             self.logger.error(MSG['EndpointNotSupported'].format(cherrypy.request.script_name))
-            raise cherrypy.HTTPError(400,
-                                     MSG['EndpointNotSupported'].format(
-                                         cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'

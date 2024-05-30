@@ -23,7 +23,7 @@ Created on Oct 30, 2023
 import cherrypy
 import json
 import analytics
-from messages import MSG
+from messages import ERR, MSG
 from typing import Optional
 from cherrypy.process.plugins import Monitor
 from collector import SensorCollector, QueryPolicy
@@ -151,7 +151,9 @@ class PrometheusExporter(object):
 
         conn = cherrypy.request.headers.get('Host').split(':')
         if int(conn[1]) != int(self.port):
-            raise cherrypy.HTTPError(400, MSG[400])
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         if self.endpoints and self.endpoints.get(cherrypy.request.script_name,
                                                  None):
@@ -169,10 +171,9 @@ class PrometheusExporter(object):
             return resString
 
         else:
-            self.logger.error(MSG['EndpointNotSupported'].format(sensor))
-            raise cherrypy.HTTPError(400,
-                                     MSG['EndpointNotSupported'].format(
-                                         cherrypy.request.script_name))
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'

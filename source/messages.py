@@ -44,6 +44,7 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'InconsistentParams': 'Received parameters {} inconsistent with request parameters {}',
        'SensorDisabled': 'Sensor for metric {} is disabled',
        'EndpointNotSupported': 'Endpoint {} you try to access is not supported',
+       'EndpointNotSupportedForPort': 'Endpoint {} is not supported for port {}',
        'NoData': 'Empty results received',  # Please check the pmcollector is properly configured and running.
        'NoSensorConfigData': 'No sensor configuration data parsed',
        'NoDataStartNextAttempt': 'No Metadata results received from the pmcollector. Start retry attempt {} in 60s (MAX_ATTEMPTS_COUNT:{})',
