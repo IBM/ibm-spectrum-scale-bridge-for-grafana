@@ -86,8 +86,12 @@ class PrometheusConfigGenerator(object):
                            "insecure_skip_verify": True}
                     scrape_job["tls_config"] = tls
                 if self.attr.get('enabled', False):
-                    basic_auth = {"username": self.attr.get('username'),
-                                  "password": self.attr.get('password')}
+                    basic_auth = {"username": self.attr.get('username')}
+                    if os.path.isfile(self.attr.get('password')):
+                        pw = {"password_file": self.attr.get('password')}
+                    else:
+                        pw = {"password": self.attr.get('password')}
+                    basic_auth.update(pw)
                     scrape_job["basic_auth"] = basic_auth
                 targets = {"targets": [f"{self.host_ip()}:{self.attr.get('prometheus')}"]}
                 scrape_job["static_configs"] = [targets]
