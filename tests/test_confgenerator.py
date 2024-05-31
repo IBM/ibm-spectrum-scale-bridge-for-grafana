@@ -21,11 +21,11 @@ def my_setup():
             'logFile': 'zserver.log'}
 
     attr1 = {'port': 4242, 'prometheus': 9250, 'rawCounters': True, 'protocol': 'http', 'enabled': True,
-            'username': 'scale_admin', 'server': 'localhost',
-            'serverPort': 9980, 'retryDelay': 60, 'apiKeyName': 'scale_grafana',
-            'apiKeyValue': 'c0a910e4-094a-46d8-b04d-c2f73a43fd17', 'caCertPath': False,
-            'includeDiskData': False, 'logPath': '/var/log/ibm_bridge_for_grafana', 'logLevel': 10,
-            'logFile': 'zserver.log'}
+             'username': 'scale_admin', 'server': 'localhost',
+             'serverPort': 9980, 'retryDelay': 60, 'apiKeyName': 'scale_grafana',
+             'apiKeyValue': 'c0a910e4-094a-46d8-b04d-c2f73a43fd17', 'caCertPath': False,
+             'includeDiskData': False, 'logPath': '/var/log/ibm_bridge_for_grafana', 'logLevel': 10,
+             'logFile': 'zserver.log'}
 
     attr1['password'] = pwFile
 
@@ -112,6 +112,7 @@ def test_case02():
                     assert isinstance(resp, str)
                     assert len(resp) > 0
                     assert "password_file" in resp
+
 
 @with_setup(my_setup)
 def test_case03():
