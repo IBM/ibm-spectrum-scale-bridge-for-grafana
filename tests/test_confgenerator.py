@@ -8,7 +8,10 @@ from source.confgenerator import PrometheusConfigGenerator
 
 
 def my_setup():
-    global attr, args, endpoints, sensors_conf
+    global attr, attr1, args, endpoints, sensors_conf
+
+    path = os.getcwd()
+    pwFile = os.path.join(path, "tests", "test_data", 'basic_auth')
 
     attr = {'port': 4242, 'prometheus': 9250, 'rawCounters': True, 'protocol': 'http', 'enabled': True,
             'username': 'scale_admin', 'password': 'TXlWZXJ5U3Ryb25nUGFzc3cwcmQhCg==', 'server': 'localhost',
@@ -16,6 +19,16 @@ def my_setup():
             'apiKeyValue': 'c0a910e4-094a-46d8-b04d-c2f73a43fd17', 'caCertPath': False,
             'includeDiskData': False, 'logPath': '/var/log/ibm_bridge_for_grafana', 'logLevel': 10,
             'logFile': 'zserver.log'}
+
+    attr1 = {'port': 4242, 'prometheus': 9250, 'rawCounters': True, 'protocol': 'http', 'enabled': True,
+            'username': 'scale_admin', 'server': 'localhost',
+            'serverPort': 9980, 'retryDelay': 60, 'apiKeyName': 'scale_grafana',
+            'apiKeyValue': 'c0a910e4-094a-46d8-b04d-c2f73a43fd17', 'caCertPath': False,
+            'includeDiskData': False, 'logPath': '/var/log/ibm_bridge_for_grafana', 'logLevel': 10,
+            'logFile': 'zserver.log'}
+
+    attr1['password'] = pwFile
+
     args = {'server': 'localhost', 'port': 9980, 'retryDelay': 60,
             'apiKeyName': 'scale_grafana',
             'apiKeyValue': 'c0a910e4-094a-46d8-b04d-c2f73a43fd17'}
@@ -78,10 +91,30 @@ def test_case01():
                     resp = conf_generator.generate_config()
                     assert isinstance(resp, str)
                     assert len(resp) > 0
+                    assert "password" in resp
+                    assert "password_file" not in resp
 
 
 @with_setup(my_setup)
 def test_case02():
+    with mock.patch('source.metadata.MetadataHandler._MetadataHandler__initializeTables') as md_init:
+        with mock.patch('source.metadata.MetadataHandler._MetadataHandler__getSupportedMetrics') as md_supp:
+            with mock.patch('source.metadata.MetadataHandler.SensorsConfig', return_value=sensors_conf) as md_sensConf:
+                with mock.patch('source.confgenerator.PrometheusConfigGenerator.host_ip', return_value='127.0.0.1'):
+                    logger = logging.getLogger(__name__)
+                    args['logger'] = logger
+                    md = MetadataHandler(**args)
+                    md.__initializeTables = md_init.return_value
+                    md.__getSupportedMetrics = md_supp.return_value
+                    md.SensorsConfig = md_sensConf.return_value
+                    conf_generator = PrometheusConfigGenerator(logger, md, attr1, endpoints)
+                    resp = conf_generator.generate_config()
+                    assert isinstance(resp, str)
+                    assert len(resp) > 0
+                    assert "password_file" in resp
+
+@with_setup(my_setup)
+def test_case03():
     with mock.patch('source.metadata.MetadataHandler._MetadataHandler__initializeTables') as md_init:
         with mock.patch('source.metadata.MetadataHandler._MetadataHandler__getSupportedMetrics') as md_supp:
             with mock.patch('source.metadata.MetadataHandler.SensorsConfig', return_value=sensors_conf) as md_sensConf:
