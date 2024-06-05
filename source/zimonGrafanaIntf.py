@@ -215,7 +215,7 @@ def main(argv):
         return
 
     if __version__.endswith('-dev'):
-        print(f'\n Warning: You are running a Development version of the IBM Storage Scale bridge for Grafana. \
+        print('\n Warning: You are running a Development version of the IBM Storage Scale bridge for Grafana. \
         \n It is recommended to use the latest released version, published on: \
         \n https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/releases \n')
 
