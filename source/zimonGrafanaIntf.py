@@ -208,6 +208,17 @@ def main(argv):
         print(msg)
         return
 
+    if sys.version < '3.8':
+        print(f'\nYor system running {sys.version} \n\nThe IBM Storage Scale bridge for Grafana requires Python3.8 or above. \
+        \nRead the following instructions for possible solution: \
+        \nhttps://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/What-to-do-if-your-system-is-on-a-Python-version-lower-than-3.8')
+        return
+
+    if __version__.endswith('-dev'):
+        print('\n Warning: You are running a Development version of the IBM Storage Scale bridge for Grafana. \
+        \n It is recommended to use the latest released version, published on: \
+        \n https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/releases \n')
+
     registered_apps = []
 
     if args.get('enabled', False):
