@@ -24,7 +24,12 @@ import cherrypy
 import io
 import os
 from cProfile import Profile
-from pstats import SortKey, Stats
+try:
+    # Optional dependency
+    from pstats import SortKey
+except ImportError as e:
+    SortKey = e
+from pstats import Stats
 from metaclasses import Singleton
 
 
@@ -32,6 +37,8 @@ class Profiler(metaclass=Singleton):
     exposed = True
 
     def __init__(self, path=None):
+        if isinstance(SortKey, ImportError):
+            raise SortKey
         if not path:
             path = os.path.join(os.path.dirname(__file__), 'profile')
         self.path = path
