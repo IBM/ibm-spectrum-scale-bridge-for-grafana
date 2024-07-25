@@ -1,0 +1,286 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "noValue": "NaN",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 23,
+        "x": 0,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "current inode usage",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_rq_file_current",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "soft limit",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_rq_file_soft_limit",
+          "refId": "B"
+        },
+        {
+          "aggregator": "noop",
+          "alias": "hard limit",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFileset",
+              "groupBy": false,
+              "tagk": "gpfs_fset_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_rq_file_hard_limit",
+          "refId": "C"
+        }
+      ],
+      "title": "$byFileset files(inodes) usage and limits",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "fileset",
+    "inode",
+    "quota"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "vm2-cluster1",
+          "value": "cdqnnhu44hjb4b"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "System",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_rq_blk_current, gpfs_fs_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "byFilesystem",
+        "options": [],
+        "query": "tag_values(gpfs_rq_blk_current, gpfs_fs_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_rq_blk_current, gpfs_fset_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "byFileset",
+        "options": [],
+        "query": "tag_values(gpfs_rq_blk_current, gpfs_fset_name)",
+        "refresh": 1,
+        "regex": "^(?!.*root).*$",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {},
+  "timezone": "",
+  "title": "Fileset Inode Quota Limits details",
+  "uid": "bdr8l18sqz280c",
+  "version": 4,
+  "weekStart": ""
+}
