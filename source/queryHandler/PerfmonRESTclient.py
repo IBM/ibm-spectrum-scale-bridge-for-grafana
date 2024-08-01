@@ -112,7 +112,7 @@ class perfHTTPrequestHelper(object):
                 res = self.session.send(_prepRequest)
                 return res
             except requests.exceptions.ProxyError:
-                perfHTTPrequestHelper.close_session()
+                close_session()
                 self.logger.debug(f"doRequest __ ProxyError. Found configured proxies: {urllib.request.getproxies()}")
                 res = requests.Response()
                 res.status_code = 503
