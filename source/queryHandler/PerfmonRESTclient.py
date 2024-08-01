@@ -111,9 +111,9 @@ class perfHTTPrequestHelper(object):
             try:
                 res = self.session.send(_prepRequest)
                 return res
-            except requests.exceptions.ProxyError as e:
+            except requests.exceptions.ProxyError:
                 perfHTTPrequestHelper.close_session()
-                logger.debug(f"doRequest __ ProxyError. Found configured proxies: {urllib.request.getproxies()}")
+                self.logger.debug(f"doRequest __ ProxyError. Found configured proxies: {urllib.request.getproxies()}")
                 res = requests.Response()
                 res.status_code = 503
                 res.reason = "Unable to connect to proxy"
