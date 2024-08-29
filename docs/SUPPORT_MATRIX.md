@@ -9,6 +9,61 @@ Classic Scale:
  Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.0
  - RedHat community-powered Grafana-Operator v5
+
+# Version 7.1.8 (08/29/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.9.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 11.0.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.1
+ - RedHat community-powered Grafana-Operator v5
+
+# Version 7.1.7 (08/27/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.9.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 11.0.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.1
+ - RedHat community-powered Grafana-Operator v5
+
+# Version 7.1.6 (06/28/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.9.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 11.0.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.1
+ - RedHat community-powered Grafana-Operator v5
+
+# Version 7.1.5 (06/07/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.9.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 11.0.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.1
+ - RedHat community-powered Grafana-Operator v5
+
+# Version 7.1.4 (05/07/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.9.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 9.5.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.1
+ - RedHat community-powered Grafana-Operator v5
  
 # Version 7.1.3 (03/08/2024)
 Classic Scale:
