@@ -20,9 +20,12 @@ Created on Apr 4, 2017
 @author: HWASSMAN
 '''
 
-
-from collections import defaultdict
+import copy
+from collections import defaultdict, OrderedDict
 from typing import Set, List, Dict, DefaultDict
+
+import analytics
+from utils import cond_execution_time, get_runtime_statistics
 
 # dict.iteritems() deprecated in python 3
 iterval = lambda d: (getattr(d, 'itervalues', None) or d.values)()
@@ -44,26 +47,30 @@ class Topo(object):
         if self.topo:
             self._processMetadata(self.topo)
 
+    @get_runtime_statistics(enabled=analytics.runtime_profiling)
     def _processMetadata(self, metadata):
         '''
         For each component of the highest level (cluster or cluster_node) splits metadata in
         sub components, filters and metrics related info maps
         '''
-
+        
         for metaStr in metadata:
 
             # sub components dictionary of the highest level component (cluster or cluster_node)
             _components = defaultdict(set)
             # filters dictionary, per sensor, per (cluster or cluster_node) component
             _filters = defaultdict(list)
+            # ordered dictionary to store filedLabel:fieldName pairs in order as they occur in metaStr
+            _tags = OrderedDict()
+            
             # name of the  (cluster or cluster_node) component
             label = metaStr.get('fieldLabel')
 
             if label in self.__compTree.keys():
                 _components = self.__compTree[label]['componentsMap']
                 _filters = self.__compTree[label]['filtersMap']
-
-            self._parse_topoJSONStr(self.__metricsDef, self.__metricsType, self.__levels, self.__ids, self.__groupKeys, _components, _filters, metaStr)
+                
+            self._parse_topoJSONStr(self.__metricsDef, self.__metricsType, self.__levels, self.__ids, self.__groupKeys, _components, _filters, _tags, metaStr)
             tree_entry = {}
             tree_entry['componentsMap'] = _components
             tree_entry['filtersMap'] = _filters
@@ -71,7 +78,7 @@ class Topo(object):
             # comp_tree[label] = tree_entry
             self.__compTree[label] = tree_entry
 
-    def _parse_topoJSONStr(self, metrics, metricsType, levels, ids, groupKeys, components, filters, metaStr):
+    def _parse_topoJSONStr(self, metrics, metricsType, levels, ids, groupKeys, components, filters, _tags, metaStr):
         '''
         This function parses the 'node' or 'attribute' object found in the given JSON string (metaStr) in
         the componets or metrics dictionary. Also the used metric filters (per sensor) will be stored
@@ -85,12 +92,20 @@ class Topo(object):
 
         # check if entity is a component
         if metaStr['type'] == 'node':
+            if field_name == "sensor":
+                # remove all partialKey tags from _tags dict except parent since we step in the new sensor level metaKey
+                parent = _tags.popitem(last=False)
+                _tags.clear()
+                _tags.update([parent])
+            else:
+                _tags[field_name] = field_value
+
             if field_value not in components[field_name]:
                 components[field_name].add(field_value)
             # check if metaStr includes next level metaStr
             if 'keys' in metaStr and len(metaStr['keys']) > 0:
                 for metaKey in metaStr['keys']:
-                    self._parse_topoJSONStr(metrics, metricsType, levels, ids, groupKeys, components, filters, metaKey)
+                    self._parse_topoJSONStr(metrics, metricsType, levels, ids, groupKeys, components, filters, _tags, metaKey)
 
         # check if entity is a metric
         elif metaStr['type'] == 'attribute':
@@ -107,17 +122,17 @@ class Topo(object):
             if groupKey not in groupKeys:
                 # parse sensor relevant data f.e. groupKey, filters, levels
                 groupKeys[groupKey] = len(groupKeys) + 1
-                tags = {}
-                levTree = {}
-                for i, compValue in enumerate(partKey):
-                    for compLabel in components:
-                        if compValue in components[compLabel]:
-                            levTree[i + 1] = compLabel
-                            tags[compLabel] = compValue
-                # if tags not in filters[sensor]:
-                # not needed as groupkeys check will allow this to be reached only once
-                filters[sensor].append(tags)
+                group_tags = copy.deepcopy(_tags)
+                
+                # if not all((value in tags.values()) for value in partKey):
+                    # print("different key values")
+                    
+                filters[sensor].append(group_tags)                
                 if sensor not in levels:
+                    levTree = {}
+                    for i, tag_key in enumerate(group_tags.keys()):
+                        levTree[i + 1] = tag_key
+
                     levels[sensor] = levTree
 
             # parse key id
