@@ -25,7 +25,7 @@ from collections import defaultdict, OrderedDict
 from typing import Set, List, Dict, DefaultDict
 
 import analytics
-from utils import cond_execution_time, get_runtime_statistics
+from utils import get_runtime_statistics
 
 # dict.iteritems() deprecated in python 3
 iterval = lambda d: (getattr(d, 'itervalues', None) or d.values)()
@@ -53,7 +53,7 @@ class Topo(object):
         For each component of the highest level (cluster or cluster_node) splits metadata in
         sub components, filters and metrics related info maps
         '''
-        
+
         for metaStr in metadata:
 
             # sub components dictionary of the highest level component (cluster or cluster_node)
@@ -62,14 +62,13 @@ class Topo(object):
             _filters = defaultdict(list)
             # ordered dictionary to store filedLabel:fieldName pairs in order as they occur in metaStr
             _tags = OrderedDict()
-            
             # name of the  (cluster or cluster_node) component
             label = metaStr.get('fieldLabel')
 
             if label in self.__compTree.keys():
                 _components = self.__compTree[label]['componentsMap']
                 _filters = self.__compTree[label]['filtersMap']
-                
+
             self._parse_topoJSONStr(self.__metricsDef, self.__metricsType, self.__levels, self.__ids, self.__groupKeys, _components, _filters, _tags, metaStr)
             tree_entry = {}
             tree_entry['componentsMap'] = _components
@@ -123,11 +122,11 @@ class Topo(object):
                 # parse sensor relevant data f.e. groupKey, filters, levels
                 groupKeys[groupKey] = len(groupKeys) + 1
                 group_tags = copy.deepcopy(_tags)
-                
+
                 # if not all((value in tags.values()) for value in partKey):
-                    # print("different key values")
-                    
-                filters[sensor].append(group_tags)                
+                #     rint("different key values")
+
+                filters[sensor].append(group_tags)
                 if sensor not in levels:
                     levTree = {}
                     for i, tag_key in enumerate(group_tags.keys()):
