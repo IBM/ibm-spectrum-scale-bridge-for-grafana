@@ -214,9 +214,7 @@ class QueryPolicy(object):
         query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
-            self.logger.error(MSG['QueryError'].
-                              format('Missing metric or sensor name'))
-            raise cherrypy.HTTPError(400, ERR[400])
+            raise ValueError('Missing metric or sensor name')
 
         if self.metricsaggr:
             for key, value in self.metricsaggr.items():
@@ -341,7 +339,12 @@ class SensorCollector(SensorTimeSeries):
     def _collect(self):
         '''Executes zimon query and returns results'''
 
-        res = self.md.qh.runQuery(self.query)
+        try:
+            res = self.md.qh.runQuery(self.query)
+        except Exception as e:
+            self.logger.error(MSG['QueryError'].format(e))
+            return
+
         if res is None:
             self.logger.error(MSG['NoData'])
             # self.stop_collect()
