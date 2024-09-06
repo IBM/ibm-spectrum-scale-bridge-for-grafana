@@ -24,7 +24,7 @@ import cherrypy
 import copy
 import analytics
 from queryHandler.Query import Query
-from messages import MSG, ERR
+from messages import MSG
 from collections import defaultdict
 from typing import Optional, Any, List
 from threading import Thread
