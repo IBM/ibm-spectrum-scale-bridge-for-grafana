@@ -1,9 +1,9 @@
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.4-1181.1724035907
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543
 FROM $BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="7.1.8"
+LABEL com.ibm.version="7.1.9"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
