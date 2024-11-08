@@ -47,7 +47,8 @@ class Query(object):
                   "gpfs_disk_usage_name", "gpfs_fset_name", "gpfs_fs_name",
                   "mountPoint", "netdev_name", 'diskdev_name', "node", "db_name",
                   "operation", "protocol", "waiters_time_threshold", "export",
-                  "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass"])
+                  "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass",
+                  "gpfs_health_component", "gpfs_health_entity"])
 
     DISK_CAP_METRICS = set(["gpfs_disk_disksize", "gpfs_disk_free_fullkb", "gpfs_disk_free_fragkb",
                             "gpfs_pool_disksize", "gpfs_pool_free_fragkb", "gpfs_pool_free_fullkb",
