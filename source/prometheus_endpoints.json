@@ -21,6 +21,7 @@
     "/metrics_gpfs_pool": "GPFSPool",
     "/metrics_gpfs_diskcap": "GPFSDiskCap",
     "/metrics_gpfs_event_producer": "GPFSEventProducer",
+    "/metrics_gpfs_mmhealth": "GPFSmmhealth",
     "/metrics_gpfs_mutex": "GPFSMutex",
     "/metrics_gpfs_condvar": "GPFSCondvar",
     "/metrics_gpfs_qos": "GPFSQoS",
