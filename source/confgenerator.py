@@ -113,8 +113,9 @@ class PrometheusConfigGenerator(object):
         '''
         resp = []
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
         conn = cherrypy.request.headers.get('Host').split(':')
-        if int(conn[1]) != int(self.attr.get('prometheus')):
+        if len(conn) == 2 and int(conn[1]) != int(self.attr.get('prometheus')):
             self.logger.error(MSG['EndpointNotSupportedForPort'].
                               format(cherrypy.request.script_name, str(conn[1])))
             raise cherrypy.HTTPError(400, ERR[400])

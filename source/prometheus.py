@@ -149,8 +149,9 @@ class PrometheusExporter(object):
         '''
         resp = []
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
         conn = cherrypy.request.headers.get('Host').split(':')
-        if int(conn[1]) != int(self.port):
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
             self.logger.error(MSG['EndpointNotSupportedForPort'].
                               format(cherrypy.request.script_name, str(conn[1])))
             raise cherrypy.HTTPError(400, ERR[400])
