@@ -281,8 +281,9 @@ class OpenTsdbApi(object):
         """
         resp = []
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
         conn = cherrypy.request.headers.get('Host').split(':')
-        if int(conn[1]) != int(self.port):
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
             self.logger.error(MSG['EndpointNotSupportedForPort'].
                               format(cherrypy.request.script_name, str(conn[1])))
             raise cherrypy.HTTPError(400, ERR[400])
@@ -326,6 +327,13 @@ class OpenTsdbApi(object):
     def POST(self):
         ''' Process POST. tools.json_in.force is set to False for
         compatability between versions of grafana < 3 and version 3.'''
+
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
+        conn = cherrypy.request.headers.get('Host').split(':')
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         # /api/query
         if 'query' in cherrypy.request.script_name:
