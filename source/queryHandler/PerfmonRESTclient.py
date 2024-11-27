@@ -20,6 +20,7 @@ Created on Jan 28, 2021
 @author: HWASSMAN
 '''
 
+import urllib.request
 # catch import failure on AIX since we will not be shipping our third-party libraries on AIX
 try:
     import requests
