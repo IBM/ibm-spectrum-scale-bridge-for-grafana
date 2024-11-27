@@ -32,6 +32,22 @@ except Exception:
 DEFAULT_HEADERS = {"Accept": "application/json",
                    "Content-type": "application/json"}
 
+session = None
+
+
+def get_session():
+    global session
+    if not session:
+        session = requests.Session()
+    return session
+
+
+def close_session():
+    global session
+    if session:
+        session.close()
+        session = None
+
 
 def getAuthHandler(keyName, keyValue):
     if not isinstance(keyName, bytes):
@@ -73,27 +89,39 @@ class perfHTTPrequestHelper(object):
     2. waits until  the server response, finally forwards a result to the QueryHandler
     """
 
-    def __init__(self, logger, reqdata=None, session=None):
-        self.session = session or requests.Session()
+    def __init__(self, logger, reqdata=None, caCert=False):
+        self.session = get_session()
+        self.caCert = caCert
         self.requestData = reqdata
         self.logger = logger
 
     def doRequest(self):
         if self.requestData and isinstance(self.requestData, requests.Request):
+            self.session.verify = self.caCert
             _prepRequest = self.session.prepare_request(self.requestData)
             try:
                 res = self.session.send(_prepRequest)
                 return res
+            except requests.exceptions.ProxyError:
+                close_session()
+                self.logger.debug(f"doRequest __ ProxyError. Found configured proxies: {urllib.request.getproxies()}")
+                res = requests.Response()
+                res.status_code = 503
+                res.reason = "Unable to connect to proxy"
+                return res
             except requests.exceptions.ConnectionError:
+                close_session()
                 res = requests.Response()
                 res.status_code = 503
                 res.reason = "Connection refused from server"
                 return res
             except requests.exceptions.RequestException as e:
+                close_session()
                 self.logger.debug('doRequest __ RequestException. Request data: {}, Response data: {}'.format(e.request, e.response))
                 res = requests.Response()
                 res.status_code = 404
                 res.reason = "The request could not be processed from server"
                 return res
         else:
+            close_session()
             raise TypeError('doRequest __ Error: request data wrong format')
