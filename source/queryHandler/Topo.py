@@ -34,15 +34,14 @@ class Topo(object):
     '''
 
     def __init__(self, jsonStr=None):
-        self.topo = jsonStr
         self.__metricsDef = defaultdict(dict)   # metrics dictionary, per sensor for all elements in the metadata
         self.__metricsType = defaultdict(dict)   # metrics types dictionary
         self.__levels = defaultdict(dict)       # component level priority dictionary, per sensor
         self.__ids = {}                                # fieldIds dictionary
         self.__groupKeys = {}
         self.__compTree = {}
-        if self.topo:
-            self._processMetadata(self.topo)
+        if jsonStr:
+            self._processMetadata(jsonStr)
 
     def _processMetadata(self, metadata):
         '''
