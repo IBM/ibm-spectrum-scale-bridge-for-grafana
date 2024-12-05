@@ -20,8 +20,8 @@ Created on Apr 4, 2017
 @author: HWASSMAN
 '''
 
-
-from collections import defaultdict
+import copy
+from collections import defaultdict, OrderedDict
 from typing import Set, List, Dict, DefaultDict
 
 # dict.iteritems() deprecated in python 3
@@ -34,14 +34,14 @@ class Topo(object):
     '''
 
     def __init__(self, jsonStr=None):
-        self.topo = jsonStr
         self.__metricsDef = defaultdict(dict)   # metrics dictionary, per sensor for all elements in the metadata
+        self.__metricsType = defaultdict(dict)   # metrics types dictionary
         self.__levels = defaultdict(dict)       # component level priority dictionary, per sensor
         self.__ids = {}                                # fieldIds dictionary
         self.__groupKeys = {}
         self.__compTree = {}
-        if self.topo:
-            self._processMetadata(self.topo)
+        if jsonStr:
+            self._processMetadata(jsonStr)
 
     def _processMetadata(self, metadata):
         '''
@@ -55,6 +55,8 @@ class Topo(object):
             _components = defaultdict(set)
             # filters dictionary, per sensor, per (cluster or cluster_node) component
             _filters = defaultdict(list)
+            # ordered dictionary to store filedLabel:fieldName pairs in order as they occur in metaStr
+            _tags = OrderedDict()
             # name of the  (cluster or cluster_node) component
             label = metaStr.get('fieldLabel')
 
@@ -62,7 +64,7 @@ class Topo(object):
                 _components = self.__compTree[label]['componentsMap']
                 _filters = self.__compTree[label]['filtersMap']
 
-            self._parse_topoJSONStr(self.__metricsDef, self.__levels, self.__ids, self.__groupKeys, _components, _filters, metaStr)
+            self._parse_topoJSONStr(self.__metricsDef, self.__metricsType, self.__levels, self.__ids, self.__groupKeys, _components, _filters, _tags, metaStr)
             tree_entry = {}
             tree_entry['componentsMap'] = _components
             tree_entry['filtersMap'] = _filters
@@ -70,7 +72,7 @@ class Topo(object):
             # comp_tree[label] = tree_entry
             self.__compTree[label] = tree_entry
 
-    def _parse_topoJSONStr(self, metrics, levels, ids, groupKeys, components, filters, metaStr):
+    def _parse_topoJSONStr(self, metrics, metricsType, levels, ids, groupKeys, components, filters, _tags, metaStr):
         '''
         This function parses the 'node' or 'attribute' object found in the given JSON string (metaStr) in
         the componets or metrics dictionary. Also the used metric filters (per sensor) will be stored
@@ -80,15 +82,24 @@ class Topo(object):
 
         field_value = metaStr['fieldLabel']
         field_name = metaStr['fieldName']
+        field_type = metaStr['fieldSemantics']
 
         # check if entity is a component
         if metaStr['type'] == 'node':
+            if field_name == "sensor":
+                # remove all partialKey tags from _tags dict except parent since we step in the new sensor level metaKey
+                parent = _tags.popitem(last=False)
+                _tags.clear()
+                _tags.update([parent])
+            else:
+                _tags[field_name] = field_value
+
             if field_value not in components[field_name]:
                 components[field_name].add(field_value)
             # check if metaStr includes next level metaStr
             if 'keys' in metaStr and len(metaStr['keys']) > 0:
                 for metaKey in metaStr['keys']:
-                    self._parse_topoJSONStr(metrics, levels, ids, groupKeys, components, filters, metaKey)
+                    self._parse_topoJSONStr(metrics, metricsType, levels, ids, groupKeys, components, filters, _tags, metaKey)
 
         # check if entity is a metric
         elif metaStr['type'] == 'attribute':
@@ -100,21 +111,22 @@ class Topo(object):
 
             if field_name not in iterval(metrics[sensor]):
                 metrics[sensor][field_id] = field_name
+                metricsType[field_name] = field_type
 
             if groupKey not in groupKeys:
                 # parse sensor relevant data f.e. groupKey, filters, levels
                 groupKeys[groupKey] = len(groupKeys) + 1
-                tags = {}
-                levTree = {}
-                for i, compValue in enumerate(partKey):
-                    for compLabel in components:
-                        if compValue in components[compLabel]:
-                            levTree[i + 1] = compLabel
-                            tags[compLabel] = compValue
-                # if tags not in filters[sensor]:
-                # not needed as groupkeys check will allow this to be reached only once
-                filters[sensor].append(tags)
+                group_tags = copy.deepcopy(_tags)
+
+                # if not all((value in tags.values()) for value in partKey):
+                #     rint("different key values")
+
+                filters[sensor].append(group_tags)
                 if sensor not in levels:
+                    levTree = {}
+                    for i, tag_key in enumerate(group_tags.keys()):
+                        levTree[i + 1] = tag_key
+
                     levels[sensor] = levTree
 
             # parse key id
@@ -178,6 +190,11 @@ class Topo(object):
         return self.__metricsDef
 
     @property
+    def metricsType(self):
+        ''' Returns a dictionary of (metric_name : metric_type) items '''
+        return self.__metricsType
+
+    @property
     def getAllEnabledMetricsNames(self):
         ''' Returns list of all found metrics names'''
         metricslist = []
@@ -201,7 +218,7 @@ class Topo(object):
         if (searchMetric.find("(") >= 0):
             searchMetric = searchMetric[searchMetric.find("(") + 1:-1]
         for sensor, metrics in self.__metricsDef.items():
-            if searchMetric in metrics.values():
+            if searchMetric in set(metrics.values()):
                 return sensor
         return None
 
@@ -237,8 +254,11 @@ class Topo(object):
         based on metadata topology returned from zimon "topo".
         '''
         filtersMaps = []
-        if searchSensor in self.allFiltersMaps.keys():
-            filtersMaps.extend(self.allFiltersMaps[searchSensor])
+        if searchSensor in set(self.sensorsSpec.keys()):
+            for entryName in self.__compTree.keys():
+                values = self.__compTree[entryName]['filtersMap'].get(searchSensor, [])
+                if len(values) > 0:
+                    filtersMaps.extend(values)
         return filtersMaps
 
     def getAllFilterMapsForMetric(self, searchMetric):
@@ -274,13 +294,11 @@ class Topo(object):
         return keys
 
     def getAllFilterKeysForSensor(self, searchSensor):
-        keys = []
+        filter_keys = set()
         filtersMap = self.getAllFilterMapsForSensor(searchSensor)
-        for a in filtersMap:
-            keys.extend(list(a.keys()))
-        if len(keys) > 1:
-            return list(set(keys))
-        return keys
+        for filter in filtersMap:
+            filter_keys.update(filter.keys())
+        return list(filter_keys)
 
     def getAllFilterKeysForMeasurementsMetrics(self, searchMetrics):
         filterKeys = []

@@ -164,9 +164,10 @@ class QueryResult:
         self.rows = self.__parseRows()
 
         self.index_cache = {}  # (metric, id) -> row value index
-        self.ids = self._findIdentifiers()
+        self.ids = None
 
         if self.query and len(self.query.measurements) > 0:
+            self.ids = self._findIdentifiers()
             self._populate_index_cache()
             self._add_calculated_colunm_headers()
 
@@ -513,9 +514,12 @@ class QueryHandler2:
 
         try:
             _auth = getAuthHandler(*self.apiKeyData)
-            _reqData = createRequestDataObj(self.logger, requestType, endpoint, self.server, self.port, auth=_auth, params=params)
-            _request = perfHTTPrequestHelper(self.logger, reqdata=_reqData)
-            _request.session.verify = self.caCert
+            _reqData = createRequestDataObj(self.logger, requestType, endpoint,
+                                            self.server, self.port, auth=_auth,
+                                            params=params)
+            _request = perfHTTPrequestHelper(self.logger,
+                                             reqdata=_reqData,
+                                             caCert=self.caCert)
             _response = _request.doRequest()
 
             if _response.status_code == 200:
