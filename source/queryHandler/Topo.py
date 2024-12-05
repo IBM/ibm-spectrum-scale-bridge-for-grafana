@@ -25,7 +25,7 @@ from collections import defaultdict, OrderedDict
 from typing import Set, List, Dict, DefaultDict
 
 import analytics
-from utils import get_runtime_statistics, cond_execution_time
+from utils import get_runtime_statistics
 
 # dict.iteritems() deprecated in python 3
 iterval = lambda d: (getattr(d, 'itervalues', None) or d.values)()
