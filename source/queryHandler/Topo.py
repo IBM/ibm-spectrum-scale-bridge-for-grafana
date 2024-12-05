@@ -25,7 +25,7 @@ from collections import defaultdict, OrderedDict
 from typing import Set, List, Dict, DefaultDict
 
 import analytics
-from utils import get_runtime_statistics
+from utils import get_runtime_statistics, cond_execution_time
 
 # dict.iteritems() deprecated in python 3
 iterval = lambda d: (getattr(d, 'itervalues', None) or d.values)()
@@ -258,8 +258,11 @@ class Topo(object):
         based on metadata topology returned from zimon "topo".
         '''
         filtersMaps = []
-        if searchSensor in set(self.allFiltersMaps.keys()):
-            filtersMaps.extend(self.allFiltersMaps[searchSensor])
+        if searchSensor in set(self.sensorsSpec.keys()):
+            for entryName in self.__compTree.keys():
+                values = self.__compTree[entryName]['filtersMap'].get(searchSensor, [])
+                if len(values) > 0:
+                    filtersMaps.extend(values)
         return filtersMaps
 
     def getAllFilterMapsForMetric(self, searchMetric):
