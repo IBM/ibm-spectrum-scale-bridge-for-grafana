@@ -352,10 +352,8 @@ class LookupResponse():
         if identifiersMap:
             for identifiers in identifiersMap:
                 d = defaultdict(dict)
-                for key in identifiers.keys():
-                    d['tags'][key] = identifiers[key]
-                    if d not in self.results:
-                        self.results.append(d)
+                d['tags'] = identifiers
+                self.results.append(d)
 
 
 class SingleTimeSeriesResponse():
