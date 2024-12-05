@@ -1,4 +1,4 @@
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.4-1214.1726694543
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1732804088
 FROM $BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
