@@ -1,4 +1,16 @@
 The following matrix gives a quick overview of the supported software for the IBM Storage Scale bridge for Grafana packages by version number:
+# Version 7.2.0 (12/06/2024)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.10.0
+ - IBM Storage Scale system must run 5.1.9 and above
+ - Grafana 11.0.0 and above
+ 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.1.9.8,5.2.2.1
+ - RedHat community-powered Grafana-Operator v5
+
+
 # Version 7.1.9 (09/27/2024)
 Classic Scale:
  - Python 3.9
