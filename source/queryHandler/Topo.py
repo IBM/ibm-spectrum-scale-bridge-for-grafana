@@ -226,6 +226,15 @@ class Topo(object):
                 return sensor
         return None
 
+    def getSensorLabels(self, searchSensor: str) -> list:
+        labelsDict = self.__levels.get(searchSensor, None)
+        if labelsDict:
+            labelsList = []
+            for level, name in labelsDict.items():
+                labelsList.insert(int(level) - 1, name)
+            return labelsList
+        return []
+
     def getSensorMetricNames(self, searchSensor: str) -> list:
         metrics = self.__metricsDef.get(searchSensor, None)
         if metrics:

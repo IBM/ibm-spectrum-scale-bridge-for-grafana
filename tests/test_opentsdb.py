@@ -9,15 +9,20 @@ from source.opentsdb import OpenTsdbApi
 
 
 def my_setup():
-    global key1, key2, col1, col2, filtersMap, dps1, dps2, ts1, ts2, metricTS, data, jreq
+    global key1, key2, key3, col1, col2, col3, labels, filtersMap, dps1, dps2, ts1, ts2, metricTS, data, jreq
 
     key1 = Key._from_string('scale-11|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
-    key2 = Key._from_string('scale-11|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
+    key2 = Key._from_string('scale-12|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
+    key3 = Key._from_string('scale-13|GPFSFilesystem|scale-cluster-1.vmlocal|localFS|gpfs_fs_bytes_read', '')
 
     col1 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2,
                       keys=(key1,), column=6)
     col2 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2,
                       keys=(key2,), column=6)
+    col3 = ColumnInfo(name='gpfs_fs_bytes_read', semType=2,
+                      keys=(key3,), column=6)
+
+    labels = ['node', 'gpfs_cluster_name', 'gpfs_fs_name']
 
     filtersMap = [{'node': 'scale-11', 'gpfs_cluster_name': 'scale-cluster-1.vmlocal', 'gpfs_fs_name': 'localFS'},
                   {'node': 'scale-12', 'gpfs_cluster_name': 'scale-cluster-1.vmlocal', 'gpfs_fs_name': 'localFS'}]
@@ -30,8 +35,8 @@ def my_setup():
             1715963060: 0, 1715963070: 0, 1715963080: 0, 1715963090: 0, 1715963100: 0, 1715963110: 0,
             1715963120: 0, 1715963130: 0, 1715963140: 0, 1715963150: 0, 1715963160: 0, 1715963170: 0}
 
-    ts1 = TimeSeries(col1, dps1, filtersMap)
-    ts2 = TimeSeries(col2, dps2, filtersMap)
+    ts1 = TimeSeries(col1, dps1, filtersMap, labels)
+    ts2 = TimeSeries(col2, dps2, filtersMap, labels)
 
     metricTS = MetricTimeSeries('gpfs_fs_bytes_read', '')
     metricTS.timeseries = [ts1, ts2]
@@ -56,6 +61,16 @@ def my_setup():
 
 @with_setup(my_setup)
 def test_case01():
+    ts = TimeSeries(col3, dps2, filtersMap, labels)
+    assert len(ts.tags) > 0
+    assert len(ts.tags) == len(labels)
+    assert all(item in ts.tags.keys() for item in labels)
+    assert ts.tags['node'] == 'scale-13'
+    assert ts.tags['gpfs_fs_name'] == 'localFS'
+
+
+@with_setup(my_setup)
+def test_case02():
     with mock.patch('source.metadata.MetadataHandler') as md:
         md_instance = md.return_value
         logger = logging.getLogger(__name__)
@@ -67,7 +82,7 @@ def test_case01():
 
 
 @with_setup(my_setup)
-def test_case02():
+def test_case03():
     with mock.patch('source.metadata.MetadataHandler') as md:
         md_instance = md.return_value
         logger = logging.getLogger(__name__)
@@ -81,7 +96,7 @@ def test_case02():
 
 
 @with_setup(my_setup)
-def test_case03():
+def test_case04():
     with mock.patch('source.metadata.MetadataHandler') as md:
         md_instance = md.return_value
         logger = logging.getLogger(__name__)
