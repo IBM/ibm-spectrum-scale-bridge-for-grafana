@@ -38,19 +38,22 @@ local_cache = set()
 
 class TimeSeries(object):
 
-    def __init__(self, columnInfo, dps, filtersMap):
+    def __init__(self, columnInfo, dps, filtersMap, defaultLabels):
         self.metricname = columnInfo.keys[0].metric
         self.columnInfo = columnInfo
         self.dps = dps
         self.tags = defaultdict(list)
         self.aggregatedTags = []
 
-        self.parse_tags(filtersMap)
+        self.parse_tags(filtersMap, defaultLabels)
 
     @cond_execution_time(enabled=analytics.inspect_special)
-    def parse_tags(self, filtersMap):
-        tagsDict = defaultdict(set)
+    def parse_tags(self, filtersMap, defaultLabels):
         logger = getBridgeLogger()
+        if not (filtersMap and defaultLabels):
+            logger.trace(f'No labels, no filters in local cache for {self.columnInfo.keys[0].__str__()}')
+            return
+        tagsDict = defaultdict(set)
         for key in self.columnInfo.keys:
             ident = [key.parent]
             ident.extend(key.identifier)
@@ -79,6 +82,13 @@ class TimeSeries(object):
                     Thread(name='AdHocMetaDataUpdate', target=md.update).start()
                 else:
                     logger.trace(MSG['NewKeyAlreadyReported'].format('|'.join(ident)))
+
+                constructedTags = dict(zip(defaultLabels, ident))
+                if len(self.columnInfo.keys) == 1:
+                    self.tags = constructedTags
+                else:
+                    for _key, _value in constructedTags.items():
+                        tagsDict[_key].add(_value)
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
@@ -146,6 +156,7 @@ class SensorTimeSeries(object):
         self.period = period
         self.metrics = {}
         self.filtersMap = self._get_all_filters()
+        self.labels = self._get_sensor_labels()
 
     def cleanup_metrics_values(self) -> None:
         for name in self.metrics.keys():
@@ -192,6 +203,10 @@ class SensorTimeSeries(object):
     def _get_all_filters(self):
         md = MetadataHandler()
         return md.metaData.getAllFilterMapsForSensor(self.sensor)
+
+    def _get_sensor_labels(self):
+        md = MetadataHandler()
+        return md.metaData.getSensorLabels(self.sensor)
 
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
@@ -369,7 +384,7 @@ class SensorCollector(SensorTimeSeries):
                 columnValues[columnInfo][row.tstamp] = value
 
         for columnInfo, dps in columnValues.items():
-            ts = TimeSeries(columnInfo, dps, self.filtersMap)
+            ts = TimeSeries(columnInfo, dps, self.filtersMap, self.labels)
             if self.metrics.get(columnInfo.keys[0].metric) is not None:
                 self.logger.trace(MSG['MetricInResults'].format(
                     columnInfo.keys[0].metric))
