@@ -28,7 +28,8 @@ from queryHandler import SensorConfig
 from utils import execution_time
 from messages import ERR, MSG
 from metaclasses import Singleton
-from time import sleep
+from time import time, sleep
+from datetime import datetime
 
 
 local_cache = []
@@ -42,6 +43,7 @@ class MetadataHandler(metaclass=Singleton):
         self.__sensorsConf = None
         self.__metaData = None
         self.__metricsDesc = {}
+        self.__updateTime = None
         self.logger = kwargs['logger']
         self.server = kwargs['server']
         self.port = kwargs['port']
@@ -75,6 +77,10 @@ class MetadataHandler(metaclass=Singleton):
     @property
     def metricsDesc(self):
         return self.__metricsDesc
+
+    @property
+    def getUpdateTime(self):
+        return self.__updateTime
 
     def getSensorPeriodForMetric(self, metric):
         sensor = self.metaData.getSensorForMetric(metric)
@@ -139,6 +145,7 @@ class MetadataHandler(metaclass=Singleton):
                 sleep(self.sleepTime)
             else:
                 self.__metaData = Topo(topoStr)
+                self.__updateTime = time()
                 foundItems = len(self.metaData.allParents) - 1
                 sensors = self.metaData.sensorsSpec.keys()
                 self.logger.info(MSG['MetaSuccess'])
@@ -162,6 +169,12 @@ class MetadataHandler(metaclass=Singleton):
             # cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = self.update()
             # resp = json.dumps(resp)
+
+        # /metadata/time
+        elif '/metadata/time' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            ts = int(self.getUpdateTime)
+            resp = [datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')]
 
         # /metadata/sensorsconfig
         elif '/metadata/sensorsconfig' == cherrypy.request.script_name:
@@ -189,6 +202,7 @@ class MetadataHandler(metaclass=Singleton):
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
             raise cherrypy.HTTPError(404, ERR[404])
         self.__metaData = Topo(topoStr)
+        self.__updateTime = time()
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         return ({'msg': MSG['MetaSuccess']})
