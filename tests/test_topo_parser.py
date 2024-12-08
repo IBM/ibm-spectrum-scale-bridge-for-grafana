@@ -9,7 +9,7 @@ def my_setup():
     path = os.getcwd()
     topoStrFile = os.path.join(path, "tests", "test_data", 'topoStr.json')
     with open(topoStrFile) as f:
-            topoStr = json.load(f)
+        topoStr = json.load(f)
     topo = Topo(topoStr)
     metrics = ['cpu_user']
     metrics1 = ['gpfs_fs_inode_used']

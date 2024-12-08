@@ -49,8 +49,11 @@ class TimeSeries(object):
 
     @cond_execution_time(enabled=analytics.inspect_special)
     def parse_tags(self, filtersMap, defaultLabels):
-        tagsDict = defaultdict(set)
         logger = getBridgeLogger()
+        if not (filtersMap and defaultLabels):
+            logger.trace(f'No labels, no filters in local cache for {self.columnInfo.keys[0].__str__()}')
+            return
+        tagsDict = defaultdict(set)
         for key in self.columnInfo.keys:
             ident = [key.parent]
             ident.extend(key.identifier)
@@ -204,6 +207,7 @@ class SensorTimeSeries(object):
     def _get_sensor_labels(self):
         md = MetadataHandler()
         return md.metaData.getSensorLabels(self.sensor)
+
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
