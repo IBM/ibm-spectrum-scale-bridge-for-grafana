@@ -277,6 +277,12 @@ def main(argv):
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                          }
                         )
+    # query for metadata (zimon) last update time
+    cherrypy.tree.mount(mdHandler, '/metadata/time',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
     # query for list configured zimon sensors
     cherrypy.tree.mount(mdHandler, '/metadata/sensorsconfig',
                         {'/':
