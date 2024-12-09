@@ -37,7 +37,7 @@ class TopoRefreshManager(object, metaclass=Singleton):
     thread = None
     refresh_delay_secs = 30
 
-    def __init__(self, call_func_on_change, *args, **kwargs):
+    def __init__(self, call_func_on_change=None, *args, **kwargs):
         self._cached_stamp = {}
         self.logger = getBridgeLogger()
         self.update_required = False
@@ -81,11 +81,12 @@ class TopoRefreshManager(object, metaclass=Singleton):
                 if self.update_required:
                     md = MetadataHandler()
                     elapsed_time = time.time() - md.getUpdateTime
-                    # self.logger.trace(f"Elapsed time{elapsed_time}")
+                    self.logger.trace(MSG['ElapsedTimeSinceLastUpdate'].format(elapsed_time))
                     if elapsed_time > 300 or self.new_keys > 100:
                         self.logger.info(MSG['RequestMetaUpdate'])
-                        self.call_func_on_change(*self.args, **self.kwargs)
-                        self.clear_local_cache()
+                        if self.call_func_on_change is not None:
+                            self.call_func_on_change(*self.args, **self.kwargs)
+                            self.clear_local_cache()
             except KeyboardInterrupt:
                 self.logger.details(MSG['StopMonitoringTopoChanges'])
                 break
