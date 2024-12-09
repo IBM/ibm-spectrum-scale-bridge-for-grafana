@@ -22,6 +22,7 @@ Created on Oct 25, 2023
 
 import time
 import copy
+from threading import Lock
 from typing import Callable, TypeVar, Any
 from functools import wraps
 from messages import MSG
@@ -86,6 +87,18 @@ def cond_execution_time(enabled: bool = False, skip_attribute: bool = False) -> 
     def no_outer(f: Callable[..., T]) -> Callable[..., T]:
         return f
     return outer if enabled else no_outer
+
+
+def synchronized(lock: Lock):
+    """Decorator which takes a Lock and runs the function under that Lock"""
+    def funcWrapper(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            with lock:
+                ret = func(*args, **kwargs)
+            return ret
+        return wrapper
+    return funcWrapper
 
 
 def get_runtime_statistics(enabled: bool = False) -> Callable[[Callable[..., T]], Callable[..., T]]:

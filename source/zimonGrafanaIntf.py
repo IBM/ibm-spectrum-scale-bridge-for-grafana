@@ -40,6 +40,7 @@ from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
 from profiler import Profiler
+from refresher import TopoRefreshManager
 from watcher import ConfigWatcher
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
@@ -392,6 +393,9 @@ def main(argv):
         watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
         cherrypy.engine.subscribe('start', watcher.start_watch)
         cherrypy.engine.subscribe('stop', watcher.stop_watch)
+        refresher = TopoRefreshManager(refresh_metadata, refresh_all=False)
+        cherrypy.engine.subscribe('start', refresher.start_monitor)
+        cherrypy.engine.subscribe('stop', refresher.stop_monitor)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
         logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)))

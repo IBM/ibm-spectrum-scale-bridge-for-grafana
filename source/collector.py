@@ -30,6 +30,7 @@ from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
+from refresher import TopoRefreshManager
 from utils import classattributes, cond_execution_time, get_runtime_statistics
 
 
@@ -73,15 +74,8 @@ class TimeSeries(object):
                     break
             # detected zimon key, do we need refresh local TOPO?
             if not found:
-                cache_size = len(local_cache)
-                local_cache.union(ident)
-                updated_size = len(local_cache)
-                if updated_size > cache_size:
-                    logger.trace(MSG['NewKeyDetected'].format('|'.join(ident)))
-                    md = MetadataHandler()
-                    Thread(name='AdHocMetaDataUpdate', target=md.update).start()
-                else:
-                    logger.trace(MSG['NewKeyAlreadyReported'].format('|'.join(ident)))
+                topoRefresher = TopoRefreshManager()
+                topoRefresher.update_local_cache(ident)
 
                 constructedTags = dict(zip(defaultLabels, ident))
                 if len(self.columnInfo.keys) == 1:

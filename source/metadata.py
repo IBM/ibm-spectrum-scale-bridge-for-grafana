@@ -25,14 +25,15 @@ import cherrypy
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
-from utils import execution_time
+from utils import execution_time, synchronized
 from messages import ERR, MSG
 from metaclasses import Singleton
 from time import time, sleep
 from datetime import datetime
+from threading import Lock
 
 
-local_cache = []
+topoUpdateLock = Lock()
 
 
 class MetadataHandler(metaclass=Singleton):
@@ -189,6 +190,7 @@ class MetadataHandler(metaclass=Singleton):
         return resp
 
     @execution_time()
+    @synchronized(topoUpdateLock)
     def update(self, refresh_all=False):
         '''Read the topology from ZIMon and update
         the tables for metrics, keys, key elements (tag keys)
