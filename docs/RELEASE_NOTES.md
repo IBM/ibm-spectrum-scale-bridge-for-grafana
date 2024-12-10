@@ -1,3 +1,24 @@
+# Version 8.0.1 (12/10/2024)
+Added HTTP Api REST endpoints allowing to query: \
+-  Performance Monitoring Tool sensors configuration in use \
+-  Timestamp of the latest metadata local cache refresh \
+Added plugin for generating Promtheus config file authomatically based on the actual Performance Monitoring Tool sensors configuration \
+Added GPFSmmhealth sensor to the PrometheusExporter supported endpoints \
+Improved the  performance of the OpenTSDB HTTP Api REST  search/loookup endpoint \
+Added monitoring thread  observing if MetaData refresh is required \
+Published example dashboards showing: \
+- GPFS Cluster overview using OpenTSDB Datasource \
+- GPFS Cluster overview using Prometheus Datasource \
+- GPFSmmhealth metrics \
+- GPFS physical disks wait times \
+- GPFS fileset quota reporting \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.5-1732804088 \
+
+Tested with Grafana version 11.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.0 (04/26/2024)
 The Grafana Bridge has been refactored to allow several APIs to be registered and run as standalone plugins. The OpenTSDB API now needs to be explicitly registered via port configuration in config.ini before it can be used with Grafana. 
 Added the new Prometheus Exporter plugin which collects metrics and exposes them in a format that can be scraped by the Prometheus timeseries database. This plugin also needs to be enabled via port configuration. 
