@@ -1,0 +1,266 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM1-CLUSTER1",
+      "label": "vm1-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    },
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "status-history",
+      "name": "Status history",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-green",
+            "mode": "fixed"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "#808080",
+                  "index": 3,
+                  "text": "UNKNOWN"
+                },
+                "10": {
+                  "color": "dark-green",
+                  "index": 0,
+                  "text": "HEALTHY"
+                },
+                "20": {
+                  "color": "dark-yellow",
+                  "index": 1,
+                  "text": "DEGRADED"
+                },
+                "40": {
+                  "color": "dark-red",
+                  "index": 2,
+                  "text": "FAILED"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colWidth": 0.9,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "noop",
+          "alias": "$tag_gpfs_health_entity",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "15m",
+          "filters": [
+            {
+              "filter": "$Node",
+              "groupBy": false,
+              "tagk": "node",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "$component",
+              "groupBy": false,
+              "tagk": "gpfs_health_component",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_health_status",
+          "refId": "A"
+        }
+      ],
+      "title": "$component entities HEALTH state history",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "^(?!.*-).*$"
+            }
+          }
+        }
+      ],
+      "type": "status-history"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "health",
+    "opentsdb",
+    "entity"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "vm1-cluster1",
+          "value": "ee4aqor3lxm9sd"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "Datasource",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM1-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_health_status, node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "Node",
+        "options": [],
+        "query": "tag_values(gpfs_health_status, node)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM1-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_health_status, gpfs_health_component, node=$Node)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "component",
+        "options": [],
+        "query": "tag_values(gpfs_health_status, gpfs_health_component, node=$Node)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Component entities health details",
+  "uid": "fe6h5syrz4npcc",
+  "version": 1,
+  "weekStart": ""
+}

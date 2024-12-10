@@ -1,0 +1,16 @@
+[Unit]
+Description=IBM Storage Scale bridge for Grafana
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=on-failure
+WorkingDirectory=/opt/IBM/bridge
+ExecStart=/usr/bin/python3 -u source/zimonGrafanaIntf.py
+
+StandardOutput=journal+console
+StandardError=journal+console
+SyslogIdentifier=grafana-bridge
+
+[Install]
+WantedBy=multi-user.target

@@ -25,22 +25,26 @@ import cherrypy
 from queryHandler.QueryHandler import QueryHandler2 as QueryHandler
 from queryHandler.Topo import Topo
 from queryHandler import SensorConfig
-from utils import execution_time
-from messages import MSG
+from utils import execution_time, synchronized
+from messages import ERR, MSG
 from metaclasses import Singleton
-from time import sleep
+from time import time, sleep
+from datetime import datetime
+from threading import Lock
 
 
-local_cache = []
+topoUpdateLock = Lock()
 
 
 class MetadataHandler(metaclass=Singleton):
+    exposed = True
 
     def __init__(self, **kwargs):
         self.__qh = None
         self.__sensorsConf = None
         self.__metaData = None
         self.__metricsDesc = {}
+        self.__updateTime = None
         self.logger = kwargs['logger']
         self.server = kwargs['server']
         self.port = kwargs['port']
@@ -74,6 +78,10 @@ class MetadataHandler(metaclass=Singleton):
     @property
     def metricsDesc(self):
         return self.__metricsDesc
+
+    @property
+    def getUpdateTime(self):
+        return self.__updateTime
 
     def getSensorPeriodForMetric(self, metric):
         sensor = self.metaData.getSensorForMetric(metric)
@@ -129,14 +137,16 @@ class MetadataHandler(metaclass=Singleton):
             raise ValueError(MSG['NoSensorConfigData'])
         MAX_ATTEMPTS_COUNT = 3
         for attempt in range(1, MAX_ATTEMPTS_COUNT + 1):
-            self.__metaData = Topo(self.qh.getTopology())
-            if not (self.metaData and self.metaData.topo):
+            topoStr = self.qh.getTopology()
+            if not topoStr:
                 if attempt > MAX_ATTEMPTS_COUNT:
                     break
                 # if no data returned because of the REST HTTP server is still starting, sleep and retry (max 3 times)
                 self.logger.warning(MSG['NoDataStartNextAttempt'].format(attempt, MAX_ATTEMPTS_COUNT))
                 sleep(self.sleepTime)
             else:
+                self.__metaData = Topo(topoStr)
+                self.__updateTime = time()
                 foundItems = len(self.metaData.allParents) - 1
                 sensors = self.metaData.sensorsSpec.keys()
                 self.logger.info(MSG['MetaSuccess'])
@@ -146,7 +156,41 @@ class MetadataHandler(metaclass=Singleton):
                 return
         raise ValueError(MSG['NoData'])
 
+    @cherrypy.tools.json_out()  # @UndefinedVariable
+    def GET(self, **params):
+        """ Forward GET REST HTTP/s API incoming requests to Metadata Handler
+            available endpoints:
+                            /metadata/update
+                            /metadata/sensorsconfig
+        """
+        resp = []
+
+        # /metadata/update
+        if '/metadata/update' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.update()
+            # resp = json.dumps(resp)
+
+        # /metadata/time
+        elif '/metadata/time' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            ts = int(self.getUpdateTime)
+            resp = [datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')]
+
+        # /metadata/sensorsconfig
+        elif '/metadata/sensorsconfig' == cherrypy.request.script_name:
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = self.SensorsConfig
+            # resp = json.dumps(resp)
+
+        del cherrypy.response.headers['Allow']
+        cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
+        # cherrypy.response.headers['Content-Type'] = 'application/json'
+        # resp = json.dumps(resp)
+        return resp
+
     @execution_time()
+    @synchronized(topoUpdateLock)
     def update(self, refresh_all=False):
         '''Read the topology from ZIMon and update
         the tables for metrics, keys, key elements (tag keys)
@@ -155,10 +199,12 @@ class MetadataHandler(metaclass=Singleton):
         if refresh_all:
             self.__sensorsConf = SensorConfig.readSensorsConfigFromMMSDRFS(self.logger)
 
-        self.__metaData = Topo(self.qh.getTopology())
-        if not (self.metaData and self.metaData.topo):
+        topoStr = self.qh.getTopology()
+        if not topoStr:
             self.logger.error(MSG['NoData'])  # Please check the pmcollector is properly configured and running.
-            raise cherrypy.HTTPError(404, MSG[404])
+            raise cherrypy.HTTPError(404, ERR[404])
+        self.__metaData = Topo(topoStr)
+        self.__updateTime = time()
         self.logger.details(MSG['MetaSuccess'])
         self.logger.debug(MSG['ReceivAttrValues'].format('parents', ", ".join(self.metaData.allParents)))
         return ({'msg': MSG['MetaSuccess']})

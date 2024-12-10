@@ -1,0 +1,1372 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    },
+    {
+      "name": "DS_EXPRESSION",
+      "label": "Expression",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "__expr__"
+    }
+  ],
+  "__elements": {
+    "fdr9fzl70hhq8c": {
+      "name": "Capacity Utilization per Fileset (soft limit) in $byFilesystem",
+      "uid": "fdr9fzl70hhq8c",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "description": "This Graph based on the metrics of the GPFSFilesetQuota sensor. The bar diagram shows the number of currently used kilobytes in relation to the assigned soft quota limit per fileset of the $byFilesystem.\n\n**Note**  that the GPFSFilesetQuota sensor is running once per hour. \n\nThe percentage value is calculated as follows:\n(gpfs_rq_blk_current + gpfs_rq_blk_in_doubt)/gpfs_rq_blk_soft_limit from gpfs_fs_name=$byFilesystem\n",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "fixedColor": "green",
+              "mode": "continuous-GrYlRd"
+            },
+            "decimals": 1,
+            "displayName": "${__field.labels.gpfs_fset_name}",
+            "fieldMinMax": false,
+            "mappings": [],
+            "max": 1,
+            "noValue": "NaN",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "options": {
+          "displayMode": "lcd",
+          "maxVizHeight": 200,
+          "minVizHeight": 50,
+          "minVizWidth": 75,
+          "namePlacement": "top",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "manual",
+          "text": {
+            "titleSize": 15,
+            "valueSize": 30
+          },
+          "valueMode": "color"
+        },
+        "pluginVersion": "11.0.0",
+        "targets": [
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "pm_filter"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_blk_current",
+            "refId": "D"
+          },
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "pm_filter"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_blk_in_doubt",
+            "refId": "A"
+          },
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "pm_filter"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_blk_soft_limit",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "__expr__",
+              "uid": "__expr__"
+            },
+            "expression": "($D+$A)/$B",
+            "hide": false,
+            "refId": "C",
+            "type": "math"
+          }
+        ],
+        "title": "Capacity Utilization per Fileset (soft limit) in $byFilesystem",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "pattern": "^(?!.*root).*$"
+              }
+            }
+          }
+        ],
+        "type": "bargauge"
+      }
+    },
+    "adrg9886nbi80d": {
+      "name": "Inode utilization per Fileset (soft limit) in $byFilesystem",
+      "uid": "adrg9886nbi80d",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "description": "This Graph based on the metrics of the GPFSFilesetQuota sensor. The bar diagram shows the number of currently used  files (inodes) in relation to the assigned soft quota limit per fileset of the $byFilesystem.\n\n**Note**  that the GPFSFilesetQuota sensor is running once per hour. \n\nThe percentage value is calculated as follows:\n(gpfs_rq_file_current+gpfs_rq_file_in_doubt) /gpfs_rq_file_soft_limit from gpfs_fs_name=$byFilesystem",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "fixedColor": "green",
+              "mode": "shades"
+            },
+            "decimals": 1,
+            "displayName": "${__field.labels.gpfs_fset_name}",
+            "fieldMinMax": false,
+            "mappings": [],
+            "max": 1,
+            "noValue": "NaN",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 19922944
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "options": {
+          "displayMode": "lcd",
+          "maxVizHeight": 200,
+          "minVizHeight": 50,
+          "minVizWidth": 75,
+          "namePlacement": "top",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "manual",
+          "text": {
+            "titleSize": 15,
+            "valueSize": 30
+          },
+          "valueMode": "color"
+        },
+        "pluginVersion": "11.0.0",
+        "targets": [
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "iliteral_or"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_file_current",
+            "refId": "D"
+          },
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "iliteral_or"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_file_in_doubt",
+            "refId": "A"
+          },
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_fset_name",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "${System}"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$byFilesystem",
+                "groupBy": false,
+                "tagk": "gpfs_fs_name",
+                "type": "pm_filter"
+              }
+            ],
+            "hide": true,
+            "metric": "gpfs_rq_file_soft_limit",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "__expr__",
+              "uid": "__expr__"
+            },
+            "expression": "($D+$A)/$B",
+            "hide": false,
+            "refId": "C",
+            "type": "math"
+          }
+        ],
+        "title": "Inode utilization per Fileset (soft limit) in $byFilesystem",
+        "transformations": [
+          {
+            "filter": {
+              "id": "byRefId",
+              "options": "C"
+            },
+            "id": "sortBy",
+            "options": {}
+          },
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "pattern": "^(?!.*root).*$"
+              }
+            }
+          }
+        ],
+        "type": "bargauge"
+      }
+    }
+  },
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "__expr__",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "This dashboard could be used to monitor file system usage and quota information per file set.\n",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 15,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "**Additional info:**           If the panels on the left side do not show any data, please quickly scroll down and up the entire dashboard.\r\n                               After reading this message, you can remove this text panel from the dashboard entirely.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "This graph is based on the metrics provided by the GPFSFilesetQuota sensor. The table shows the top 5 $byFilesystem filesets with the highest kilobyte usage based on the assigned soft quota limit.\n\n**Note that the GPFSFilesetQuota sensor runs once per hour. \n\nThe percentage is calculated as follows\nmax(gpfs_rq_blk_current /gpfs_rq_blk_soft_limit) from gpfs_fs_name=$byFilesystem.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "filterable": false,
+            "inspect": false,
+            "minWidth": 50
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "show details",
+              "url": "/../d/bdr84zexhhm9sd/fileset-block-quota-limits-details?orgId=1&refresh=5s&var-byFileset=${__data.fields.gpfs_fset_name}&var-byFilesystem=${__data.fields.gpfs_fs_name}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 40
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_cluster_name"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_fs_name"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_fset_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 165
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 2
+      },
+      "id": 6,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "show all",
+          "url": "/../d/fdr9h7kvfypdsb/filesets-block-limits?&var-byFilesystem=$byFilesystem"
+        }
+      ],
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "panelId": 3,
+          "refId": "A",
+          "withTransforms": false
+        }
+      ],
+      "title": "Top 5 filesets approaching the soft block quotas",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {
+            "limitField": 5
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "^(?!.*root).*$"
+                  }
+                },
+                "fieldName": "gpfs_fset_name"
+              }
+            ],
+            "match": "all",
+            "type": "include"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "description": "This Graph based on GPFSFilesetQuota sensor metric gpfs_rq_blk_current.\n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 54,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "deckbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 6,
+        "y": 2
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_blk_current",
+          "refId": "A"
+        }
+      ],
+      "title": "The amount of disk space (kilobytes) currently in use",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "description": "This Graph based on the metrics of the GPFSDiskCap sensor.\n\n**Note**  that the GPFSDiskCap sensor is running once per day. \n In the first 24h after the filesystem creation there will be probably no value shown. \n\nThe percentage value is calculated as follows:\nsum(gpfs_disk_disksize) - (sum(gpfs_disk_free_fullkb) ) /sum(gpfs_disk_disksize) from gpfs_fs_name=$byFilesystem\n\nClick on the value in the graph to switch to the detail view.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "show details",
+              "url": "/../d/cdr9jtyc56qdcf/filesystem-disk-capacity-overview?var-byFilesystem=${__field.labels.gpfs_fs_name}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 19,
+        "y": 2
+      },
+      "id": 11,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "text": {}
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": true,
+          "metric": "gpfs_disk_free_fullkb",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": true,
+          "metric": "gpfs_disk_disksize",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "($B-$A)/$B",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "title": "$byFilesystem disk capacity usage",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "This graph is based on the metrics provided by the GPFSFilesetQuota sensor. The table shows the top 5 $byFilesystem filesets with the highest inodes(files) usage based on the assigned soft quota limit.\n\n**Note that the GPFSFilesetQuota sensor runs once per hour. \n\nThe percentage is calculated as follows\nmax(gpfs_rq_file_current /gpfs_rq_file_soft_limit) from gpfs_fs_name=$byFilesystem.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "filterable": false,
+            "inspect": false,
+            "minWidth": 50
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "show details",
+              "url": "/../d/bdr8l18sqz280c/fileset-inode-quota-limits-details?orgId=1&refresh=5s&var-byFileset=${__data.fields.gpfs_fset_name}&var-byFilesystem=${__data.fields.gpfs_fs_name}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 40
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_cluster_name"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_fs_name"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gpfs_fset_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 165
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 10
+      },
+      "id": 10,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "show all",
+          "url": "/../d/fdrg9bidhv1tsa/filesets-inode-limits?&var-byFilesystem=$byFilesystem"
+        }
+      ],
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "panelId": 14,
+          "refId": "A",
+          "withTransforms": false
+        }
+      ],
+      "title": "Top 5 filesets approaching the soft file quotas",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {
+            "limitField": 5
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "regex",
+                  "options": {
+                    "value": "^(?!.*root).*$"
+                  }
+                },
+                "fieldName": "gpfs_fset_name"
+              }
+            ],
+            "match": "all",
+            "type": "include"
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 54,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 13,
+        "x": 6,
+        "y": 10
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_rq_file_current",
+          "refId": "A"
+        }
+      ],
+      "title": "Sum of files (inodes) currently in use",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM2-CLUSTER1}"
+      },
+      "description": "This Graph based on the metrics of the GPFSInodeCap sensor.\n\n**Note** that the GPFSInodeCap is not an independent sensor in the perfmon config, \nbut a sub-sensor of the GPFSDiskCap sensor which is running once per day. \nIn the first 24h after the filesystem creation there will be probably no value shown. \n\nThe percentage value is calculated as follows:\ngpfs_fs_inode_used /gpfs_fs_inode_max from gpfs_fs_name=$byFilesystem\n\nClick on the value in the graph to switch to the detail view.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "",
+              "url": "/../d/cdrgckceicl4wf/filesystem-inodes-overview?var-byFilesystem=${__field.labels.gpfs_fs_name}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 80
+              },
+              {
+                "color": "dark-red",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 19,
+        "y": 10
+      },
+      "id": 12,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "11.0.0",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": true,
+          "metric": "gpfs_fs_inode_used",
+          "refId": "A"
+        },
+        {
+          "aggregator": "noop",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM2-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "$byFilesystem",
+              "groupBy": false,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "hide": true,
+          "metric": "gpfs_fs_inode_max",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A/$B",
+          "hide": false,
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "title": "$byFilesystem inode capacity usage",
+      "type": "gauge"
+    },
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 3,
+      "libraryPanel": {
+        "uid": "fdr9fzl70hhq8c",
+        "name": "Capacity Utilization per Fileset (soft limit) in $byFilesystem"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 14,
+      "libraryPanel": {
+        "uid": "adrg9886nbi80d",
+        "name": "Inode utilization per Fileset (soft limit) in $byFilesystem"
+      }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": [
+    "capacity",
+    "fileset",
+    "quota"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "vm2-cluster1",
+          "value": "cdqnnhu44hjb4b"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "System",
+        "options": [],
+        "query": "opentsdb",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${DS_VM2-CLUSTER1}"
+        },
+        "definition": "tag_values(gpfs_rq_blk_current, gpfs_fs_name)",
+        "description": "List filesystems with enforced per-fileset quotas.\nIf a specific filesystem name is not on the list, use `mmlsfs <fs> -Q' to check if per-fileset quotas are enforced.",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "byFilesystem",
+        "options": [],
+        "query": "tag_values(gpfs_rq_blk_current, gpfs_fs_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timeRangeUpdatedDuringEditOrView": false,
+  "timepicker": {},
+  "timezone": "",
+  "title": "Fileset Quota Limits",
+  "uid": "bdbb60a6-b34d-4fcf-944f-9c0715021127",
+  "version": 105,
+  "weekStart": ""
+}

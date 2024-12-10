@@ -281,9 +281,12 @@ class OpenTsdbApi(object):
         """
         resp = []
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
         conn = cherrypy.request.headers.get('Host').split(':')
-        if int(conn[1]) != int(self.port):
-            raise cherrypy.HTTPError(400, MSG[400])
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         # /api/suggest
         if 'suggest' in cherrypy.request.script_name:
@@ -292,18 +295,6 @@ class OpenTsdbApi(object):
         # /api/search/lookup
         elif 'lookup' in cherrypy.request.script_name:
             resp = self.lookup(params)
-
-        # /api/update
-        elif 'update' in cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.update()
-            # resp = json.dumps(resp)
-
-        # /sensorsconfig
-        elif '/sensorsconfig' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.SensorsConfig
-            # resp = json.dumps(resp)
 
         elif 'aggregators' in cherrypy.request.script_name:
             resp = ["noop", "sum", "avg", "max", "min", "rate"]
@@ -319,6 +310,11 @@ class OpenTsdbApi(object):
             supportedFilters['pm_filter'] = filterDesc
             resp = supportedFilters
 
+        else:
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
+
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         # cherrypy.response.headers['Content-Type'] = 'application/json'
@@ -332,6 +328,13 @@ class OpenTsdbApi(object):
         ''' Process POST. tools.json_in.force is set to False for
         compatability between versions of grafana < 3 and version 3.'''
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
+        conn = cherrypy.request.headers.get('Host').split(':')
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
+
         # /api/query
         if 'query' in cherrypy.request.script_name:
 
@@ -339,7 +342,7 @@ class OpenTsdbApi(object):
             jreq = cherrypy.request.json
             if jreq.get('queries') is None:
                 self.logger.error(MSG['QueryError'].format('empty'))
-                raise cherrypy.HTTPError(400, MSG[400])
+                raise cherrypy.HTTPError(400, ERR[400])
 
             return self.query(jreq)
 
@@ -370,10 +373,8 @@ class LookupResponse():
         if identifiersMap:
             for identifiers in identifiersMap:
                 d = defaultdict(dict)
-                for key in identifiers.keys():
-                    d['tags'][key] = identifiers[key]
-                    if d not in self.results:
-                        self.results.append(d)
+                d['tags'] = identifiers
+                self.results.append(d)
 
 
 class SingleTimeSeriesResponse(object):

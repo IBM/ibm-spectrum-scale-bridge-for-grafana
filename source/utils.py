@@ -22,9 +22,11 @@ Created on Oct 25, 2023
 
 import time
 import copy
+from threading import Lock
 from typing import Callable, TypeVar, Any
 from functools import wraps
 from messages import MSG
+from profiler import Profiler
 
 T = TypeVar('T')
 
@@ -79,6 +81,34 @@ def cond_execution_time(enabled: bool = False, skip_attribute: bool = False) -> 
                 wrapper._execution_duration = duration  # type: ignore
             logger.debug(MSG['RunMethod'].format(f.__name__, ', '.join(filter(None, [args_str, kwargs_str]))))
             logger.debug(MSG['TimerInfo'].format(f.__name__, duration, cpu_time))
+            return result
+        return wrapper
+
+    def no_outer(f: Callable[..., T]) -> Callable[..., T]:
+        return f
+    return outer if enabled else no_outer
+
+
+def synchronized(lock: Lock):
+    """Decorator which takes a Lock and runs the function under that Lock"""
+    def funcWrapper(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            with lock:
+                ret = func(*args, **kwargs)
+            return ret
+        return wrapper
+    return funcWrapper
+
+
+def get_runtime_statistics(enabled: bool = False) -> Callable[[Callable[..., T]], Callable[..., T]]:
+    """ Conditionally executes the passed through function f with profiling."""
+
+    def outer(f: Callable[..., T]) -> Callable[..., T]:
+        @wraps(f)
+        def wrapper(*args: Any, **kwargs: Any) -> T:
+            profiler = Profiler()
+            result = profiler.run(f, *args, **kwargs)
             return result
         return wrapper
 

@@ -30,7 +30,8 @@ from typing import Optional, Any, List
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
-from utils import classattributes, cond_execution_time
+from refresher import TopoRefreshManager
+from utils import classattributes, cond_execution_time, get_runtime_statistics
 
 
 local_cache = set()
@@ -38,19 +39,22 @@ local_cache = set()
 
 class TimeSeries(object):
 
-    def __init__(self, columnInfo, dps, filtersMap):
+    def __init__(self, columnInfo, dps, filtersMap, defaultLabels):
         self.metricname = columnInfo.keys[0].metric
         self.columnInfo = columnInfo
         self.dps = dps
         self.tags = defaultdict(list)
         self.aggregatedTags = []
 
-        self.parse_tags(filtersMap)
+        self.parse_tags(filtersMap, defaultLabels)
 
     @cond_execution_time(enabled=analytics.inspect_special)
-    def parse_tags(self, filtersMap):
-        tagsDict = defaultdict(set)
+    def parse_tags(self, filtersMap, defaultLabels):
         logger = getBridgeLogger()
+        if not (filtersMap and defaultLabels):
+            logger.trace(f'No labels, no filters in local cache for {self.columnInfo.keys[0].__str__()}')
+            return
+        tagsDict = defaultdict(set)
         for key in self.columnInfo.keys:
             ident = [key.parent]
             ident.extend(key.identifier)
@@ -70,15 +74,15 @@ class TimeSeries(object):
                     break
             # detected zimon key, do we need refresh local TOPO?
             if not found:
-                cache_size = len(local_cache)
-                local_cache.union(ident)
-                updated_size = len(local_cache)
-                if updated_size > cache_size:
-                    logger.trace(MSG['NewKeyDetected'].format('|'.join(ident)))
-                    md = MetadataHandler()
-                    Thread(name='AdHocMetaDataUpdate', target=md.update).start()
+                topoRefresher = TopoRefreshManager()
+                topoRefresher.update_local_cache(ident)
+
+                constructedTags = dict(zip(defaultLabels, ident))
+                if len(self.columnInfo.keys) == 1:
+                    self.tags = constructedTags
                 else:
-                    logger.trace(MSG['NewKeyAlreadyReported'].format('|'.join(ident)))
+                    for _key, _value in constructedTags.items():
+                        tagsDict[_key].add(_value)
 
         for _key, _values in tagsDict.items():
             if len(_values) > 1:
@@ -86,6 +90,7 @@ class TimeSeries(object):
             else:
                 self.tags[_key] = _values.pop()
 
+    @get_runtime_statistics(enabled=analytics.runtime_profiling)
     def reduce_dps_to_first_not_none(self, reverse_order=False):
         """Reduce multiple data points(dps) of a single
            TimeSeries to the first non null value in a sorted order.
@@ -145,6 +150,7 @@ class SensorTimeSeries(object):
         self.period = period
         self.metrics = {}
         self.filtersMap = self._get_all_filters()
+        self.labels = self._get_sensor_labels()
 
     def cleanup_metrics_values(self) -> None:
         for name in self.metrics.keys():
@@ -192,6 +198,10 @@ class SensorTimeSeries(object):
         md = MetadataHandler()
         return md.metaData.getAllFilterMapsForSensor(self.sensor)
 
+    def _get_sensor_labels(self):
+        md = MetadataHandler()
+        return md.metaData.getSensorLabels(self.sensor)
+
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
@@ -213,9 +223,7 @@ class QueryPolicy(object):
         query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
-            self.logger.error(MSG['QueryError'].
-                              format('Missing metric or sensor name'))
-            raise cherrypy.HTTPError(400, MSG[400])
+            raise ValueError('Missing metric or sensor name')
 
         if self.metricsaggr:
             for key, value in self.metricsaggr.items():
@@ -340,7 +348,12 @@ class SensorCollector(SensorTimeSeries):
     def _collect(self):
         '''Executes zimon query and returns results'''
 
-        res = self.md.qh.runQuery(self.query)
+        try:
+            res = self.md.qh.runQuery(self.query)
+        except Exception as e:
+            self.logger.error(MSG['QueryError'].format(e))
+            return
+
         if res is None:
             self.logger.error(MSG['NoData'])
             # self.stop_collect()
@@ -365,7 +378,7 @@ class SensorCollector(SensorTimeSeries):
                 columnValues[columnInfo][row.tstamp] = value
 
         for columnInfo, dps in columnValues.items():
-            ts = TimeSeries(columnInfo, dps, self.filtersMap)
+            ts = TimeSeries(columnInfo, dps, self.filtersMap, self.labels)
             if self.metrics.get(columnInfo.keys[0].metric) is not None:
                 self.logger.trace(MSG['MetricInResults'].format(
                     columnInfo.keys[0].metric))

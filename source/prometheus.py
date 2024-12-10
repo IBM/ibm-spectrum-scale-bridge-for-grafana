@@ -23,7 +23,7 @@ Created on Oct 30, 2023
 import cherrypy
 import json
 import analytics
-from messages import MSG
+from messages import ERR, MSG
 from typing import Optional
 from cherrypy.process.plugins import Monitor
 from collector import SensorCollector, QueryPolicy
@@ -149,22 +149,15 @@ class PrometheusExporter(object):
         '''
         resp = []
 
+        self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
         conn = cherrypy.request.headers.get('Host').split(':')
-        if int(conn[1]) != int(self.port):
-            raise cherrypy.HTTPError(400, MSG[400])
+        if len(conn) == 2 and int(conn[1]) != int(self.port):
+            self.logger.error(MSG['EndpointNotSupportedForPort'].
+                              format(cherrypy.request.script_name, str(conn[1])))
+            raise cherrypy.HTTPError(400, ERR[400])
 
-        # /update
-        if '/update' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.update()
-
-        # /sensorsconfig
-        elif '/sensorsconfig' == cherrypy.request.script_name:
-            # cherrypy.response.headers['Content-Type'] = 'application/json'
-            resp = self.md.SensorsConfig
-
-        elif self.endpoints and self.endpoints.get(cherrypy.request.script_name,
-                                                   None):
+        if self.endpoints and self.endpoints.get(cherrypy.request.script_name,
+                                                 None):
             sensor = self.endpoints[cherrypy.request.script_name]
             resp = self.metrics([sensor])
             cherrypy.response.headers['Content-Type'] = 'text/plain'
@@ -179,10 +172,9 @@ class PrometheusExporter(object):
             return resString
 
         else:
-            self.logger.error(MSG['EndpointNotSupported'].format(sensor))
-            raise cherrypy.HTTPError(400,
-                                     MSG['EndpointNotSupported'].format(
-                                         cherrypy.request.script_name))
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
 
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'

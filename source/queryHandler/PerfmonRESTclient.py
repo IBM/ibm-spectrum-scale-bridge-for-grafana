@@ -22,6 +22,7 @@ Created on Jan 28, 2021
 
 import analytics
 from utils import cond_execution_time
+import urllib.request
 # catch import failure on AIX since we will not be shipping our third-party libraries on AIX
 try:
     import requests
@@ -109,6 +110,13 @@ class perfHTTPrequestHelper(object):
             _prepRequest = self.session.prepare_request(self.requestData)
             try:
                 res = self.session.send(_prepRequest)
+                return res
+            except requests.exceptions.ProxyError:
+                close_session()
+                self.logger.debug(f"doRequest __ ProxyError. Found configured proxies: {urllib.request.getproxies()}")
+                res = requests.Response()
+                res.status_code = 503
+                res.reason = "Unable to connect to proxy"
                 return res
             except requests.exceptions.ConnectionError:
                 close_session()

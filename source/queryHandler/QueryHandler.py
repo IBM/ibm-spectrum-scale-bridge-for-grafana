@@ -28,7 +28,7 @@ import analytics
 from collections import namedtuple, defaultdict
 from itertools import chain
 from typing import NamedTuple, Tuple
-from utils import cond_execution_time
+from utils import cond_execution_time, get_runtime_statistics
 
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
 
@@ -176,10 +176,12 @@ class QueryResult:
             for row in self.rows:
                 self._add_calculated_row_data(calc, row)
 
+    @get_runtime_statistics(enabled=analytics.runtime_profiling)
     def __parseHeader(self):
         item = self.json['header']
         return HeaderData(**item)
 
+    @get_runtime_statistics(enabled=analytics.runtime_profiling)
     def __parseLegend(self):
         legendItems = self.json['legend']
         columnInfos = []

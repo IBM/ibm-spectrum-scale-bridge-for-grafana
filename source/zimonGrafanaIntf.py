@@ -35,9 +35,12 @@ from __version__ import __version__
 from messages import ERR, MSG
 from bridgeLogger import configureLogging, getBridgeLogger
 from confParser import getSettings
+from confgenerator import PrometheusConfigGenerator
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
+from profiler import Profiler
+from refresher import TopoRefreshManager
 from watcher import ConfigWatcher
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
@@ -206,6 +209,17 @@ def main(argv):
         print(msg)
         return
 
+    if (sys.version_info < (3, 8)):
+        print(f'\nYor system running {sys.version} \n\nThe IBM Storage Scale bridge for Grafana requires Python3.8 or above. \
+        \nRead the following instructions for possible solution: \
+        \nhttps://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/What-to-do-if-your-system-is-on-a-Python-version-lower-than-3.8')
+        return
+
+    if __version__.endswith('-dev'):
+        print('\n Warning: You are running a Development version of the IBM Storage Scale bridge for Grafana. \
+        \n It is recommended to use the latest released version, published on: \
+        \n https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/releases \n')
+
     registered_apps = []
 
     if args.get('enabled', False):
@@ -257,6 +271,27 @@ def main(argv):
         logger.error("ZiMon sensor configuration file not found")
         return
 
+    # register MetaData Handler endpoints
+    # query to force update of metadata (zimon)
+    cherrypy.tree.mount(mdHandler, '/metadata/update',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    # query for metadata (zimon) last update time
+    cherrypy.tree.mount(mdHandler, '/metadata/time',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    # query for list configured zimon sensors
+    cherrypy.tree.mount(mdHandler, '/metadata/sensorsconfig',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+
+    # register OpenTSDB API endpoints
     if args.get('port', None):
         bind_opentsdb_server(args)
         api = OpenTsdbApi(logger, mdHandler, args.get('port'))
@@ -280,18 +315,6 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
-        # query to force update of metadata (zimon feature)
-        cherrypy.tree.mount(api, '/api/update',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for list configured zimon sensors
-        cherrypy.tree.mount(api, '/sensorsconfig',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
         # query for list of aggregators (openTSDB)
         cherrypy.tree.mount(api, '/api/aggregators',
                             {'/':
@@ -306,6 +329,7 @@ def main(argv):
                             )
         registered_apps.append("OpenTSDB Api listening on Grafana queries")
 
+    # register Prometheus Exporter API endpoints
     if args.get('prometheus', None):
         bind_prometheus_server(args)
         load_endpoints('prometheus_endpoints.json')
@@ -315,19 +339,6 @@ def main(argv):
                                       args.get('rawCounters', False))
         exporter.endpoints.update(ENDPOINTS.get('prometheus',
                                                 {}))
-
-        # query to force update of metadata (zimon feature)
-        cherrypy.tree.mount(exporter, '/update',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
-        # query for list configured zimon sensors
-        cherrypy.tree.mount(exporter, '/sensorsconfig',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
         # query for all metrics (PrometheusExporter)
         cherrypy.tree.mount(exporter, '/metrics',
                             {'/':
@@ -342,8 +353,39 @@ def main(argv):
                                      }
                                     )
         registered_apps.append("Prometheus Exporter Api listening on Prometheus requests")
+
+        # register Prometheus config generator endpoints (only if PyYaml available)
+        try:
+            conf_generator = PrometheusConfigGenerator(logger,
+                                                       mdHandler,
+                                                       args,
+                                                       ENDPOINTS.get('prometheus', {}))
+            cherrypy.tree.mount(conf_generator, '/prometheus.yml',
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
+            registered_apps.append("Prometheus Config Generator Api")
+        except ImportError:
+            logger.warning("Prometheus Config Generator Api requires python PyYaml packages. Skip registering API.")
+
+    # register Profiler reporter endpoint
+    profiler = Profiler(args.get('logPath'))
+    # query for print out profiling report
+    cherrypy.tree.mount(profiler, '/profiling',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+
+    # register cherrypy stats plugin endpoint
     if analytics.cherrypy_internal_stats:
-        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats')
+        cherrypy.tree.mount(StatsPage(), '/cherrypy_internal_stats',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
@@ -351,6 +393,9 @@ def main(argv):
         watcher = ConfigWatcher(files_to_watch, refresh_metadata, refresh_all=True)
         cherrypy.engine.subscribe('start', watcher.start_watch)
         cherrypy.engine.subscribe('stop', watcher.stop_watch)
+        refresher = TopoRefreshManager(refresh_metadata, refresh_all=False)
+        cherrypy.engine.subscribe('start', refresher.start_monitor)
+        cherrypy.engine.subscribe('stop', refresher.stop_monitor)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
         logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)))
