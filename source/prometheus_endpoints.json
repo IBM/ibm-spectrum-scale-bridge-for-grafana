@@ -2,6 +2,8 @@
     "/metrics_gpfs_disk": "GPFSDisk",
     "/metrics_gpfs_filesystem": "GPFSFilesystem",
     "/metrics_gpfs_nsddisk": "GPFSNSDDisk",
+    "/metrics_gpfs_nsdpool": "GPFSNSDPool",
+    "/metrics_gpfs_nsdfs": "GPFSNSDFS",
     "/metrics_gpfs_poolio": "GPFSPoolIO",
     "/metrics_gpfs_vfsx": "GPFSVFSX",
     "/metrics_gpfsioc": "GPFSIOC",
