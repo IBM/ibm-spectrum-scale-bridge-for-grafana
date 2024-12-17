@@ -9,6 +9,6 @@
 # setuptools
 cherrypy
 PyYAML
-psutil
+# psutil
 # urllib3
 # requests
