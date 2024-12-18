@@ -1,3 +1,13 @@
+# Version 8.0.2 (12/18/2024)
+Added GPFSNSDPool, GPFSNSDFS sensors to the supported PrometheusExporter endpoints
+Added LOGLEVEL to the Dockerfile editable command line arguments
+Removed psutil package from Python requirements list 
+
+Tested with Grafana version 11.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.1 (12/10/2024)
 Added HTTP Api REST endpoints allowing to query: \
 -  Performance Monitoring Tool sensors configuration in use \
