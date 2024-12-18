@@ -3,7 +3,7 @@ FROM $BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.0.1"
+LABEL com.ibm.version="8.0.2"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -73,6 +73,9 @@ ARG DEFAULTLOGPATH='/var/log/ibm_bridge_for_grafana'
 ENV LOGPATH=$DEFAULTLOGPATH
 RUN echo "the log will use $LOGPATH"
 
+ARG DEFAULTLOGLEVEL=15
+ENV LOGLEVEL=$DEFAULTLOGLEVEL
+
 COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 # COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 
@@ -139,7 +142,7 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 # Switch user
 USER $GID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c 10 -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICAUTHUSER -a $BASICAUTHPASSW -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICAUTHUSER -a $BASICAUTHPASSW -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE"]
 
 EXPOSE 4242 8443 9250
 

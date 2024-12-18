@@ -30,8 +30,6 @@ more-itertools==10.5.0
     #   jaraco-text
 portend==3.2.0
     # via cherrypy
-psutil==6.1.0
-    # via -r /root/requirements_ubi.in
 python-dateutil==2.9.0.post0
     # via tempora
 pyyaml==6.0.2
