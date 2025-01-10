@@ -96,6 +96,8 @@ class MetadataHandler(metaclass=Singleton):
             sensor = 'GPFSDiskCap'
         elif sensor in ('GPFSNSDFS', 'GPFSNSDPool'):
             sensor = 'GPFSNSDDisk'
+        elif sensor == 'GPFSFCM':
+            sensor = 'GPFSFCMDA'
         elif sensor == 'DomainStore':
             return 1
 
