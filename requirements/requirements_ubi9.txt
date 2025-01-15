@@ -15,14 +15,14 @@ jaraco-collections==5.1.0
     # via cherrypy
 jaraco-context==6.0.1
     # via jaraco-text
-jaraco-functools==4.0.2
+jaraco-functools==4.1.0
     # via
     #   cheroot
     #   jaraco-text
     #   tempora
 jaraco-text==4.0.0
     # via jaraco-collections
-more-itertools==10.5.0
+more-itertools==10.6.0
     # via
     #   cheroot
     #   cherrypy
@@ -32,9 +32,9 @@ portend==3.2.0
     # via cherrypy
 python-dateutil==2.9.0.post0
     # via tempora
-six==1.16.0
+six==1.17.0
     # via python-dateutil
-tempora==5.7.0
+tempora==5.8.0
     # via portend
 zc-lockfile==3.0.post1
     # via cherrypy
