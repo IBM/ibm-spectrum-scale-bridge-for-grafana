@@ -41,6 +41,14 @@ Tested with RedHat community-powered Grafana operator v.5
 
 
 
+# Version 7.2.1 (01/15/2025)
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.5-1736404036 \
+
+Tested with Grafana version 11
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 7.2.0 (12/06/2024)
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.5-1732804088 \
 Speed up OpenTSDB /search/lookup REST Api endpoint response time \
