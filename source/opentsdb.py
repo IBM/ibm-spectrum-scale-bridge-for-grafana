@@ -57,8 +57,8 @@ class OpenTsdbApi(object):
         if jreq.get('start') == 'last':
             for metric in metrics:
                 for st in metric.timeseries:
-                    timestmp =''
-                    val = 'null' 
+                    timestmp = ''
+                    val = 'null'
                     if len(st.dps) > 0:
                         timestmp = list(st.dps.keys())[0]
                         val = st.dps[timestmp]
@@ -323,7 +323,7 @@ class OpenTsdbApi(object):
                 self.logger.error(MSG['QueryError'].format('empty'))
                 raise cherrypy.HTTPError(400, ERR[400])
 
-            queries = [] 
+            queries = []
             timeseries = params.get('timeseries')
             if not isinstance(timeseries, list):
                 timeseries = [timeseries]
@@ -331,6 +331,8 @@ class OpenTsdbApi(object):
                 try:
                     metricDict = {}
                     params_list = re.split(r'\{(.*)\}', timeserie.strip())
+                    if len(params_list[0]) == 0:
+                        break
                     metricDict['metric'] = params_list[0]
 
                     if len(params_list) > 1:
@@ -342,6 +344,8 @@ class OpenTsdbApi(object):
                 except Exception as e:
                     self.logger.exception(MSG['IntError'].format(str(e)))
                     raise cherrypy.HTTPError(500, MSG[500])
+            if len(queries) == 0:
+                raise cherrypy.HTTPError(400, ERR[400])
             jreq['start'] = 'last'
             jreq['queries'] = queries
 
