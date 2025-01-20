@@ -54,15 +54,29 @@ class OpenTsdbApi(object):
     def format_response(self, data: dict, jreq: dict) -> List[dict]:
         respList = []
         metrics = set(data.values())
-        for metric in metrics:
-            for st in metric.timeseries:
-                res = SingleTimeSeriesResponse(jreq.get('inputQuery'),
-                                               jreq.get('showQuery'),
-                                               jreq.get('globalAnnotations'),
-                                               st.tags, st.aggregatedTags)
-                # self.logger.trace(f'OpenTSDB queryResponse for :
-                #                   {data.keys()[0]} with {len(st.dps)} datapoints')
-                respList.append(res.to_dict(st.dps))
+        if jreq.get('start') == 'last':
+            for metric in metrics:
+                for st in metric.timeseries:
+                    timestmp = ''
+                    val = 'null'
+                    if len(st.dps) > 0:
+                        timestmp = list(st.dps.keys())[0]
+                        val = st.dps[timestmp]
+                    res = LastSingleTimeSeriesResponse(jreq.get('inputQuery'),
+                                                       timestmp,
+                                                       val,
+                                                       st.tags)
+                    respList.append(res.to_dict())
+        else:
+            for metric in metrics:
+                for st in metric.timeseries:
+                    res = SingleTimeSeriesResponse(jreq.get('inputQuery'),
+                                                   jreq.get('showQuery'),
+                                                   jreq.get('globalAnnotations'),
+                                                   st.tags, st.aggregatedTags)
+                    # self.logger.trace(f'OpenTSDB queryResponse for :
+                    #                   {data.keys()[0]} with {len(st.dps)} datapoints')
+                    respList.append(res.to_dict(st.dps))
         return respList
 
     @execution_time()
@@ -115,29 +129,34 @@ class OpenTsdbApi(object):
 
         q = jreq.get('inputQuery')
 
-        period = self.md.getSensorPeriodForMetric(q.get('metric'))
+        sensor = self.TOPO.getSensorForMetric(q.get('metric'))
+        period = self.md.getSensorPeriod(sensor)
         if period < 1:
             self.logger.error(MSG['SensorDisabled'].format(q.get('metric')))
             raise cherrypy.HTTPError(
                 400, MSG['SensorDisabled'].format(q.get('metric')))
 
-        sensor = self.TOPO.getSensorForMetric(q.get('metric'))
-
         args = {}
         args['metricsaggr'] = {q.get('metric'): q.get('aggregator')}
-        args['start'] = str(int(int(str(jreq.get('start'))) / 1000))
-        if jreq.get('end') is not None:
-            args['end'] = str(int(int(str(jreq.get('end'))) / 1000))
 
-        if q.get('downsample'):
-            args['dsOp'] = self._get_downsmpl_op(q.get('downsample'))
-            args['dsBucketSize'] = self._calc_bucket_size(q.get('downsample'))
+        if jreq.get('start') == 'last':
+            args['nsamples'] = 1
+            if q.get('tags'):
+                args['filters'] = q.get('tags')
+        else:
+            args['start'] = str(int(int(str(jreq.get('start'))) / 1000))
+            if jreq.get('end') is not None:
+                args['end'] = str(int(int(str(jreq.get('end'))) / 1000))
 
-        if q.get('filters'):
-            filters, grouptags = self._parse_input_query_filters(
-                q.get('filters'))
-            args['filters'] = filters
-            args['grouptags'] = grouptags
+            if q.get('downsample'):
+                args['dsOp'] = self._get_downsmpl_op(q.get('downsample'))
+                args['dsBucketSize'] = self._calc_bucket_size(q.get('downsample'))
+
+            if q.get('filters'):
+                filters, grouptags = self._parse_input_query_filters(
+                    q.get('filters'))
+                args['filters'] = filters
+                args['grouptags'] = grouptags
 
         args['rawData'] = q.get('explicitTags', False)
 
@@ -296,6 +315,42 @@ class OpenTsdbApi(object):
         elif 'lookup' in cherrypy.request.script_name:
             resp = self.lookup(params)
 
+        # /api/query/last
+        elif '/api/query/last' == cherrypy.request.script_name:
+            jreq = {}
+
+            if params.get('timeseries') is None:
+                self.logger.error(MSG['QueryError'].format('empty'))
+                raise cherrypy.HTTPError(400, ERR[400])
+
+            queries = []
+            timeseries = params.get('timeseries')
+            if not isinstance(timeseries, list):
+                timeseries = [timeseries]
+            for timeserie in timeseries:
+                try:
+                    metricDict = {}
+                    params_list = re.split(r'\{(.*)\}', timeserie.strip())
+                    if len(params_list[0]) == 0:
+                        break
+                    metricDict['metric'] = params_list[0]
+
+                    if len(params_list) > 1:
+                        attr = params_list[1]
+                        filterBy = dict(x.split('=') for x in attr.split(','))
+                        metricDict['tags'] = filterBy
+                    queries.append(metricDict)
+
+                except Exception as e:
+                    self.logger.exception(MSG['IntError'].format(str(e)))
+                    raise cherrypy.HTTPError(500, MSG[500])
+            if len(queries) == 0:
+                raise cherrypy.HTTPError(400, ERR[400])
+            jreq['start'] = 'last'
+            jreq['queries'] = queries
+
+            resp = self.query(jreq)
+
         elif 'aggregators' in cherrypy.request.script_name:
             resp = ["noop", "sum", "avg", "max", "min", "rate"]
 
@@ -336,7 +391,7 @@ class OpenTsdbApi(object):
             raise cherrypy.HTTPError(400, ERR[400])
 
         # /api/query
-        if 'query' in cherrypy.request.script_name:
+        if '/api/query' == cherrypy.request.script_name:
 
             # read query request parameters
             jreq = cherrypy.request.json
@@ -398,4 +453,18 @@ class SingleTimeSeriesResponse(object):
         # first convert object to dict and then fetch the dict of dps to it
         if dps:
             res['dps'] = dps
+        return res
+
+
+class LastSingleTimeSeriesResponse(object):
+
+    def __init__(self, inputQuery, timestmp, value, tags: dict = None):
+        self.metric = inputQuery.get('metric')
+        self.timestamp = timestmp
+        self.value = value
+        self.tags = tags or defaultdict(list)
+
+    def to_dict(self):
+        ''' Converts the LastSingleTimeSeriesResponse object to dict. '''
+        res = self.__dict__
         return res
