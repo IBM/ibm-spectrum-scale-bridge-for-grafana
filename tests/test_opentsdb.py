@@ -135,7 +135,7 @@ def test_case05():
         logger = logging.getLogger(__name__)
         opentsdb = OpenTsdbApi(logger, md_instance, '9999')
         resp = opentsdb.format_response(data, jreq)
-        assert set(resp[0].keys()) == set(['metric','timestamp','value','tags'])
+        assert set(resp[0].keys()) == set(['metric', 'timestamp', 'value', 'tags'])
         assert resp[0].get('metric') == "cpu_user"
         assert 'gpfs_fs_name' not in resp[0].get('tags')
         assert 'node' in resp[0].get('tags')
