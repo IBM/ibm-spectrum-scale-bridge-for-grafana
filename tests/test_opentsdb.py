@@ -59,6 +59,23 @@ def my_setup():
             }
 
 
+def query_last_setup():
+    global key1, col1, labels, filtersMap, dps1, ts1, metricTS, data, jreq
+
+    key1 = Key._from_string('scale-16|CPU|cpu_user', '')
+    col1 = ColumnInfo(name='cpu_user', semType=1, keys=(key1,), column=0)
+    filtersMap = [{'node': 'scale-11'}, {'node': 'scale-12'}, {'node': 'scale-13'}, {'node': 'scale-14'}, {'node': 'scale-15'}, {'node': 'scale-16'}]
+    labels = ['node']
+    dps1 = {1737321193: 3.0}
+    ts1 = TimeSeries(col1, dps1, filtersMap, labels)
+    metricTS = MetricTimeSeries('cpu_user', '')
+    metricTS.timeseries = [ts1]
+    data = {'cpu_user': metricTS}
+    jreq = {'start': 'last', 'inputQuery': {'metric': 'cpu_user',
+                                            'tags': {'node': 'scale-16'},
+                                            'index': 0}}
+
+
 @with_setup(my_setup)
 def test_case01():
     ts = TimeSeries(col3, dps2, filtersMap, labels)
@@ -109,3 +126,16 @@ def test_case04():
         response = profiler.stats(os.path.join(profiler.path, "profiling_format_response.prof"))
         assert response is not None
         print('\n'.join(response) + '\n')
+
+
+@with_setup(query_last_setup)
+def test_case05():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        resp = opentsdb.format_response(data, jreq)
+        assert set(resp[0].keys()) == set(['metric','timestamp','value','tags'])
+        assert resp[0].get('metric') == "cpu_user"
+        assert 'gpfs_fs_name' not in resp[0].get('tags')
+        assert 'node' in resp[0].get('tags')
