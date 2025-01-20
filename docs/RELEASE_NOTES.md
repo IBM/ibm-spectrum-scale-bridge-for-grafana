@@ -1,3 +1,14 @@
+# Version 8.0.3 (01/20/2025)
+Added GPFSPoolCap, GPFSInodeCap and GPFSFCMDA sensors to the supported PrometheusExporter endpoints \
+Added HTTP Api REST endpoint for querying last metric sample (OpenTSDB plugin)
+Reworked Dockerfile allowing build grafana-bridge image from Redhat UBI9/Python3.9 \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.5-1736404036 \ 
+
+Tested with Grafana version 11.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.2 (12/18/2024)
 Added GPFSNSDPool, GPFSNSDFS sensors to the supported PrometheusExporter endpoints
 Added LOGLEVEL to the Dockerfile editable command line arguments
