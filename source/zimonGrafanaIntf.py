@@ -303,6 +303,12 @@ def main(argv):
                               }
                              }
                             )
+        # query metric last value
+        cherrypy.tree.mount(api, '/api/query/last',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
         # query for metric name (openTSDB: zimon extension returns keys as well)
         cherrypy.tree.mount(api, '/api/suggest',
                             {'/':
