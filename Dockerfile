@@ -1,13 +1,13 @@
 ARG BUILD_ENV=prod
 ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1736404036
 
-FROM $BASE as build_prod
+FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 
-FROM $BASE as build_test
+FROM $BASE AS build_test
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 
-FROM $BASE as build_custom
+FROM $BASE AS build_custom
 ONBUILD COPY ./requirements/requirements.in  /root/requirements.in
 
 FROM build_${BUILD_ENV}
@@ -23,8 +23,8 @@ LABEL com.ibm.description="This tool translates the IBM Storage Scale performanc
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
 LABEL com.ibm.summary="It allows the IBM Storage Scale users to perform performance monitoring for IBM Storage Scale devices using Grafana"
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 ARG USERNAME=bridge
 ENV USER=$USERNAME
