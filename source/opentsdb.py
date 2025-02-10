@@ -461,6 +461,8 @@ class SingleTimeSeriesResponse(object):
         # first convert object to dict and then fetch the dict of dps to it
         if dps:
             res['dps'] = dps
+        elif isinstance(dps, list):
+            res['dps'] = []
         return res
 
 
