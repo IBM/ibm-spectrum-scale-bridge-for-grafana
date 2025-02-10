@@ -205,7 +205,7 @@ class SensorTimeSeries(object):
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
-                      dsBucketSize=0, dsOp='', rawData=False),
+                      dsBucketSize=0, dsOp='', rawData=False, dpsArrays=False),
                  ['sensor', 'period'])
 class QueryPolicy(object):
 
@@ -372,10 +372,16 @@ class SensorCollector(SensorTimeSeries):
                 list(self.request.metricsaggr.keys())[0]))
             rows = res.downsampleResults(self.dsInterval, self.request.dsOp)
 
-        columnValues = defaultdict(dict)
-        for row in rows:
-            for value, columnInfo in zip(row.values, res.columnInfos):
-                columnValues[columnInfo][row.tstamp] = value
+        if self.request.dpsArrays:
+            columnValues = defaultdict(list)
+            for row in rows:
+                for value, columnInfo in zip(row.values, res.columnInfos):
+                    columnValues[columnInfo].append([row.tstamp, value])
+        else:   
+            columnValues = defaultdict(dict)
+            for row in rows:
+                for value, columnInfo in zip(row.values, res.columnInfos):
+                    columnValues[columnInfo][row.tstamp] = value
 
         for columnInfo, dps in columnValues.items():
             ts = TimeSeries(columnInfo, dps, self.filtersMap, self.labels)
