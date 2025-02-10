@@ -377,7 +377,7 @@ class SensorCollector(SensorTimeSeries):
             for row in rows:
                 for value, columnInfo in zip(row.values, res.columnInfos):
                     columnValues[columnInfo].append([row.tstamp, value])
-        else:   
+        else:
             columnValues = defaultdict(dict)
             for row in rows:
                 for value, columnInfo in zip(row.values, res.columnInfos):

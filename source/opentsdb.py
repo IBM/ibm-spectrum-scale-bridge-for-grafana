@@ -384,7 +384,7 @@ class OpenTsdbApi(object):
     @cherrypy.config(**{'tools.json_in.force': False})
     @cherrypy.tools.json_in()  # @UndefinedVariable
     @cherrypy.tools.json_out()  # @UndefinedVariable
-    def POST(self,**params):
+    def POST(self, **params):
         ''' Process POST. tools.json_in.force is set to False for
         compatability between versions of grafana < 3 and version 3.'''
 
