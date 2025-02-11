@@ -76,6 +76,34 @@ def query_last_setup():
                                             'index': 0}}
 
 
+def query_arrays_setup():
+    global key1, col1, labels, filtersMap, dps1, ts1, ts2, metricTS, metricTS1, data, data1, jreq
+
+    key1 = Key._from_string('scale-11|CPU|cpu_system', '')
+    col1 = ColumnInfo(name='cpu_user', semType=1, keys=(key1,), column=0)
+    filtersMap = [{'node': 'scale-11'}, {'node': 'scale-12'}, {'node': 'scale-13'}, {'node': 'scale-14'}, {'node': 'scale-15'}, {'node': 'scale-16'}]
+    labels = ['node']
+    dps1 = [[1739214990, 3], [1739215050, 2], [1739215110, 3], [1739215170, 4], [1739215230, 3]]
+    dps2 = []
+    ts1 = TimeSeries(col1, dps1, filtersMap, labels)
+    ts2 = TimeSeries(col1, dps2, filtersMap, labels)
+    metricTS = MetricTimeSeries('cpu_system', '')
+    metricTS.timeseries = [ts1]
+    data = {'cpu_user': metricTS}
+    metricTS1 = MetricTimeSeries('cpu_system', '')
+    metricTS1.timeseries = [ts2]
+    data1 = {'cpu_user': metricTS1}
+    jreq = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
+            'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
+                           'filters': [
+                               {'filter': 'scale-11', 'groupBy': False,
+                                'tagk': 'node', 'type': 'pm_filter'
+                                }],
+                           'metric': 'cpu_system', 'index': 0
+                           }
+            }
+
+
 @with_setup(my_setup)
 def test_case01():
     ts = TimeSeries(col3, dps2, filtersMap, labels)
@@ -110,6 +138,7 @@ def test_case03():
         assert 'gpfs_fs_name' in resp[0].get('tags')
         assert 'node' in resp[0].get('tags')
         assert 'gpfs_cluster_name' in resp[0].get('tags')
+        assert isinstance(resp[0].get('dps'), dict)
 
 
 @with_setup(my_setup)
@@ -139,3 +168,30 @@ def test_case05():
         assert resp[0].get('metric') == "cpu_user"
         assert 'gpfs_fs_name' not in resp[0].get('tags')
         assert 'node' in resp[0].get('tags')
+
+
+@with_setup(query_arrays_setup)
+def test_case06():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        resp = opentsdb.format_response(data, jreq)
+        assert set(resp[0].keys()) == set(['metric', 'dps', 'tags', 'aggregatedTags'])
+        assert resp[0].get('metric') == "cpu_system"
+        assert 'node' in resp[0].get('tags')
+        assert isinstance(resp[0].get('dps'), list)
+
+
+@with_setup(query_arrays_setup)
+def test_case07():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        resp = opentsdb.format_response(data1, jreq)
+        assert set(resp[0].keys()) == set(['metric', 'dps', 'tags', 'aggregatedTags'])
+        assert resp[0].get('metric') == "cpu_system"
+        assert 'node' in resp[0].get('tags')
+        assert isinstance(resp[0].get('dps'), list)
+        assert len(resp[0].get('dps')) == 0
