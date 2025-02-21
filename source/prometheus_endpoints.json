@@ -31,6 +31,7 @@
     "/metrics_gpfs_qos": "GPFSQoS",
     "/metrics_gpfs_fcm": "GPFSFCM",
     "/metrics_gpfs_fcmda": "GPFSFCMDA",
+    "/metrics_gpfs_hardware": "GPFSHardware",
     "/metrics_nfsio": "NFSIO",
     "/metrics_smb_stats": "SMBStats",
     "/metrics_smb_globalstats": "SMBGlobalStats",
