@@ -90,19 +90,19 @@ RUN echo "the HTTP/S protocol is set to $PROTOCOL"  && \
     echo "the PERFMONPORT port is set to $SERVERPORT" && \
     echo "the pmcollector server ip is set to $SERVER" && \
     echo "the log will use $LOGPATH" 
-	
+
 RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
-	yum install -y python39 python3-pip; \
-	if [ "$BUILD_ENV" = "build_test" ]; then \             
-	python3 -m pip install pip-tools && \
-	python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
-	echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
-	python3 -m pip install -r /root/requirements_ubi9.txt && \
-        echo "Installed python version: $(python3 -V)" && \
-        echo "Installed python packages: $(python3 -m pip list)"; else \
-	echo "Already using python container as base image. No need to install it." && \ 
-	python3 -m pip install  -r /root/requirements.in && \
-	echo "Installed python packages: $(python3 -m pip list)"; fi
+    yum install -y python39 python3-pip; \
+    if [ "$BUILD_ENV" = "test" ]; then \
+    python3 -m pip install pip-tools && \
+    python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
+    echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
+    python3 -m pip install -r /root/requirements_ubi9.txt && \
+    echo "Installed python version: $(python3 -V)" && \
+    echo "Installed python packages: $(python3 -m pip list)"; else \
+    echo "Already using python container as base image. No need to install it." && \ 
+    python3 -m pip install  -r /root/requirements.in && \
+    echo "Installed python packages: $(python3 -m pip list)"; fi
 
 USER root
 
