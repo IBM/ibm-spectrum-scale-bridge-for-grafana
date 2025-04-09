@@ -6,7 +6,7 @@ from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global path, logger, mainSensorsConfig, wrongSensorsConfig, zimonFile, sensorsCount
+    global path, logger, mainSensorsConfig, wrongSensorsConfig, sensorsCount
     path = os.getcwd()
     logger = configureLogging(path, None)
     mainSensorsConfig = 'ZIMonSensors.cfg'

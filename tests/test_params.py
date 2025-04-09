@@ -7,7 +7,7 @@ from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g, m, n, o, p, y, x, r, s
+    global a, b, c, d, e, f, g, m, n, o, p, y, r, s
     a = ConfigManager().defaults
     y = ConfigManager().defaults.copy()
     y['apiKeyValue'] = '/tmp/mykey'
