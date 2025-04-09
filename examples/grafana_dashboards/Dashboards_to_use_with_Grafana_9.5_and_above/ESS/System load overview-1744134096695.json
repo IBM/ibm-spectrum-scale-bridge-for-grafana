@@ -1,0 +1,3255 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_SWAT_SSS6000",
+      "label": "SWAT SSS6000",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "11.5.1"
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 38,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "The 3 CPU states\nThere are 3 general states your CPU can be in:\n\n    Idle, which means it has nothing to do.\n    Running a user space program, like a command shell, an email server, or a compiler.\n    Running the kernel, servicing interrupts or managing resources.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "",
+                  "url": "../d/degx14qeu8qv4c/cpu-utilization-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=cpu_system&var-Node=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 1
+          },
+          "id": 39,
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [
+                {
+                  "filter": "",
+                  "groupBy": false,
+                  "tagk": "node",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "cpu_system",
+              "refId": "B"
+            },
+            {
+              "aggregator": "max",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [],
+              "metric": "cpu_user",
+              "refId": "A"
+            },
+            {
+              "aggregator": "min",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "hide": false,
+              "metric": "cpu_idle",
+              "refId": "C"
+            }
+          ],
+          "title": " CPU Utilization",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 1
+          },
+          "id": 22,
+          "options": {
+            "displayMode": "gradient",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 16,
+            "minVizWidth": 8,
+            "namePlacement": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "noop",
+              "alias": "$tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [],
+              "metric": "cpu_contexts",
+              "refId": "A"
+            }
+          ],
+          "title": " CPU contexts per Node",
+          "type": "bargauge"
+        }
+      ],
+      "title": "CPU",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 29,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\nnetdev_bytes_r - Number of bytes received.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 0,
+            "y": 2
+          },
+          "id": 32,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "avg",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_bytes_r",
+              "refId": "A"
+            }
+          ],
+          "title": "Average Rate Recived Data",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\nnetdev_bytes_s - Number of bytes sent",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_s&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 6,
+            "y": 2
+          },
+          "id": 33,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "avg",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_bytes_s",
+              "refId": "A"
+            }
+          ],
+          "title": "Average Rate Sent Data",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "netdev_errors_r - Number of read errors.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 12,
+            "y": 2
+          },
+          "id": 30,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_errors_r",
+              "refId": "A"
+            }
+          ],
+          "title": "Read errors",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "netdev_errors_s - Number of write errors.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 15,
+            "y": 2
+          },
+          "id": 31,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_errors_s",
+              "refId": "A"
+            }
+          ],
+          "title": "Send errors",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "netdev_drops_r - Number of packets dropped while receiving",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 18,
+            "y": 2
+          },
+          "id": 34,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_drops_r",
+              "refId": "A"
+            }
+          ],
+          "title": "Read drops",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "netdev_drops_s;Pkts;Number of packets dropped while sending",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 3,
+            "x": 21,
+            "y": 2
+          },
+          "id": 35,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "netdev_drops_s",
+              "refId": "A"
+            }
+          ],
+          "title": "Send drops",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "hue",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 9
+          },
+          "id": 18,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "netdev",
+              "currentFilterValue": "i",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "metric": "netdev_bytes_r",
+              "refId": "A"
+            },
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "metric": "netdev_bytes_s",
+              "refId": "B"
+            }
+          ],
+          "title": "Aggregate Network Send/Receive data (bytesI",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Network",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 2
+      },
+      "id": 28,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "description": "Used metric:\nport_xmit_data- Total number of data octets, which are divided by 4 (lanes), transmitted through all virtual lanes.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "fieldMinMax": false,
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "",
+                  "url": "../d/degwujgrswcn4c/infiniband-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=port_xmit_data&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 0,
+            "y": 286
+          },
+          "id": 24,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "netdev",
+              "currentFilterValue": "i",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "hide": false,
+              "metric": "port_xmit_data",
+              "refId": "A"
+            }
+          ],
+          "title": "IB Average Rate Transmitted Data",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [],
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "description": "Used metric:\nport_rcv_data\t-Total number of data octets, which are divided by 4 (lanes), received on all virtual lanes. transmitted through all virtual lanes.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "fieldMinMax": false,
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "",
+                  "url": "../d/degwujgrswcn4c/infiniband-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=port_rcv_data&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 5,
+            "x": 5,
+            "y": 286
+          },
+          "id": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "alias": "",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "netdev",
+              "currentFilterValue": "i",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "hide": false,
+              "metric": "port_rcv_data",
+              "refId": "A"
+            }
+          ],
+          "title": "IB Average Rate Received Data",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [],
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "description": "port_rcv_errors -Total number of packets containing an error that were received on the port.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 7,
+            "x": 10,
+            "y": 286
+          },
+          "id": 21,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "alias": "$tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "currentTagKey": "netdev_name",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [],
+              "metric": "port_rcv_errors",
+              "refId": "A"
+            }
+          ],
+          "title": "IB Number of received packets containing an error",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "description": "port_xmit_discards - Total number of outbound packets discarded by the port because the port is down or congested.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 7,
+            "x": 17,
+            "y": 286
+          },
+          "id": 26,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "alias": "$tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "currentTagKey": "netdev_name",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [],
+              "metric": "port_xmit_discards",
+              "refId": "A"
+            }
+          ],
+          "title": "IB Number of outbound packets discarded",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "hue",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 292
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "netdev",
+              "currentFilterValue": "i",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "sum",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "metric": "port_xmit_data",
+              "refId": "A"
+            },
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "sum",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "",
+              "filters": [],
+              "metric": "port_rcv_data",
+              "refId": "B"
+            }
+          ],
+          "title": "IB Aggregated Received/Transmitted Data",
+          "type": "timeseries"
+        }
+      ],
+      "title": "InfiniBand Network",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 37,
+      "panels": [],
+      "title": "Filesystem",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 4
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "",
+          "filters": [],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "B"
+        }
+      ],
+      "title": "FS Average write rate",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "mean"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show write rate of the Node",
+              "url": "../d/cei7v0s6m6by8b/filesystem-data-transfer-rate-per-node?orgId=1&from=now-1h&to=now&timezone=browser&var-Datasource=${Datasource}&var-Metric=gpfs_fs_bytes_written&var-Node=${__data.fields.Field}&var-Filesystem=$__all&refresh=10s"
+            }
+          ],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              },
+              {
+                "id": "displayName",
+                "value": "Node"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 4
+      },
+      "id": 40,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_written",
+          "refId": "A"
+        }
+      ],
+      "title": "FS writes aggregated per node",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {}
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {}
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show write rate of the filesystem",
+              "url": "../d/bei9mwrkeszcwe/filesystem-data-transfers-rate?orgId=1&from=now-1h&to=now&timezone=browser&var-Datasource=${Datasource}&var-Metric=gpfs_fs_bytes_written&var-Filesystem=${__data.fields.Field}&var-Node=$__all&refresh=10s"
+            }
+          ],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              },
+              {
+                "id": "displayName",
+                "value": "Filesystem"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 4
+      },
+      "id": 41,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "max",
+          "alias": " $tag_gpfs_fs_name",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_max_disk_wait_wr",
+          "refId": "A"
+        }
+      ],
+      "title": "The longest time spent waiting for a disk write operation per filesystem",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {}
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {}
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "id": 42,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "rate",
+          "alias": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "",
+          "filters": [],
+          "hide": false,
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "B"
+        }
+      ],
+      "title": "FS Average read rate",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "mean"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show read rate of the Node",
+              "url": "../d/cei7v0s6m6by8b/filesystem-data-transfer-rate-per-node?orgId=1&from=now-1h&to=now&timezone=browser&var-Datasource=${Datasource}&var-Metric=gpfs_fs_bytes_read&var-Node=${__data.fields.Field}&var-Filesystem=$__all&refresh=10s"
+            }
+          ],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              },
+              {
+                "id": "displayName",
+                "value": "Filesystem: Node"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 12
+      },
+      "id": 43,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "alias": "$tag_node",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_bytes_read",
+          "refId": "A"
+        }
+      ],
+      "title": "FS reads aggregated per node",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {}
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {}
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show read rate of the filesystem",
+              "url": "../d/bei9mwrkeszcwe/filesystem-data-transfers-rate?orgId=1&from=now-1h&to=now&timezone=browser&var-Datasource=${Datasource}&var-Metric=gpfs_fs_bytes_read&var-Filesystem=${__data.fields.Field}&var-Node=$__all&refresh=10s"
+            }
+          ],
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Field"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              },
+              {
+                "id": "displayName",
+                "value": "Filesystem"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Max"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 12
+      },
+      "id": 44,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Max"
+          }
+        ]
+      },
+      "pluginVersion": "11.5.1",
+      "targets": [
+        {
+          "aggregator": "max",
+          "alias": " $tag_gpfs_fs_name",
+          "currentFilterGroupBy": false,
+          "currentFilterKey": "",
+          "currentFilterType": "literal_or",
+          "currentFilterValue": "",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "1",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_fs_name",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_fs_max_disk_wait_rd",
+          "refId": "A"
+        }
+      ],
+      "title": "The longest time spent waiting for a disk read operation per filesystem",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {}
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "max"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Max"
+              }
+            ]
+          }
+        },
+        {
+          "id": "limit",
+          "options": {}
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 36,
+      "panels": [
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_open_calls - Number of open calls.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 0,
+            "y": 493
+          },
+          "id": 45,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_open_calls",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of open calls (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_close_calls - Number of close calls",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 4,
+            "y": 493
+          },
+          "id": 46,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_close_calls",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of close calls (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_read_calls - Number of read calls",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 8,
+            "y": 493
+          },
+          "id": 47,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_read_calls",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of read calls (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_write_calls: Number of write calls",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 12,
+            "y": 493
+          },
+          "id": 48,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_write_calls",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of write calls (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_inodes_written - Number of inode updates to disk",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 16,
+            "y": 493
+          },
+          "id": 49,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_inodes_written",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of inode updates (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "description": "Used metric:\ngpfs_fis_readdir_calls - Number of readdir calls",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Show details",
+                  "url": "../d/aegms7d0k7shsf/network-data-transfer-details?orgId=1&from=now-5m&to=now&timezone=browser&var-Datasource=bdwdd9m8s86psa&var-Metric=netdev_bytes_r&var-Node=$__all&var-Adapter=$__all&refresh=10s"
+                }
+              ],
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 4,
+            "x": 20,
+            "y": 493
+          },
+          "id": 50,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "max",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "metric": "gpfs_fis_readdir_calls",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS number of readdir calls (max)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "mean"
+                },
+                "replaceFields": true
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 86,
+                "gradientMode": "hue",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 0,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 500
+          },
+          "id": 4,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 1,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "never",
+            "stacking": "normal",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 300
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "sum",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${DS_SWAT_SSS6000}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [],
+              "metric": "gpfs_fis_bytes_read",
+              "refId": "A"
+            },
+            {
+              "aggregator": "sum",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "sum",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "metric": "gpfs_fis_bytes_written",
+              "refId": "B"
+            }
+          ],
+          "title": "Aggregated FIS bytes Read/Write",
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 300
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Filesystem: Node"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 500
+          },
+          "id": 51,
+          "options": {
+            "cellHeight": "md",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Max"
+              }
+            ]
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "alias": " $tag_gpfs_fs_name: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [
+                {
+                  "filter": "",
+                  "groupBy": true,
+                  "tagk": "gpfs_fs_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_fis_bytes_read",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS read rate per filesystem/node",
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": {}
+            },
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Max"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_SWAT_SSS6000}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 300
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Filesystem: Node"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 500
+          },
+          "id": 52,
+          "options": {
+            "cellHeight": "md",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Max"
+              }
+            ]
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "aggregator": "rate",
+              "alias": " $tag_gpfs_fs_name: $tag_node",
+              "currentFilterGroupBy": false,
+              "currentFilterKey": "",
+              "currentFilterType": "literal_or",
+              "currentFilterValue": "",
+              "datasource": {
+                "type": "opentsdb",
+                "uid": "${Datasource}"
+              },
+              "disableDownsampling": true,
+              "downsampleAggregator": "noop",
+              "downsampleFillPolicy": "none",
+              "downsampleInterval": "1",
+              "filters": [
+                {
+                  "filter": "",
+                  "groupBy": true,
+                  "tagk": "gpfs_fs_name",
+                  "type": "pm_filter"
+                }
+              ],
+              "metric": "gpfs_fis_bytes_written",
+              "refId": "A"
+            }
+          ],
+          "title": "FIS write rate per filesystem/node",
+          "transformations": [
+            {
+              "id": "joinByField",
+              "options": {}
+            },
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Max"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Filesystem (Application view)",
+      "type": "row"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 40,
+  "tags": [
+    "test",
+    "ess",
+    "opentsdb"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "name": "Datasource",
+        "options": [],
+        "query": "opentsdb",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h"
+    ]
+  },
+  "timezone": "",
+  "title": "System load overview",
+  "uid": "befj7uu711c00b",
+  "version": 114,
+  "weekStart": ""
+}
