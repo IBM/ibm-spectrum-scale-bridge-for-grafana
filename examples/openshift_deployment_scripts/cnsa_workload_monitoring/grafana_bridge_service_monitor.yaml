@@ -1,0 +1,178 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-spectrum-scale
+    app.kubernetes.io/name: grafanabridge
+  name: prometheus-grafanabridge-monitor
+  namespace: ibm-spectrum-scale
+spec:
+  endpoints:
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_filesystem
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 300s
+    path: /metrics_gpfs_pool
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 300s
+    path: /metrics_gpfs_fileset
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 28800s
+    path: /metrics_gpfs_diskcap
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 3600s
+    path: /metrics_gpfs_filesetquota
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_afm
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_afmfs
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_afmfset
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  - honorTimestamps: true
+    interval: 30s
+    path: /metrics_gpfs_mmhealth
+    port: prometheus
+    scheme: https
+    tlsConfig:
+      ca:
+        configMap:
+          key: service-ca.crt
+          name: ibm-spectrum-scale-cabundle
+      cert:
+        secret:
+          key: tls.crt
+          name: ibm-spectrum-scale-grafana-bridge-service-cert
+      keySecret:
+        key: tls.key
+        name: ibm-spectrum-scale-grafana-bridge-service-cert
+      serverName: ibm-spectrum-scale-grafana-bridge.ibm-spectrum-scale.svc
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: ibm-spectrum-scale
+      app.kubernetes.io/name: grafanabridge
+
+
