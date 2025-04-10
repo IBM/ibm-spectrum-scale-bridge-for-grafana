@@ -1,13 +1,13 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1736404036
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1742918310
 
-FROM $BASE as build_prod
+FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
 
-FROM $BASE as build_test
+FROM $BASE AS build_test
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 
-FROM $BASE as build_custom
+FROM $BASE AS build_custom
 ONBUILD COPY ./requirements/requirements.in  /root/requirements.in
 
 FROM build_${BUILD_ENV}
@@ -17,14 +17,14 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.0.4-dev"
+LABEL com.ibm.version="8.0.4"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
 LABEL com.ibm.summary="It allows the IBM Storage Scale users to perform performance monitoring for IBM Storage Scale devices using Grafana"
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 ARG USERNAME=bridge
 ENV USER=$USERNAME
@@ -90,19 +90,19 @@ RUN echo "the HTTP/S protocol is set to $PROTOCOL"  && \
     echo "the PERFMONPORT port is set to $SERVERPORT" && \
     echo "the pmcollector server ip is set to $SERVER" && \
     echo "the log will use $LOGPATH" 
-	
+
 RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
-	yum install -y python39 python3-pip; \
-	if [ "$BUILD_ENV" = "build_test" ]; then \             
-	python3 -m pip install pip-tools && \
-	python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
-	echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
-	python3 -m pip install -r /root/requirements_ubi9.txt && \
-        echo "Installed python version: $(python3 -V)" && \
-        echo "Installed python packages: $(python3 -m pip list)"; else \
-	echo "Already using python container as base image. No need to install it." && \ 
-	python3 -m pip install  -r /root/requirements.in && \
-	echo "Installed python packages: $(python3 -m pip list)"; fi
+    yum install -y python39 python3-pip; \
+    if [ "$BUILD_ENV" = "test" ]; then \
+    python3 -m pip install pip-tools && \
+    python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
+    echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
+    python3 -m pip install -r /root/requirements_ubi9.txt && \
+    echo "Installed python version: $(python3 -V)" && \
+    echo "Installed python packages: $(python3 -m pip list)"; else \
+    echo "Already using python container as base image. No need to install it." && \ 
+    python3 -m pip install  -r /root/requirements.in && \
+    echo "Installed python packages: $(python3 -m pip list)"; fi
 
 USER root
 
