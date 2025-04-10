@@ -1,3 +1,21 @@
+# Version 8.0.4 (04/10/2025)
+Added Deployment scripts to expose GPFS metrics to the Openshift Monitoring stack
+Published example dashboards for monitoring ESS devices: \
+- System load overview \
+- CPU utilization details \
+- Network Data transfer details \
+- InfiniBand Data transfer details \
+- Filesystem Data transfers rate \
+- Filesystem Data transfer rate per Node\
+- Filesystem Data transfers rate \
+Reworked Dockerfile allowing compile python requirements list during grafana-bridge image build \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.5-1742918310 \ 
+
+Tested with Grafana version 11.5.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.3 (01/20/2025)
 Added GPFSPoolCap, GPFSInodeCap and GPFSFCMDA sensors to the supported PrometheusExporter endpoints \
 Added HTTP Api REST endpoint for querying last metric sample (OpenTSDB plugin)
