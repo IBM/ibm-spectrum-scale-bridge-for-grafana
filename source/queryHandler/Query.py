@@ -43,12 +43,12 @@ class Query(object):
         NOP: "{0}", SUM: "sum({0})", AVG: "avg({0})", MAX: "max({0})", MIN: "min({0})", RATE: "rate({0})"}
     OPS_STR = {'nop': NOP, 'noop': NOP, 'sum': SUM, 'avg': AVG, 'max': MAX, 'min': MIN, 'rate': RATE}
 
-    FIELDS = set(["gpfs_cluster_name", "gpfs_disk_name", "gpfs_diskpool_name",
-                  "gpfs_disk_usage_name", "gpfs_fset_name", "gpfs_fs_name",
-                  "mountPoint", "netdev_name", 'diskdev_name', "node", "db_name",
-                  "operation", "protocol", "waiters_time_threshold", "export",
-                  "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass",
-                  "gpfs_health_component", "gpfs_health_entity"])
+    # FIELDS = set(["gpfs_cluster_name", "gpfs_disk_name", "gpfs_diskpool_name",
+    #              "gpfs_disk_usage_name", "gpfs_fset_name", "gpfs_fs_name",
+    #              "mountPoint", "netdev_name", 'diskdev_name', "node", "db_name",
+    #              "operation", "protocol", "waiters_time_threshold", "export",
+    #              "nodegroup", "account", "filesystem", "tct_csap", "tct_operation", "cloud_nodeclass",
+    #              "gpfs_health_component", "gpfs_health_entity", "gpfs_hw_entity", "gpfs_hw_enc_serial"])
 
     DISK_CAP_METRICS = set(["gpfs_disk_disksize", "gpfs_disk_free_fullkb", "gpfs_disk_free_fragkb",
                             "gpfs_pool_disksize", "gpfs_pool_free_fragkb", "gpfs_pool_free_fullkb",
@@ -116,8 +116,8 @@ class Query(object):
 
     def addGroupByMetric(self, groupByMetric):
         '''Add a metric to be used in grouping multi-metric (operation) columns'''
-        if groupByMetric not in self.FIELDS:
-            raise ValueError("unknown groupby type %s" % groupByMetric)
+        # if groupByMetric not in self.FIELDS:
+        #    raise ValueError("unknown groupby type %s" % groupByMetric)
         self.groupby.append(groupByMetric)
         return self
 
@@ -125,8 +125,8 @@ class Query(object):
         '''Add a filter of the form "field=value" where
         the field is an identifier key element and
         value is a constant or a regular expression'''
-        if field not in self.FIELDS:
-            raise ValueError("unknown filter type %s" % field)
+        # if field not in self.FIELDS:
+        #    raise ValueError("unknown filter type %s" % field)
         newFilter = field + "=" + value
         if newFilter not in self.filters:
             self.filters.append(newFilter)
