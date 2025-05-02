@@ -1,0 +1,33 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: openshif-cnsa-cluster-overview
+spec:
+  folder: "my-folder"
+  instanceSelector:
+    matchLabels:
+      dashboards: "my-dashboards"
+  url: "https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs/heads/master/examples/grafana_dashboards/CNSA_with_openshift_monitoring/Openshift%20cluster%20and%20IBM%20Storage%20Scale%20cloud%20native%20project%20overview-1746187774085.json"
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cnsa-components-health-overview
+spec:
+  folder: "my-folder"
+  instanceSelector:
+    matchLabels:
+      dashboards: "my-dashboards"
+  url: "https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs/heads/master/examples/grafana_dashboards/CNSA_with_openshift_monitoring/Component%20health%20view%20by%20node%20selection%20for%20IBM%20Storage%20Scale%20container%20native-1746187932964.json"
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: cnsa-component-entities-overview
+spec:
+  folder: "my-folder"
+  instanceSelector:
+    matchLabels:
+      dashboards: "my-dashboards"
+  url: "https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs/heads/master/examples/grafana_dashboards/CNSA_with_openshift_monitoring/Component%20entities%20health%20details%20for%20IBM%20Storage%20Scale%20container%20native-1746187960827.json"
