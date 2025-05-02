@@ -1164,7 +1164,13 @@
   ],
   "refresh": "",
   "schemaVersion": 40,
-  "tags": [],
+  "tags": [
+    "cnsa",
+    "openshift",
+    "health",
+    "prometheus",
+    "overview"
+  ],
   "templating": {
     "list": [
       {
@@ -1187,6 +1193,6 @@
   "timezone": "browser",
   "title": "Openshift cluster and IBM Storage Scale cloud native project overview",
   "uid": "aekkvzjw9qwhsf",
-  "version": 21,
+  "version": 23,
   "weekStart": ""
 }

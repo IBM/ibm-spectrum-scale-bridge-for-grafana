@@ -35,3 +35,21 @@ https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs
 ```
 
 
+
+## Visualizing and monitoring metrics exposed to the openshift-monitoring stack with the Grafana dashboard within the Openshift cluster
+
+
+
+Deploy Grafana instance in the "grafana-for-cnsa" project
+
+Create the Prometheus GrafanaDatasource
+```shell
+oc apply -f https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs/heads/master/examples/openshift_deployment_scripts/cnsa_workload_monitoring/grafana-prometheus-datasource.yml
+```
+
+Create the GrafanaDashboard resources
+```shell
+oc apply -f https://raw.githubusercontent.com/IBM/ibm-spectrum-scale-bridge-for-grafana/refs/heads/master/examples/openshift_deployment_scripts/cnsa_workload_monitoring/cnsa-openshift-cluster-dashboards.yaml
+```
+
+For the complete deployment guide please check the project [Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki)
