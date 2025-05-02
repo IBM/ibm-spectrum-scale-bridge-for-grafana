@@ -71,6 +71,14 @@
             },
             "lineWidth": 1
           },
+          "fieldMinMax": false,
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show entities states",
+              "url": "/../d/eeko3qplp00lcb/55468de?orgId=1&refresh=30s&${Datasource:queryparam}&${Node:queryparam}﻿&var-Component=${__field.labels.gpfs_health_component}&from=${__from}&to=${__to}"
+            }
+          ],
           "mappings": [
             {
               "options": {
@@ -116,12 +124,12 @@
       },
       "gridPos": {
         "h": 16,
-        "w": 24,
+        "w": 23,
         "x": 0,
         "y": 0
       },
       "id": 1,
-      "interval": "15m",
+      "interval": "10m",
       "options": {
         "colWidth": 0.9,
         "legend": {
@@ -147,33 +155,28 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "max without (instance, pod) (max_over_time(gpfs_health_status{node=\"$Node\", gpfs_health_component=\"$Component\"}[15m]))",
+          "expr": "max without (instance, pod) (max_over_time(gpfs_health_status{gpfs_health_entity=\"-\", node=\"$Node\"}[10m]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "{{gpfs_health_entity}}",
+          "legendFormat": "{{gpfs_health_component}}",
           "range": true,
           "refId": "A",
           "useBackend": false
         }
       ],
-      "title": "$Component entities HEALTH state history",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "^(?!-).*$"
-            }
-          }
-        }
-      ],
+      "title": "$Node components HEALTH state history",
       "type": "status-history"
     }
   ],
   "refresh": "30s",
   "schemaVersion": 40,
-  "tags": [],
+  "tags": [
+    "component",
+    "prometheus",
+    "health",
+    "cnsa"
+  ],
   "templating": {
     "list": [
       {
@@ -204,36 +207,17 @@
         "refresh": 1,
         "regex": "",
         "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_OCP2-THANOS-QUERIER}"
-        },
-        "definition": "label_values(gpfs_health_status{node=\"$Node\"},gpfs_health_component)",
-        "includeAll": false,
-        "name": "Component",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(gpfs_health_status{node=\"$Node\"},gpfs_health_component)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-24h",
-    "to": "now"
+    "from": "2025-05-01T13:27:20.551Z",
+    "to": "2025-05-02T13:27:20.551Z"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Component entities health details for IBM Storage Scale container native",
-  "uid": "eeko3qplp00lcb",
-  "version": 1,
+  "title": "Component health view by node selection for IBM Storage Scale container native",
+  "uid": "be6h20r1cnpc0e",
+  "version": 7,
   "weekStart": ""
 }
