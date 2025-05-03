@@ -119,7 +119,7 @@ def query_raw_data_setup():
             }
     jreq1 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
              'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
-                           'filters': [
+                            'filters': [
                                {'filter': 'scale-11', 'groupBy': False,
                                 'tagk': 'node', 'type': 'pm_filter'
                                 }],
@@ -129,31 +129,30 @@ def query_raw_data_setup():
             }
     jreq2 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
              'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
-                           'filters': [
+                            'filters': [
                                {'filter': 'scale-11', 'groupBy': False,
                                 'tagk': 'node', 'type': 'pm_filter'
                                 }],
-                           'metric': 'cpu_system', 'index': 0,
-                           'shouldComputeRate': True, 'isCounter': True
+                            'metric': 'cpu_system', 'index': 0,
+                            'shouldComputeRate': True, 'isCounter': True
                            }
             }
-    jreq3 = {'start':1746277483949, 'end': None,
-             'inputQuery': {'aggregator': 'noop', 'downsampleAggregator': 'avg', 
+    jreq3 = {'start': 1746277483949, 'end': None,
+             'inputQuery': {'aggregator': 'noop', 'downsampleAggregator': 'avg',
                             'downsampleFillPolicy': 'none',
                             'metric': 'cpu_contexts',
-                            'disableDownsampling': True, 
+                            'disableDownsampling': True,
                             'explicitTags': True, 'index': 0
                             }
              }
-    jreq4 = {'start':1746277483949, 'end': None,
-             'inputQuery': {'aggregator': 'noop', 'downsampleAggregator': 'avg', 
+    jreq4 = {'start': 1746277483949, 'end': None,
+             'inputQuery': {'aggregator': 'noop', 'downsampleAggregator': 'avg',
                             'downsampleFillPolicy': 'none',
                             'metric': 'cpu_contexts',
-                            'disableDownsampling': True, 
+                            'disableDownsampling': True,
                             'explicitTags': False, 'index': 0
                             }
              }
-
 
 
 @with_setup(my_setup)
