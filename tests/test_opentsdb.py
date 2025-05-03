@@ -103,6 +103,40 @@ def query_arrays_setup():
                            }
             }
 
+def query_raw_data_setup():
+    global jreq, jreq1, jreq2, jreq3
+
+    jreq = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
+            'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
+                           'filters': [
+                               {'filter': 'scale-11', 'groupBy': False,
+                                'tagk': 'node', 'type': 'pm_filter'
+                                }],
+                           'metric': 'cpu_system', 'index': 0,
+                           'shouldComputeRate': False, 'isCounter': False
+                           }
+            }
+    jreq1 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
+            'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
+                           'filters': [
+                               {'filter': 'scale-11', 'groupBy': False,
+                                'tagk': 'node', 'type': 'pm_filter'
+                                }],
+                           'metric': 'cpu_system', 'index': 0,
+                           'shouldComputeRate': True, 'isCounter': False
+                           }
+            }
+    jreq2 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
+            'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
+                           'filters': [
+                               {'filter': 'scale-11', 'groupBy': False,
+                                'tagk': 'node', 'type': 'pm_filter'
+                                }],
+                           'metric': 'cpu_system', 'index': 0,
+                           'shouldComputeRate': True, 'isCounter': True
+                           }
+            }
+
 
 @with_setup(my_setup)
 def test_case01():
@@ -195,3 +229,19 @@ def test_case07():
         assert 'node' in resp[0].get('tags')
         assert isinstance(resp[0].get('dps'), list)
         assert len(resp[0].get('dps')) == 0
+
+
+@with_setup(query_raw_data_setup)
+def test_case08():
+    q = jreq.get('inputQuery')
+    args = {}
+    args['rawData'] = q.get('explicitTags', False) or q.get('isCounter', False)
+    assert args.get('rawData') == False
+    q1 = jreq1.get('inputQuery')
+    args1 = {}
+    args1['rawData'] = q1.get('explicitTags', False) or q1.get('isCounter', False)
+    assert args1.get('rawData') == False
+    q2 = jreq2.get('inputQuery')
+    args2 = {}
+    args2['rawData'] = q2.get('explicitTags', False) or q2.get('isCounter', False)
+    assert args2.get('rawData') == True
