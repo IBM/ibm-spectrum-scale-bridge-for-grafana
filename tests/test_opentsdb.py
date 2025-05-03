@@ -120,9 +120,9 @@ def query_raw_data_setup():
     jreq1 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
              'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
                             'filters': [
-                               {'filter': 'scale-11', 'groupBy': False,
-                                'tagk': 'node', 'type': 'pm_filter'
-                                }],
+                                {'filter': 'scale-11', 'groupBy': False,
+                                 'tagk': 'node', 'type': 'pm_filter'
+                                 }],
                            'metric': 'cpu_system', 'index': 0,
                            'shouldComputeRate': True, 'isCounter': False
                            }
@@ -130,9 +130,9 @@ def query_raw_data_setup():
     jreq2 = {'start': 1739214930519, 'end': 1739215230519, 'arrays': True,
              'inputQuery': {'aggregator': 'noop', 'downsample': '1m-avg',
                             'filters': [
-                               {'filter': 'scale-11', 'groupBy': False,
-                                'tagk': 'node', 'type': 'pm_filter'
-                                }],
+                                {'filter': 'scale-11', 'groupBy': False,
+                                 'tagk': 'node', 'type': 'pm_filter'
+                                 }],
                             'metric': 'cpu_system', 'index': 0,
                             'shouldComputeRate': True, 'isCounter': True
                            }
