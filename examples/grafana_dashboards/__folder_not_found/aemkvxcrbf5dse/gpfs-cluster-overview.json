@@ -1045,7 +1045,7 @@
       }
     ],
     "preload": false,
-    "refresh": "15m",
+    "refresh": "5s",
     "schemaVersion": 41,
     "tags": [
       "overview",
