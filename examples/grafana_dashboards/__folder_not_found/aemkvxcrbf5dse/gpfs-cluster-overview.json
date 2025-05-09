@@ -616,7 +616,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "beldztiwer4zke"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -701,7 +701,7 @@
             "alias": "$tag_gpfs_health_entity on $tag_node",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "downsampleAggregator": "max",
             "downsampleFillPolicy": "none",
