@@ -748,7 +748,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "beldztiwer4zke"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -804,7 +804,7 @@
             "alias": "$tag_gpfs_cluster_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
