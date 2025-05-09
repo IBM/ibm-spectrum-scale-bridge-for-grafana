@@ -194,7 +194,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "beldztiwer4zke"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -278,7 +278,7 @@
             "aggregator": "max",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "downsampleAggregator": "avg",
             "downsampleFillPolicy": "none",
@@ -290,7 +290,7 @@
             "aggregator": "max",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "downsampleAggregator": "avg",
             "downsampleFillPolicy": "none",
