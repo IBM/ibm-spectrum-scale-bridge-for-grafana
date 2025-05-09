@@ -1045,7 +1045,7 @@
       }
     ],
     "preload": false,
-    "refresh": "5s",
+    "refresh": "15m",
     "schemaVersion": 41,
     "tags": [
       "overview",
@@ -1056,8 +1056,8 @@
       "list": [
         {
           "current": {
-            "text": "opentsdb",
-            "value": "beldztiwer4zke"
+            "text": "vm2-cluster1",
+            "value": "edwdefh36562of"
           },
           "includeAll": false,
           "name": "Datasource",
