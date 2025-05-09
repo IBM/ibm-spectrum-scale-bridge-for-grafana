@@ -476,7 +476,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "beldztiwer4zke"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -552,7 +552,7 @@
             "alias": "$tag_gpfs_fs_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
@@ -574,7 +574,7 @@
             "alias": "$tag_gpfs_fs_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
@@ -1056,8 +1056,8 @@
       "list": [
         {
           "current": {
-            "text": "vm2-cluster1",
-            "value": "edwdefh36562of"
+            "text": "opentsdb",
+            "value": "beldztiwer4zke"
           },
           "includeAll": false,
           "name": "Datasource",
