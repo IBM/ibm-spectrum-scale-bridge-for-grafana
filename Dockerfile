@@ -1,5 +1,5 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1742918310
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.5-1745854298
 
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
@@ -17,7 +17,7 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.0.5-dev"
+LABEL com.ibm.version="8.0.5"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
