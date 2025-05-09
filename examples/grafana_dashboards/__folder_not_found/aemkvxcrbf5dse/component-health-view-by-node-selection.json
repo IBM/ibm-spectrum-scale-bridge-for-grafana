@@ -37,11 +37,14 @@
         "libraryPanel": {
           "name": "$Node components HEALTH state history",
           "uid": "ae6h5mi3456gwf"
-        }
+        },
+        "title": "",
+        "type": "library-panel-ref"
       }
     ],
+    "preload": false,
     "refresh": "30s",
-    "schemaVersion": 40,
+    "schemaVersion": 41,
     "tags": [
       "opentsdb",
       "health",
@@ -84,8 +87,7 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "Component health view by node selection",
-    "weekStart": ""
+    "title": "Component health view by node selection"
   },
   "status": {}
 }
