@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_VM1-CLUSTER1",
-      "label": "vm1-cluster1",
+      "name": "DS_VM2-CLUSTER1",
+      "label": "vm2-cluster1",
       "description": "",
       "type": "datasource",
       "pluginId": "opentsdb",
@@ -24,7 +24,7 @@
       "model": {
         "datasource": {
           "type": "opentsdb",
-          "uid": "${DS_VM1-CLUSTER1}"
+          "uid": "${Datasource}"
         },
         "description": "",
         "fieldConfig": {
@@ -33,6 +33,7 @@
               "mode": "fixed"
             },
             "custom": {
+              "axisPlacement": "auto",
               "fillOpacity": 70,
               "hideFrom": {
                 "legend": false,
@@ -100,11 +101,13 @@
           "rowHeight": 0.9,
           "showValue": "auto",
           "tooltip": {
+            "hideZeros": false,
             "maxHeight": 600,
             "mode": "single",
             "sort": "none"
           }
         },
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "aggregator": "max",
@@ -129,7 +132,6 @@
             "refId": "A"
           }
         ],
-        "title": "HEALTH state history per node",
         "type": "state-timeline"
       }
     }
@@ -150,12 +152,18 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.0.0"
+      "version": "12.0.0"
     },
     {
       "type": "datasource",
       "id": "opentsdb",
       "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
       "version": "1.0.0"
     },
     {
@@ -196,7 +204,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${DS_VM2-CLUSTER1}"
       },
       "fieldConfig": {
         "defaults": {
@@ -209,8 +217,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -234,6 +241,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -245,14 +253,14 @@
         "textMode": "name",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "alias": "$tag_gpfs_cluster_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "downsampleAggregator": "noop",
           "downsampleFillPolicy": "none",
@@ -278,7 +286,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -293,8 +301,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -318,6 +325,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -329,13 +337,13 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -358,7 +366,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -372,6 +380,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 32,
             "gradientMode": "none",
@@ -402,8 +411,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -430,17 +438,19 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "max",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "downsampleAggregator": "avg",
           "downsampleFillPolicy": "none",
@@ -452,7 +462,7 @@
           "aggregator": "max",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${Datasource}"
           },
           "downsampleAggregator": "avg",
           "downsampleFillPolicy": "none",
@@ -468,7 +478,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${DS_VM2-CLUSTER1}"
       },
       "fieldConfig": {
         "defaults": {
@@ -483,8 +493,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -508,6 +517,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -519,13 +529,13 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${Datasource}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -548,7 +558,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${DS_VM2-CLUSTER1}"
       },
       "fieldConfig": {
         "defaults": {
@@ -562,8 +572,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -583,6 +592,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "count"
@@ -594,14 +604,14 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "alias": "$tag_gpfs_fs_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${Datasource}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -619,7 +629,7 @@
           "refId": "B"
         }
       ],
-      "title": "Fielsystems",
+      "title": "Filelsystems",
       "transformations": [
         {
           "id": "reduce",
@@ -638,7 +648,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${DS_VM2-CLUSTER1}"
       },
       "fieldConfig": {
         "defaults": {
@@ -669,8 +679,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -708,14 +717,14 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "alias": "$tag_gpfs_fs_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${Datasource}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -737,7 +746,7 @@
           "alias": "$tag_gpfs_fs_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -779,7 +788,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -818,8 +827,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -843,6 +851,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -857,14 +866,14 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "noop",
           "alias": "$tag_gpfs_health_entity on $tag_node",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "downsampleAggregator": "max",
           "downsampleFillPolicy": "none",
@@ -911,7 +920,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -924,8 +933,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -949,6 +957,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -960,14 +969,14 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "avg",
           "alias": "$tag_gpfs_cluster_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -991,7 +1000,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1007,8 +1016,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -1036,6 +1044,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1047,14 +1056,14 @@
         "textMode": "value_and_name",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "alias": "$tag_netdev_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "downsampleAggregator": "avg",
           "downsampleFillPolicy": "none",
@@ -1076,7 +1085,7 @@
           "alias": "$tag_netdev_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${Datasource}"
           },
           "downsampleAggregator": "avg",
           "downsampleFillPolicy": "none",
@@ -1119,7 +1128,7 @@
     {
       "datasource": {
         "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1133,8 +1142,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -1154,6 +1162,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "count"
@@ -1165,14 +1174,14 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.0.0",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "aggregator": "sum",
           "alias": "$tag_gpfs_disk_name",
           "datasource": {
             "type": "opentsdb",
-            "uid": "${DS_VM1-CLUSTER1}"
+            "uid": "${DS_VM2-CLUSTER1}"
           },
           "disableDownsampling": true,
           "downsampleAggregator": "noop",
@@ -1208,7 +1217,7 @@
     }
   ],
   "refresh": "15m",
-  "schemaVersion": 39,
+  "schemaVersion": 41,
   "tags": [
     "overview",
     "health",
@@ -1217,21 +1226,13 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "vm1-cluster1",
-          "value": "ee4aqor3lxm9sd"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
-        "multi": false,
         "name": "Datasource",
         "options": [],
         "query": "opentsdb",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       }
     ]
@@ -1240,11 +1241,10 @@
     "from": "now-24h",
     "to": "now"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
   "title": "GPFS Cluster overview",
   "uid": "ee6h4z9seyosgc",
-  "version": 1,
+  "version": 20,
   "weekStart": ""
 }
