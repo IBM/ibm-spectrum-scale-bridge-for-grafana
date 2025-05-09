@@ -1,0 +1,16 @@
+﻿kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: external-thanos-querier
+  namespace: openshift-monitoring
+spec:
+  to:
+    kind: Service
+    name: thanos-querier
+    weight: 100
+  port:
+    targetPort: web
+  tls:
+    termination: passthrough
+  wildcardPolicy: None
+

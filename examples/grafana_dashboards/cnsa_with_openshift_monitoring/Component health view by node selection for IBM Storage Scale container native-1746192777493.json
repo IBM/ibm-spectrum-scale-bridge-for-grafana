@@ -1,20 +1,12 @@
 {
   "__inputs": [
     {
-      "name": "DS_VM1-CLUSTER1",
-      "label": "vm1-cluster1",
+      "name": "DS_OCP2-THANOS-QUERIER",
+      "label": "ocp2-thanos-querier",
       "description": "",
       "type": "datasource",
-      "pluginId": "opentsdb",
-      "pluginName": "OpenTSDB"
-    },
-    {
-      "name": "DS_VM2-CLUSTER1",
-      "label": "vm2-cluster1",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "opentsdb",
-      "pluginName": "OpenTSDB"
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
     }
   ],
   "__elements": {},
@@ -23,12 +15,12 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.0.0"
+      "version": "11.5.1"
     },
     {
       "type": "datasource",
-      "id": "opentsdb",
-      "name": "OpenTSDB",
+      "id": "prometheus",
+      "name": "Prometheus",
       "version": "1.0.0"
     },
     {
@@ -62,13 +54,12 @@
   "panels": [
     {
       "datasource": {
-        "type": "opentsdb",
-        "uid": "${DS_VM1-CLUSTER1}"
+        "type": "prometheus",
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "dark-green",
             "mode": "fixed"
           },
           "custom": {
@@ -80,6 +71,14 @@
             },
             "lineWidth": 1
           },
+          "fieldMinMax": false,
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Show entities states",
+              "url": "/../d/eeko3qplp00lcb/55468de?orgId=1&refresh=30s&${Datasource:queryparam}&${Node:queryparam}﻿&var-Component=${__field.labels.gpfs_health_component}&from=${__from}&to=${__to}"
+            }
+          ],
           "mappings": [
             {
               "options": {
@@ -89,7 +88,7 @@
                   "text": "UNKNOWN"
                 },
                 "10": {
-                  "color": "dark-green",
+                  "color": "green",
                   "index": 0,
                   "text": "HEALTHY"
                 },
@@ -113,6 +112,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
@@ -120,12 +123,13 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 24,
+        "h": 16,
+        "w": 23,
         "x": 0,
         "y": 0
       },
       "id": 1,
+      "interval": "10m",
       "options": {
         "colWidth": 0.9,
         "legend": {
@@ -136,131 +140,84 @@
         "rowHeight": 0.9,
         "showValue": "never",
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.1",
       "targets": [
         {
-          "aggregator": "noop",
-          "alias": "$tag_gpfs_health_entity",
           "datasource": {
-            "type": "opentsdb",
-            "uid": "${DS_VM2-CLUSTER1}"
+            "type": "prometheus",
+            "uid": "${DS_OCP2-THANOS-QUERIER}"
           },
-          "disableDownsampling": false,
-          "downsampleAggregator": "max",
-          "downsampleFillPolicy": "none",
-          "downsampleInterval": "15m",
-          "filters": [
-            {
-              "filter": "$Node",
-              "groupBy": false,
-              "tagk": "node",
-              "type": "pm_filter"
-            },
-            {
-              "filter": "$component",
-              "groupBy": false,
-              "tagk": "gpfs_health_component",
-              "type": "pm_filter"
-            }
-          ],
-          "metric": "gpfs_health_status",
-          "refId": "A"
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "max without (instance, pod) (max_over_time(gpfs_health_status{gpfs_health_entity=\"-\", node=\"$Node\"}[10m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "{{gpfs_health_component}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
         }
       ],
-      "title": "$component entities HEALTH state history",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "pattern": "^(?!.*-).*$"
-            }
-          }
-        }
-      ],
+      "title": "$Node components HEALTH state history",
       "type": "status-history"
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 39,
+  "schemaVersion": 40,
   "tags": [
+    "component",
+    "prometheus",
     "health",
-    "opentsdb",
-    "entity"
+    "cnsa"
   ],
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "vm1-cluster1",
-          "value": "ee4aqor3lxm9sd"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
-        "multi": false,
         "name": "Datasource",
         "options": [],
-        "query": "opentsdb",
-        "queryValue": "",
+        "query": "prometheus",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
         "current": {},
         "datasource": {
-          "type": "opentsdb",
-          "uid": "${DS_VM1-CLUSTER1}"
+          "type": "prometheus",
+          "uid": "${Datasource}"
         },
-        "definition": "tag_values(gpfs_health_status, node)",
-        "hide": 0,
+        "definition": "label_values(gpfs_health_status,node)",
         "includeAll": false,
-        "multi": false,
         "name": "Node",
         "options": [],
-        "query": "tag_values(gpfs_health_status, node)",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "opentsdb",
-          "uid": "${DS_VM1-CLUSTER1}"
+        "query": {
+          "qryType": 1,
+          "query": "label_values(gpfs_health_status,node)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "definition": "tag_values(gpfs_health_status, gpfs_health_component, node=$Node)",
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "component",
-        "options": [],
-        "query": "tag_values(gpfs_health_status, gpfs_health_component, node=$Node)",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2025-05-01T13:27:20.551Z",
+    "to": "2025-05-02T13:27:20.551Z"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
-  "title": "Component entities health details",
-  "uid": "fe6h5syrz4npcc",
-  "version": 1,
+  "title": "Component health view by node selection for IBM Storage Scale container native",
+  "uid": "be6h20r1cnpc0e",
+  "version": 7,
   "weekStart": ""
 }

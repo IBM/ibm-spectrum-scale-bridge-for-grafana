@@ -163,7 +163,7 @@ class OpenTsdbApi(object):
         if 'arrays' in jreq:
             args['dpsArrays'] = jreq['arrays']
 
-        args['rawData'] = q.get('explicitTags', False)
+        args['rawData'] = q.get('explicitTags', False) or q.get('isCounter', False)
 
         args['sensor'] = sensor
         args['period'] = period

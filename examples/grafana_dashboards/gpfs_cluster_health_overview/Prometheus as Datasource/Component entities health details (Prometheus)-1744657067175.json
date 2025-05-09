@@ -1,8 +1,8 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS-HWASSMANN1-VM",
-      "label": "Prometheus-hwassmann1-vm",
+      "name": "DS_OCP2-THANOS-QUERIER",
+      "label": "ocp2-thanos-querier",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.0.0"
+      "version": "11.5.1"
     },
     {
       "type": "datasource",
@@ -55,7 +55,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS-HWASSMANN1-VM}"
+        "uid": "${Datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -132,20 +132,22 @@
         "rowHeight": 0.9,
         "showValue": "never",
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS-HWASSMANN1-VM}"
+            "uid": "${DS_OCP2-THANOS-QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "max_over_time(gpfs_health_status{node=\"$Node\", gpfs_health_component=\"$Component\"}[15m])",
+          "expr": "max without (instance, pod) (max_over_time(gpfs_health_status{node=\"$Node\", gpfs_health_component=\"$Component\"}[15m]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -170,7 +172,7 @@
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 39,
+  "schemaVersion": 40,
   "tags": [
     "health",
     "prometheus",
@@ -179,33 +181,23 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "Prometheus-hwassmann1-vm",
-          "value": "fe4jlakedzm68a"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
-        "multi": false,
         "name": "Datasource",
         "options": [],
         "query": "prometheus",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-HWASSMANN1-VM}"
+          "uid": "${Datasource}"
         },
         "definition": "label_values(gpfs_health_status,node)",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
         "name": "Node",
         "options": [],
         "query": {
@@ -215,20 +207,16 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-HWASSMANN1-VM}"
+          "uid": "${DS_OCP2-THANOS-QUERIER}"
         },
         "definition": "label_values(gpfs_health_status{node=\"$Node\"},gpfs_health_component)",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
         "name": "Component",
         "options": [],
         "query": {
@@ -238,21 +226,18 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-6h",
-    "to": "now"
+    "from": "2025-04-13T18:57:30.641Z",
+    "to": "2025-04-14T18:57:30.641Z"
   },
-  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "browser",
-  "title": "Component entities health details",
+  "title": "Component entities health details (Prometheus)",
   "uid": "ce6h32uqqu0hsf",
-  "version": 1,
+  "version": 5,
   "weekStart": ""
 }
