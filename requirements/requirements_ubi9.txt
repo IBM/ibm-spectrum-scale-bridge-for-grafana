@@ -22,7 +22,7 @@ jaraco-functools==4.1.0
     #   tempora
 jaraco-text==4.0.0
     # via jaraco-collections
-more-itertools==10.6.0
+more-itertools==10.7.0
     # via
     #   cheroot
     #   cherrypy
