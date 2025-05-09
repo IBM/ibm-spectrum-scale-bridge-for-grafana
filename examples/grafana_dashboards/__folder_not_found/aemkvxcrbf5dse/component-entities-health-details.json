@@ -38,6 +38,7 @@
               "mode": "fixed"
             },
             "custom": {
+              "axisPlacement": "auto",
               "fillOpacity": 70,
               "hideFrom": {
                 "legend": false,
@@ -77,8 +78,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 }
               ]
             }
@@ -108,7 +108,7 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "aggregator": "noop",
@@ -153,8 +153,9 @@
         "type": "status-history"
       }
     ],
+    "preload": false,
     "refresh": "30s",
-    "schemaVersion": 40,
+    "schemaVersion": 41,
     "tags": [
       "health",
       "opentsdb",
@@ -211,8 +212,7 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "Component entities health details",
-    "weekStart": ""
+    "title": "Component entities health details"
   },
   "status": {}
 }
