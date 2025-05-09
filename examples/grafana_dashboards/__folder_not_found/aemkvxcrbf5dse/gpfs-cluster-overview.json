@@ -476,7 +476,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "${Datasource}"
+          "uid": "beldztiwer4zke"
         },
         "fieldConfig": {
           "defaults": {
@@ -552,7 +552,7 @@
             "alias": "$tag_gpfs_fs_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "${Datasource}"
+              "uid": "beldztiwer4zke"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
@@ -574,7 +574,7 @@
             "alias": "$tag_gpfs_fs_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "${Datasource}"
+              "uid": "beldztiwer4zke"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
