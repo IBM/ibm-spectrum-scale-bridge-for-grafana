@@ -156,7 +156,10 @@
       "list": [
         {
           "allowCustomValue": false,
-          "current": {},
+          "current": {
+            "text": "SWAT SSS6000",
+            "value": "delrs54jryq68a"
+          },
           "name": "Datasource",
           "options": [],
           "query": "opentsdb",
@@ -166,7 +169,10 @@
         },
         {
           "allowCustomValue": false,
-          "current": {},
+          "current": {
+            "text": "gpfs_fs_bytes_read",
+            "value": "gpfs_fs_bytes_read"
+          },
           "datasource": {
             "type": "opentsdb",
             "uid": "${Datasource}"
@@ -181,7 +187,10 @@
         },
         {
           "allowCustomValue": false,
-          "current": {},
+          "current": {
+            "text": "sess6k1vm-mgmt.pbm.ihost.com",
+            "value": "sess6k1vm-mgmt.pbm.ihost.com"
+          },
           "datasource": {
             "type": "opentsdb",
             "uid": "delrs54jryq68a"
@@ -197,7 +206,12 @@
         },
         {
           "allowCustomValue": false,
-          "current": {},
+          "current": {
+            "text": "All",
+            "value": [
+              "$__all"
+            ]
+          },
           "datasource": {
             "type": "opentsdb",
             "uid": "${Datasource}"
