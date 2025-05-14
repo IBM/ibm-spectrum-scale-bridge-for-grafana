@@ -29,7 +29,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "delrs54jryq68a"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -77,8 +77,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -110,14 +109,14 @@
             "sort": "none"
           }
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "aggregator": "noop",
             "alias": "$tag_gpfs_fs_name: $tag_node",
             "datasource": {
               "type": "opentsdb",
-              "uid": "delrs54jryq68a"
+              "uid": "${Datasource}"
             },
             "disableDownsampling": true,
             "downsampleAggregator": "noop",
@@ -144,8 +143,9 @@
         "type": "timeseries"
       }
     ],
+    "preload": false,
     "refresh": "10s",
-    "schemaVersion": 40,
+    "schemaVersion": 41,
     "tags": [
       "test",
       "ess",
@@ -221,8 +221,7 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "Filesystem Data transfer rate per Node",
-    "weekStart": ""
+    "title": "Filesystem Data transfer rate per Node"
   },
   "status": {}
 }
