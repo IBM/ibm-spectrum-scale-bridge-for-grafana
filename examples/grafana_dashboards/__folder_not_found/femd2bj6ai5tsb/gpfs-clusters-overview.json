@@ -1,0 +1,277 @@
+{
+  "apiVersion": "dashboard.grafana.app/v0alpha1",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "2871c6b3-cd5d-4305-a220-067e671b597e"
+  },
+  "spec": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations \u0026 Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "${Datasource_a}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "show details",
+                "url": "../d/ee6h4z9seyosgc/gpfs-cluster-overview?orgId=1\u0026from=now-24h\u0026to=now\u0026timezone=browser\u0026var-Datasource=${Datasource_a}\u0026refresh=15m"
+              }
+            ],
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "#808080",
+                    "index": 0,
+                    "text": "UNKNOWN"
+                  },
+                  "10": {
+                    "color": "dark-green",
+                    "index": 1,
+                    "text": "HEALTHY"
+                  },
+                  "20": {
+                    "color": "dark-yellow",
+                    "index": 2,
+                    "text": "DEGRADED"
+                  },
+                  "40": {
+                    "color": "dark-red",
+                    "index": 3,
+                    "text": "FAILED"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "text"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {
+            "valueSize": 40
+          },
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "12.0.0",
+        "repeat": "Datasource_a",
+        "repeatDirection": "h",
+        "targets": [
+          {
+            "aggregator": "max",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "delrs54jryq68a"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "metric": "gpfs_health_status",
+            "refId": "A"
+          }
+        ],
+        "title": "Status $Datasource_a",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${Datasource_b}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "show details",
+                "url": "../d/777/gpfs-cluster-overview-prometheus?orgId=1\u0026from=now-24h\u0026to=now\u0026timezone=browser\u0026\u0026var-Datasource=${Datasource_b}\u0026refresh=15m"
+              }
+            ],
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "#808080",
+                    "index": 0,
+                    "text": "UNKNOWN"
+                  },
+                  "10": {
+                    "color": "dark-green",
+                    "index": 1,
+                    "text": "HEALTHY"
+                  },
+                  "20": {
+                    "color": "dark-yellow",
+                    "index": 2,
+                    "text": "DEGRADED"
+                  },
+                  "40": {
+                    "color": "dark-red",
+                    "index": 3,
+                    "text": "FAILED"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "text"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 24,
+          "x": 0,
+          "y": 10
+        },
+        "id": 2,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "text": {
+            "valueSize": 40
+          },
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "12.0.0",
+        "repeat": "Datasource_b",
+        "repeatDirection": "h",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "eelskoqcee8e8a"
+            },
+            "editorMode": "code",
+            "expr": "max (max_over_time(gpfs_health_status[15m]))",
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Status $Datasource_b",
+        "type": "stat"
+      }
+    ],
+    "refresh": "15m",
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "allowCustomValue": false,
+          "current": {},
+          "includeAll": true,
+          "label": "OpenTSDB Datasource",
+          "multi": true,
+          "name": "Datasource_a",
+          "options": [],
+          "query": "opentsdb",
+          "refresh": 1,
+          "regex": "",
+          "type": "datasource"
+        },
+        {
+          "allowCustomValue": false,
+          "current": {},
+          "includeAll": true,
+          "label": "Prometheus Datasource",
+          "multi": true,
+          "name": "Datasource_b",
+          "options": [],
+          "query": "prometheus",
+          "refresh": 1,
+          "regex": "",
+          "type": "datasource"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "GPFS Clusters overview",
+    "weekStart": ""
+  },
+  "status": {}
+}
