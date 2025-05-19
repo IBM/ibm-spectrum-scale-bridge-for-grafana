@@ -689,7 +689,7 @@
           },
           "showPercentChange": false,
           "text": {
-            "titleSize": 14
+            "valueSize": 20
           },
           "textMode": "auto",
           "wideLayout": true
