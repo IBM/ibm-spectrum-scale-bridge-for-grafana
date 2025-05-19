@@ -1,0 +1,217 @@
+{
+  "apiVersion": "dashboard.grafana.app/v0alpha1",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ce6h32uqqu0hsf"
+  },
+  "spec": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations \u0026 Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${Datasource}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "fixed"
+            },
+            "custom": {
+              "fillOpacity": 70,
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "#808080",
+                    "index": 3,
+                    "text": "UNKNOWN"
+                  },
+                  "10": {
+                    "color": "green",
+                    "index": 0,
+                    "text": "HEALTHY"
+                  },
+                  "20": {
+                    "color": "dark-yellow",
+                    "index": 1,
+                    "text": "DEGRADED"
+                  },
+                  "40": {
+                    "color": "dark-red",
+                    "index": 2,
+                    "text": "FAILED"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 16,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "interval": "15m",
+        "options": {
+          "colWidth": 0.9,
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "rowHeight": 0.9,
+          "showValue": "never",
+          "tooltip": {
+            "hideZeros": false,
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.5.1",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "eelskoqcee8e8a"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "expr": "max without (instance, pod) (max_over_time(gpfs_health_status{node=\"$Node\", gpfs_health_component=\"$Component\"}[15m]))",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{gpfs_health_entity}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "$Component entities HEALTH state history",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "pattern": "^(?!.*-).*$"
+              }
+            }
+          }
+        ],
+        "type": "status-history"
+      }
+    ],
+    "refresh": "30s",
+    "schemaVersion": 40,
+    "tags": [
+      "health",
+      "prometheus",
+      "entity"
+    ],
+    "templating": {
+      "list": [
+        {
+          "current": {},
+          "includeAll": false,
+          "name": "Datasource",
+          "options": [],
+          "query": "prometheus",
+          "refresh": 1,
+          "regex": "",
+          "type": "datasource"
+        },
+        {
+          "current": {},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${Datasource}"
+          },
+          "definition": "label_values(gpfs_health_status,node)",
+          "includeAll": false,
+          "name": "Node",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(gpfs_health_status,node)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
+        },
+        {
+          "current": {},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "eelskoqcee8e8a"
+          },
+          "definition": "label_values(gpfs_health_status{node=\"$Node\"},gpfs_health_component)",
+          "includeAll": false,
+          "name": "Component",
+          "options": [],
+          "query": {
+            "qryType": 1,
+            "query": "label_values(gpfs_health_status{node=\"$Node\"},gpfs_health_component)",
+            "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          },
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "2025-04-13T18:57:30.641Z",
+      "to": "2025-04-14T18:57:30.641Z"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Component entities health details (Prometheus)",
+    "weekStart": ""
+  },
+  "status": {}
+}
