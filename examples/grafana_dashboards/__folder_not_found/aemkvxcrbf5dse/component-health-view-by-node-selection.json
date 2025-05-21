@@ -68,7 +68,7 @@
           "current": {},
           "datasource": {
             "type": "opentsdb",
-            "uid": "beldztiwer4zke"
+            "uid": "${Datasource}"
           },
           "definition": "tag_values(gpfs_health_status, node)",
           "includeAll": false,
