@@ -29,7 +29,7 @@
       {
         "datasource": {
           "type": "opentsdb",
-          "uid": "beldztiwer4zke"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -85,7 +85,7 @@
             "alias": "$tag_gpfs_cluster_name",
             "datasource": {
               "type": "opentsdb",
-              "uid": "beldztiwer4zke"
+              "uid": "${Datasource}"
             },
             "downsampleAggregator": "noop",
             "downsampleFillPolicy": "none",
@@ -1056,8 +1056,8 @@
       "list": [
         {
           "current": {
-            "text": "SWAT SSS6000",
-            "value": "delrs54jryq68a"
+            "text": "vm2-cluster2",
+            "value": "belrqz79zln9cb"
           },
           "includeAll": false,
           "name": "Datasource",
