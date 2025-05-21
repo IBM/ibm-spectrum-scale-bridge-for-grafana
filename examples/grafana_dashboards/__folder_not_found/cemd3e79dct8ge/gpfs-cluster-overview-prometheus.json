@@ -37,7 +37,9 @@
         "libraryPanel": {
           "name": "HEALTH state history per node",
           "uid": "de6fqwj5r8ykgc"
-        }
+        },
+        "title": "",
+        "type": "library-panel-ref"
       },
       {
         "datasource": {
@@ -56,8 +58,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -93,7 +94,7 @@
           "textMode": "auto",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -132,8 +133,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -169,7 +169,7 @@
           "textMode": "auto",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -194,7 +194,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "eelskoqcee8e8a"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -203,8 +203,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -240,7 +239,7 @@
           "textMode": "auto",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -288,8 +287,7 @@
               "mode": "percentage",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "#EAB839",
@@ -327,7 +325,7 @@
           "showThresholdMarkers": true,
           "sizing": "auto"
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -426,8 +424,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -463,7 +460,7 @@
           "textMode": "auto",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -502,8 +499,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -539,7 +535,7 @@
           "textMode": "value_and_name",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -573,8 +569,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -610,7 +605,7 @@
           "textMode": "auto",
           "wideLayout": true
         },
-        "pluginVersion": "11.5.1",
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "datasource": {
@@ -644,8 +639,9 @@
         "type": "stat"
       }
     ],
-    "refresh": "",
-    "schemaVersion": 40,
+    "preload": false,
+    "refresh": "15m",
+    "schemaVersion": 41,
     "tags": [
       "prometheus",
       "health",
@@ -654,7 +650,10 @@
     "templating": {
       "list": [
         {
-          "current": {},
+          "current": {
+            "text": "MD_vm_prometheus",
+            "value": "cemcuypznny80d"
+          },
           "includeAll": false,
           "name": "Datasource",
           "options": [],
@@ -671,8 +670,7 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "GPFS Cluster overview (Prometheus)",
-    "weekStart": ""
+    "title": "GPFS Cluster overview (Prometheus)"
   },
   "status": {}
 }
