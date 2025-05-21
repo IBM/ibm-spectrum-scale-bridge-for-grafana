@@ -275,7 +275,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "eelskoqcee8e8a"
+          "uid": "${Datasource}"
         },
         "fieldConfig": {
           "defaults": {
@@ -347,7 +347,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "eelskoqcee8e8a"
+              "uid": "${Datasource}"
             },
             "disableTextWrap": false,
             "editorMode": "builder",
