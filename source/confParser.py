@@ -252,6 +252,8 @@ def parse_cmd_args(argv):
                         help='Enter your apiKey value:')
     parser.add_argument('-d', '--includeDiskData', action="store", choices=["yes", "no"], default=None,
                         help='Use or not the historical data from disk (Default from config.ini: "no")')
+    parser.add_argument('-w', '--rawCounters', action="store", choices=["True", "False"], default=None,
+                        help='Controls if original sensor counters should be exposed by PrometheusExporter (Default from config.ini: "True")')
 
     args = parser.parse_args(argv)
     return args, ''
