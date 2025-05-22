@@ -7,7 +7,7 @@ from nose2.tools.decorators import with_setup
 
 
 def my_setup():
-    global a, b, c, d, e, f, g, m, n, o, p, y, r, s
+    global a, b, c, d, e, f, g, m, n, o, p, y, r, s, w, v
     a = ConfigManager().defaults
     y = ConfigManager().defaults.copy()
     y['apiKeyValue'] = '/tmp/mykey'
@@ -18,6 +18,7 @@ def my_setup():
     m, n = parse_cmd_args(['-d', 'yes'])
     o, p = parse_cmd_args(['-v', 'e40960c9-de0a-4c75-bc71-0bcae6db23b2'])
     r, s = parse_cmd_args(['-p', '4242', '-e', '9250'])
+    w, v = parse_cmd_args(['-w', 'False'])
 
 
 @with_setup(my_setup)
@@ -199,3 +200,12 @@ def test_case16():
         assert 'password' not in result.keys()
         assert valid
         assert len(msg) == 0
+
+
+@with_setup(my_setup)
+def test_case17():
+    if version >= "8.0":
+        result = merge_defaults_and_args(a, w)
+        assert len(result.keys()) > 0
+        assert 'rawCounters' in result.keys()
+        assert result.get('rawCounters') == eval("False")
