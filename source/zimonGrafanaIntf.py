@@ -290,6 +290,12 @@ def main(argv):
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                          }
                         )
+    # query for list zimon sensor metrics
+    cherrypy.tree.mount(mdHandler, '/metadata/sensormetrics',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
 
     # register OpenTSDB API endpoints
     if args.get('port', None):

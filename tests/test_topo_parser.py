@@ -22,3 +22,21 @@ def test_case01():
     sensorLabels = topo.getSensorLabels(searchSensor)
     assert len(sensorLabels) > 0
     assert "gpfs_disk_name" in sensorLabels
+
+
+@with_setup(my_setup)
+def test_case02():
+    searchSensor = 'GPFSDiskCap'
+    typesDict = topo.getSensorMetricTypes(searchSensor)
+    assert len(typesDict) > 0
+    assert 'counter' not in typesDict.values()
+    assert 'gpfs_disk_disksize' in typesDict.keys()
+    assert typesDict['gpfs_disk_disksize'] == 'quantity'
+
+
+@with_setup(my_setup)
+def test_case03():
+    searchSensor = 'GPFSNSDFS'
+    typesDict = topo.getSensorMetricTypes(searchSensor)
+    assert len(typesDict) > 0
+    assert 'counter' in typesDict.values()
