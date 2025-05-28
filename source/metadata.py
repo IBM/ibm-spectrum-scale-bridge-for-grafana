@@ -185,6 +185,22 @@ class MetadataHandler(metaclass=Singleton):
             resp = self.SensorsConfig
             # resp = json.dumps(resp)
 
+        # /metadata/sensorsconfig
+        elif '/metadata/sensormetrics' == cherrypy.request.script_name:
+            resp = {}
+            sensors = []
+            # cherrypy.response.headers['Content-Type'] = 'application/json'
+            if params.get('sensor') is None:
+                sensors = self.metaData.sensorsSpec.keys()
+            else:
+                sensor = params.get('sensor')
+                self.logger.info(f"Received request for endpoint /metadata/sensormetrics: {sensor}")
+                sensors.append(sensor)
+            for sensor in sensors:
+                metricsData = self.metaData.getSensorMetricTypes(sensor)
+                resp[sensor] = metricsData
+            # resp = json.dumps(resp)
+
         del cherrypy.response.headers['Allow']
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         # cherrypy.response.headers['Content-Type'] = 'application/json'

@@ -241,6 +241,14 @@ class Topo(object):
             return metrics.values()
         return []
 
+    def getSensorMetricTypes(self, searchSensor: str) -> Dict[str, str]:
+        sensorMetricsTypes = {}
+        metrics = self.__metricsDef.get(searchSensor, None)
+        if metrics:
+            typesDict = self.__metricsType
+            sensorMetricsTypes = {metric: typesDict[metric] for metric in metrics.values()}
+        return sensorMetricsTypes
+
     def getSensorsForMeasurementMetrics(self, searchMetrics):
         sensorsList = []
         for metric in searchMetrics:
