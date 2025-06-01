@@ -1,0 +1,339 @@
+{
+  "apiVersion": "dashboard.grafana.app/v0alpha1",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "adrn3nuthrsw0e"
+  },
+  "spec": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations \u0026 Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "aelsi0dap7w8we"
+        },
+        "description": "gpfs_pdds_max_disk_wait_wr from gpfs_disk_name=$disk",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "noValue": "null",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "s"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byValue",
+                "options": {
+                  "op": "gte",
+                  "reducer": "allIsNull",
+                  "value": 0
+                }
+              },
+              "properties": [
+                {
+                  "id": "noValue",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_dev_path",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "aelsi0dap7w8we"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$disk",
+                "groupBy": true,
+                "tagk": "gpfs_disk_name",
+                "type": "pm_filter"
+              }
+            ],
+            "metric": "gpfs_pdds_max_disk_wait_wr",
+            "refId": "A"
+          }
+        ],
+        "title": "$disk MAX WAIT TIMES (data writes) on each path",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "opentsdb",
+          "uid": "aelsi0dap7w8we"
+        },
+        "description": "gpfs_pdds_max_queue_wait_wr from gpfs_disk_name=$disk",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "noValue": "null",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "s"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byValue",
+                "options": {
+                  "op": "gte",
+                  "reducer": "allIsNull",
+                  "value": 0
+                }
+              },
+              "properties": [
+                {
+                  "id": "noValue",
+                  "value": "0"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "id": 2,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "maxHeight": 600,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "aggregator": "noop",
+            "alias": "$tag_gpfs_dev_path",
+            "datasource": {
+              "type": "opentsdb",
+              "uid": "aelsi0dap7w8we"
+            },
+            "disableDownsampling": true,
+            "downsampleAggregator": "noop",
+            "downsampleFillPolicy": "none",
+            "filters": [
+              {
+                "filter": "$disk",
+                "groupBy": true,
+                "tagk": "gpfs_disk_name",
+                "type": "pm_filter"
+              }
+            ],
+            "metric": "gpfs_pdds_max_queue_wait_wr",
+            "refId": "A"
+          }
+        ],
+        "title": "$disk MAX in QUEUE WAIT TIMES (data writes) on each path",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 39,
+    "tags": [
+      "pdisk"
+    ],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": false,
+            "text": "Olaf_ESS",
+            "value": "bdnp5dbnxwl4wb"
+          },
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "Datasource",
+          "options": [],
+          "query": "opentsdb",
+          "refresh": 1,
+          "regex": "",
+          "skipUrlSync": false,
+          "type": "datasource"
+        },
+        {
+          "current": {},
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "aelsi0dap7w8we"
+          },
+          "definition": "tag_values(gpfs_pdds_bytes_read, gpfs_disk_name)",
+          "description": "tag_values(gpfs",
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "name": "disk",
+          "options": [],
+          "query": "tag_values(gpfs_pdds_bytes_read, gpfs_disk_name)",
+          "refresh": 1,
+          "regex": "^(?!.*RG).*$",
+          "skipUrlSync": false,
+          "sort": 0,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-30m",
+      "to": "now"
+    },
+    "timeRangeUpdatedDuringEditOrView": false,
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Individual physical disk wait time (data writes)",
+    "weekStart": ""
+  },
+  "status": {}
+}
