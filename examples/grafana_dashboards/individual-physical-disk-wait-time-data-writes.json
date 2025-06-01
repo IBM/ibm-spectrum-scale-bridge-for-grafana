@@ -1,5 +1,5 @@
 {
-  "apiVersion": "dashboard.grafana.app/v0alpha1",
+  "apiVersion": "dashboard.grafana.app/v1beta1",
   "kind": "Dashboard",
   "metadata": {
     "name": "adrn3nuthrsw0e"
@@ -44,6 +44,7 @@
               "axisLabel": "",
               "axisPlacement": "auto",
               "barAlignment": 0,
+              "barWidthFactor": 0.6,
               "drawStyle": "line",
               "fillOpacity": 0,
               "gradientMode": "none",
@@ -76,8 +77,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -121,11 +121,13 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "maxHeight": 600,
             "mode": "single",
             "sort": "none"
           }
         },
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "aggregator": "noop",
@@ -170,6 +172,7 @@
               "axisLabel": "",
               "axisPlacement": "auto",
               "barAlignment": 0,
+              "barWidthFactor": 0.6,
               "drawStyle": "line",
               "fillOpacity": 0,
               "gradientMode": "none",
@@ -202,8 +205,7 @@
               "mode": "absolute",
               "steps": [
                 {
-                  "color": "green",
-                  "value": null
+                  "color": "green"
                 },
                 {
                   "color": "red",
@@ -247,11 +249,13 @@
             "showLegend": true
           },
           "tooltip": {
+            "hideZeros": false,
             "maxHeight": 600,
             "mode": "single",
             "sort": "none"
           }
         },
+        "pluginVersion": "12.0.0",
         "targets": [
           {
             "aggregator": "noop",
@@ -279,8 +283,9 @@
         "type": "timeseries"
       }
     ],
+    "preload": false,
     "refresh": "5s",
-    "schemaVersion": 39,
+    "schemaVersion": 41,
     "tags": [
       "pdisk"
     ],
@@ -288,39 +293,31 @@
       "list": [
         {
           "current": {
-            "selected": false,
             "text": "Olaf_ESS",
             "value": "bdnp5dbnxwl4wb"
           },
-          "hide": 0,
           "includeAll": false,
-          "multi": false,
           "name": "Datasource",
           "options": [],
           "query": "opentsdb",
           "refresh": 1,
           "regex": "",
-          "skipUrlSync": false,
           "type": "datasource"
         },
         {
           "current": {},
           "datasource": {
             "type": "opentsdb",
-            "uid": "aelsi0dap7w8we"
+            "uid": "${Datasource}"
           },
           "definition": "tag_values(gpfs_pdds_bytes_read, gpfs_disk_name)",
           "description": "tag_values(gpfs",
-          "hide": 0,
           "includeAll": false,
-          "multi": false,
           "name": "disk",
           "options": [],
           "query": "tag_values(gpfs_pdds_bytes_read, gpfs_disk_name)",
           "refresh": 1,
           "regex": "^(?!.*RG).*$",
-          "skipUrlSync": false,
-          "sort": 0,
           "type": "query"
         }
       ]
@@ -329,11 +326,9 @@
       "from": "now-30m",
       "to": "now"
     },
-    "timeRangeUpdatedDuringEditOrView": false,
     "timepicker": {},
     "timezone": "browser",
-    "title": "Individual physical disk wait time (data writes)",
-    "weekStart": ""
+    "title": "Individual physical disk wait time (data writes)"
   },
   "status": {}
 }
