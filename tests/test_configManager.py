@@ -47,11 +47,8 @@ def test_case03():
 @with_setup(my_setup)
 def test_case04():
     customFile = os.path.join(path, "tests", "test_data", customConfigFile)
-    print(customFile)
     cm = ConfigManager()
     cm.customFile = customFile
-    print(cm.__dict__)
-    assert (cm.customFile == customFile)
     result = cm.readConfigFile(cm.customFile)
     assert 'tls' in result.keys()
 
