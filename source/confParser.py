@@ -200,7 +200,7 @@ class ConfigManager(object, metaclass=Singleton):
         """
 
         default_sections, defaults = self.parse_file(self.templateFile)
-        if not self.customFile:
+        if not self.customFile or self.customFile == self.templateFile:
             return defaults
 
         custom_sections, customs = self.parse_file(self.customFile)
