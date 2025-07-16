@@ -93,12 +93,13 @@ def checkCAsettings(args):
 
 def getSettings(argv):
     settings = {}
-    defaults = ConfigManager().defaults
     args, msg = parse_cmd_args(argv)
+    customFile = vars(args).get('configFile', None)
+    defaults = ConfigManager(customFile).defaults
     if args and defaults:
         settings = merge_defaults_and_args(defaults, args)
     elif args:
-        settings = args
+        settings = vars(args)
     else:
         return None, msg
     # check application port
@@ -143,16 +144,10 @@ def merge_defaults_and_args(defaults, args):
 class ConfigManager(object, metaclass=Singleton):
     ''' A singleton class managing the application configuration defaults '''
 
-    def __init__(self):
-        self.__sectOptions = {}
+    def __init__(self, custom_config_file=None):
         self.__defaults = {}
-        self.configFiles = ['config.ini']
-
-    @property
-    def options(self):
-        if not self.__sectOptions:
-            self.__sectOptions = self.reload()
-        return self.__sectOptions
+        self.customFile = custom_config_file
+        self.templateFile = self.get_template_path()
 
     @property
     def defaults(self):
@@ -160,24 +155,14 @@ class ConfigManager(object, metaclass=Singleton):
             self.__defaults = self.parse_defaults()
         return self.__defaults
 
-    def reload(self):
-        options = {}
-        self.__sectOptions = {}
-        if self.configFiles:
-            for config in self.configFiles:
-                options.update(self.readConfigFile(config))
-        return options
-
     def readConfigFile(self, fileName):
         '''parse config file and store values in a dict {section:{ key: value}}'''
         options = {}
-        dirname, filename = os.path.split(os.path.abspath(__file__))
-        conf_file = os.path.join(dirname, fileName)
-        if os.path.isfile(conf_file):
+        if os.path.isfile(fileName):
             try:
                 config = configparser.ConfigParser()
                 config.optionxform = str
-                config.read(conf_file)
+                config.read(fileName)
                 for sect in config.sections():
                     options[sect] = {}
                     for name, value in config.items(sect):
@@ -187,20 +172,48 @@ class ConfigManager(object, metaclass=Singleton):
             except Exception as e:
                 print(f"cannot read config file {fileName} Exception {e}")
         else:
-            print(f"cannot find config file {fileName} in {dirname}")
+            print(f"cannot find config file {fileName}")
         return options
 
+    def get_template_path(self):
+        '''parse config.ini to a simple key:value dict'''
+        dirname, _ = os.path.split(os.path.abspath(__file__))
+        return os.path.join(dirname, 'config.ini')
+
+    def parse_file(self, file):
+        '''parse file to a simple key:value dict'''
+        settings = {}
+        section_names = set()
+        sections = self.readConfigFile(file)
+        if sections:
+            section_names = set(sections.keys())
+            for _, sect_values in sections.items():
+                for name, value in sect_values.items():
+                    settings[name] = value
+        return section_names, settings
+
     def parse_defaults(self):
-        '''parse all sections parameters to a simple key:value dict'''
-        defaults = {}
-        for sect_name, sect_values in self.options.items():
-            for name, value in sect_values.items():
-                defaults[name] = value
+        """Retuns a dictionary of parameter names and values parsed from config file
+
+        If no custom config file provided the values will be parsed from template
+        file (.config.ini)
+        """
+
+        default_sections, defaults = self.parse_file(self.templateFile)
+        if not self.customFile:
+            return defaults
+
+        custom_sections, customs = self.parse_file(self.customFile)
+        sect = default_sections.intersection(custom_sections)
+        if not sect:
+            return defaults
+
+        defaults.update(customs)
         return defaults
 
 
 class Password(argparse.Action):
-    defaults = ConfigManager().defaults
+    # defaults = ConfigManager().defaults
 
     def __call__(self, parser, namespace, values, option_string):
         if values is None:
@@ -226,6 +239,8 @@ def parse_cmd_args(argv):
     parser.add_argument('-f', '--logFile', action="store", default=None,
                         help='Name of the log file (Default from config.ini: zserver.log). If no log file name specified \
     all traces will be printed out directly on the command line')
+    parser.add_argument('-F', '--configFile', action="store", default=None,
+                        help='Absolute path to the custom config file that should be used instead of the default config.ini file (optional)')
     parser.add_argument('-c', '--logLevel', action="store", type=int, default=None,
                         help='log level. Available levels: 10 (DEBUG), 15 (MOREINFO), 20 (INFO), 30 (WARN), 40 (ERROR) (Default from config.ini: 15)')
     parser.add_argument('-e', '--prometheus', action="store", default=None,
