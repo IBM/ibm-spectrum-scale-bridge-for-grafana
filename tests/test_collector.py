@@ -17,9 +17,9 @@ def my_setup():
     topo = Topo(topoStr)
     logger = configureLogging(path, None)
     prometheus_attrs = {'sensor': 'GPFSFilesystem', 'period': 300,
-            'nsamples': 300, 'rawData': True}
-    pfilters = {'node':'scale-16', 'gpfs_filesystem_name' : 'afmCacheFS'}
-    pquery_filters = [ f"{k}={v}" for k, v in pfilters.items()]
+                        'nsamples': 300, 'rawData': True}
+    pfilters = {'node': 'scale-16', 'gpfs_filesystem_name': 'afmCacheFS'}
+    pquery_filters = [f"{k}={v}" for k, v in pfilters.items()]
 
 
 @with_setup(my_setup)
@@ -32,9 +32,9 @@ def test_case01():
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
         queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-                '', '-z', prometheus_attrs.get('sensor'),
-                prometheus_attrs.get('period'),
-                f"last {prometheus_attrs.get('period')}")
+            '', '-z', prometheus_attrs.get('sensor'),
+            prometheus_attrs.get('period'),
+            f"last {prometheus_attrs.get('period')}")
         queryString += '\n'
         assert "group" in query.__str__()
         assert "last" in query.__str__()
@@ -53,9 +53,9 @@ def test_case02():
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
         queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-                '', '', prometheus_attrs.get('sensor'),
-                prometheus_attrs.get('period'),
-                f"last {prometheus_attrs.get('nsamples')}")
+            '', '', prometheus_attrs.get('sensor'),
+            prometheus_attrs.get('period'),
+            f"last {prometheus_attrs.get('nsamples')}")
         queryString += '\n'
         assert "group" in query.__str__()
         assert "last" in query.__str__()
@@ -64,7 +64,7 @@ def test_case02():
 
 @with_setup(my_setup)
 def test_case03():
-    prometheus_attrs.update({'filters' : pfilters})
+    prometheus_attrs.update({'filters': pfilters})
     with mock.patch('source.collector.QueryPolicy.md') as md:
         md_instance = md.return_value
         md_instance.includeDiskData.return_value = False
@@ -73,9 +73,9 @@ def test_case03():
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
         queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-                '', '-z', prometheus_attrs.get('sensor'),
-                prometheus_attrs.get('period'),
-                f"last {prometheus_attrs.get('period')}")
+            '', '-z', prometheus_attrs.get('sensor'),
+            prometheus_attrs.get('period'),
+            f"last {prometheus_attrs.get('period')}")
         queryString += ' from ' + ",".join(pquery_filters)
         queryString += '\n'
         assert "group" in query.__str__()
@@ -86,7 +86,7 @@ def test_case03():
 
 @with_setup(my_setup)
 def test_case04():
-    prometheus_attrs.update({'filters' : pfilters})
+    prometheus_attrs.update({'filters': pfilters})
     prometheus_attrs.update({'nsamples': 1, 'rawData': False})
     with mock.patch('source.collector.QueryPolicy.md') as md:
         md_instance = md.return_value
@@ -96,9 +96,9 @@ def test_case04():
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
         queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-                '', '', prometheus_attrs.get('sensor'),
-                prometheus_attrs.get('period'),
-                f"last {prometheus_attrs.get('nsamples')}")
+            '', '', prometheus_attrs.get('sensor'),
+            prometheus_attrs.get('period'),
+            f"last {prometheus_attrs.get('nsamples')}")
         queryString += ' from ' + ",".join(pquery_filters)
         queryString += '\n'
         assert "group" in query.__str__()
@@ -115,7 +115,7 @@ def test_case05(col_md, sts_md, md):
     sensor = prometheus_attrs.get('sensor')
     period = prometheus_attrs.get('period')
     logger = logging.getLogger(__name__)
-    prometheus_attrs.update({'filters' : pfilters})
+    prometheus_attrs.update({'filters': pfilters})
     prometheus_attrs.update({'nsamples': 1, 'rawData': False})
 
     md_instance = md.return_value
@@ -139,4 +139,3 @@ def test_case05(col_md, sts_md, md):
     assert collector.period == period
     assert collector.request == request
     assert collector.labels == topo.getSensorLabels(sensor)
-
