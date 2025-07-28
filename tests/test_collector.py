@@ -4,12 +4,14 @@ import json
 from unittest import mock
 from source.bridgeLogger import configureLogging
 from source.queryHandler.Topo import Topo
-from nose2.tools.decorators import with_setup
 from source.collector import QueryPolicy, SensorCollector
+from nose2.tools.such import helper as assert_helper
+from nose2.tools.decorators import with_setup
+
 
 
 def my_setup():
-    global path, topo, logger, prometheus_attrs, pfilters, pquery_filters
+    global path, topo, logger, prometheus_attrs, pfilters, pquery_filters, wrong_pfilters
     path = os.getcwd()
     topoStrFile = os.path.join(path, "tests", "test_data", 'topoStr.json')
     with open(topoStrFile) as f:
@@ -18,8 +20,9 @@ def my_setup():
     logger = configureLogging(path, None)
     prometheus_attrs = {'sensor': 'GPFSFilesystem', 'period': 300,
                         'nsamples': 300, 'rawData': True}
-    pfilters = {'node': 'scale-16', 'gpfs_filesystem_name': 'afmCacheFS'}
+    pfilters = {'node': 'scale-16', 'gpfs_fs_name': 'afmCacheFS'}
     pquery_filters = [f"{k}={v}" for k, v in pfilters.items()]
+    wrong_pfilters = {'node': 'scale-16', 'gpfs_filesystem_name': 'afmCacheFS'}
 
 
 @with_setup(my_setup)
@@ -128,7 +131,42 @@ def test_case05(col_md, sts_md, md):
     collector = SensorCollector(sensor, period, logger, request)
     collector.md = md_instance
     collector.labels = collector._get_sensor_labels()
+    collector.filtersMap = collector._get_all_filters()
     assert collector.sensor == sensor
     assert collector.period == period
     assert collector.request == request
     assert collector.labels == topo.getSensorLabels(sensor)
+    assert len(collector.filtersMap) > 0
+    assert all(i in collector.labels for i in pfilters.keys())
+
+
+@with_setup(my_setup)
+@mock.patch('source.collector.QueryPolicy.md')
+@mock.patch('source.collector.SensorTimeSeries.md')
+@mock.patch('source.collector.SensorCollector.md')
+def test_case06(col_md, sts_md, md):
+    sensor = prometheus_attrs.get('sensor')
+    period = prometheus_attrs.get('period')
+    logger = logging.getLogger(__name__)
+    prometheus_attrs.update({'filters': wrong_pfilters})
+    prometheus_attrs.update({'nsamples': 1, 'rawData': False})
+
+    md_instance = md.return_value
+    md_instance.includeDiskData.return_value = False
+    md_instance.logger.return_value = logger
+    md_instance.metaData = topo
+    # md_instance1 = sts_md.return_value
+    # md_instance2 = col_md.return_value
+    request = QueryPolicy(**prometheus_attrs)
+    collector = SensorCollector(sensor, period, logger, request)
+    collector.md = md_instance
+    collector.labels = collector._get_sensor_labels()
+    collector.filtersMap = collector._get_all_filters()
+    assert collector.sensor == sensor
+    assert collector.period == period
+    assert collector.request == request
+    assert collector.labels == topo.getSensorLabels(sensor)
+    assert len(collector.filtersMap) > 0
+    assert not all(i in collector.labels for i in wrong_pfilters.keys())
+    with assert_helper.assertRaises(Exception):
+        assert collector.validate_query_filters()
