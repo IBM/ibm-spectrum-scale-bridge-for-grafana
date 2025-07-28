@@ -121,20 +121,13 @@ def test_case05(col_md, sts_md, md):
     md_instance = md.return_value
     md_instance.includeDiskData.return_value = False
     md_instance.logger.return_value = logger
-    md_instance.metaData.return_value = topo
-
-    md_instance1 = sts_md.return_value
-    md_instance1.includeDiskData.return_value = False
-    md_instance1.logger.return_value = logger
-    md_instance1.metaData.return_value = topo
-
-    md_instance2 = col_md.return_value
-    md_instance2.includeDiskData.return_value = False
-    md_instance2.logger.return_value = logger
-    md_instance2.metaData.return_value = topo
-
+    md_instance.metaData = topo
+    # md_instance1 = sts_md.return_value
+    # md_instance2 = col_md.return_value
     request = QueryPolicy(**prometheus_attrs)
     collector = SensorCollector(sensor, period, logger, request)
+    collector.md = md_instance
+    collector.labels = collector._get_sensor_labels()
     assert collector.sensor == sensor
     assert collector.period == period
     assert collector.request == request
