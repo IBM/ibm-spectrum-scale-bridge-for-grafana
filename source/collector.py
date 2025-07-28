@@ -152,6 +152,10 @@ class SensorTimeSeries(object):
         self.filtersMap = self._get_all_filters()
         self.labels = self._get_sensor_labels()
 
+    @property
+    def md(self):
+        return MetadataHandler()
+
     def cleanup_metrics_values(self) -> None:
         for name in self.metrics.keys():
             self.metrics[name].timeseries = []
@@ -162,8 +166,7 @@ class SensorTimeSeries(object):
         include_metrics = include_metrics or []
         exclude_metrics = exclude_metrics or []
 
-        md = MetadataHandler()
-        metrics = md.metaData.getSensorMetricNames(self.sensor)
+        metrics = self.md.metaData.getSensorMetricNames(self.sensor)
         if len(metrics) < 1:
             return                       # this should not happen
 
@@ -178,9 +181,8 @@ class SensorTimeSeries(object):
 
     def _setup_static_metrics_data(self, metric_names: List[str]):
         mDict = {}
-        md = MetadataHandler()
-        spec = md.metricsDesc
-        metricsTypes = md.metaData.metricsType
+        spec = self.md.metricsDesc
+        metricsTypes = self.md.metaData.metricsType
 
         for name in metric_names:
             mtype = 'gauge'
@@ -195,12 +197,10 @@ class SensorTimeSeries(object):
         self.metrics = mDict
 
     def _get_all_filters(self):
-        md = MetadataHandler()
-        return md.metaData.getAllFilterMapsForSensor(self.sensor)
+        return self.md.metaData.getAllFilterMapsForSensor(self.sensor)
 
     def _get_sensor_labels(self):
-        md = MetadataHandler()
-        return md.metaData.getSensorLabels(self.sensor)
+        return self.md.metaData.getSensorLabels(self.sensor)
 
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
