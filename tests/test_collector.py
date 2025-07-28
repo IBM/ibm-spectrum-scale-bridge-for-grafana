@@ -9,7 +9,6 @@ from nose2.tools.such import helper as assert_helper
 from nose2.tools.decorators import with_setup
 
 
-
 def my_setup():
     global path, topo, logger, prometheus_attrs, pfilters, pquery_filters, wrong_pfilters
     path = os.getcwd()
