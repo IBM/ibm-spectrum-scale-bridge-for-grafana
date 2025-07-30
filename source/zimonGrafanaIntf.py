@@ -369,7 +369,7 @@ def main(argv):
                                 {'/':
                                  {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                  }
-                            )
+                                )
             # query for active sensors endpoint filters (prometheusExporter)
             cherrypy.tree.mount(exporter, '/filters',
                                 {'/':
