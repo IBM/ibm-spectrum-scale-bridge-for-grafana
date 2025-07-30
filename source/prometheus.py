@@ -189,9 +189,7 @@ class PrometheusExporter(object):
         # /labels
         elif '/labels' == cherrypy.request.script_name:
             resp = {}
-            # self.logger.info(f"Request params:{str(params)}")
-            for k,v in self.endpoints.items():
-                # self.logger.info(f"Sensor{v} labels:{self.TOPO.getSensorLabels(v)}")
+            for k, v in self.endpoints.items():
                 labels = self.TOPO.getSensorLabels(v)
                 if labels:
                     resp[k] = labels
@@ -202,11 +200,9 @@ class PrometheusExporter(object):
         # /filters
         elif '/filters' == cherrypy.request.script_name:
             resp = {}
-            # self.logger.info(f"Request params:{str(params)}")
             all_filters = self.TOPO.allFiltersMaps
-            for k,v in self.endpoints.items():
+            for k, v in self.endpoints.items():
                 if v in all_filters:
-                    # self.logger.info(f"Sensor{v} labels:{all_filters[v]}")
                     resp[k] = all_filters[v]
             cherrypy.response.headers['Content-Type'] = 'application/json'
             resp = json.dumps(resp)

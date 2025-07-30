@@ -360,22 +360,22 @@ def main(argv):
         if len(exporter.endpoints) > 0:
             # query for list of supported endpoints (prometheusExporter)
             cherrypy.tree.mount(exporter, '/endpoints',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
             # query for active sensors endpoint labels (prometheusExporter)
             cherrypy.tree.mount(exporter, '/labels',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
                             )
             # query for active sensors endpoint filters (prometheusExporter)
             cherrypy.tree.mount(exporter, '/filters',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
             for endpoint in exporter.endpoints.keys():
                 cherrypy.tree.mount(exporter, endpoint,
                                     {'/':
