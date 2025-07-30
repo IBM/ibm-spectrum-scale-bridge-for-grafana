@@ -38,7 +38,7 @@ class PrometheusExporter(object):
         self.__md = mdHandler
         self.port = port
         self.raw_data = raw_data
-        self.static_sensors_list = ['CPU', 'Memory', 'GPFSFileset']
+        self.static_sensors_list = ['CPU', 'Memory']
         self.cache_strategy = False
         self.endpoints = {}
         self.caching_collectors = []
@@ -157,7 +157,7 @@ class PrometheusExporter(object):
         resp = []
 
         self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
-        self.logger.info(f"Request params:{str(params)}")
+        self.logger.trace(f"Request params:{str(params)}")
         conn = cherrypy.request.headers.get('Host').split(':')
         if len(conn) == 2 and int(conn[1]) != int(self.port):
             self.logger.error(MSG['EndpointNotSupportedForPort'].
@@ -174,10 +174,39 @@ class PrometheusExporter(object):
 
         # /metrics
         elif '/metrics' == cherrypy.request.script_name:
-            resp = self.metrics()
+            # resp = self.metrics()
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
+
+        # /endpoints
+        elif '/endpoints' == cherrypy.request.script_name:
+            resp = self.endpoints.keys()
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
+
+        # /labels
+        elif '/labels' == cherrypy.request.script_name:
+            resp = {}
+            for k, v in self.endpoints.items():
+                labels = self.TOPO.getSensorLabels(v)
+                if labels:
+                    resp[k] = labels
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = json.dumps(resp)
+            return resp
+
+        # /filters
+        elif '/filters' == cherrypy.request.script_name:
+            resp = {}
+            all_filters = self.TOPO.allFiltersMaps
+            for k, v in self.endpoints.items():
+                if v in all_filters:
+                    resp[k] = all_filters[v]
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = json.dumps(resp)
+            return resp
 
         else:
             self.logger.error(MSG['EndpointNotSupported'].
