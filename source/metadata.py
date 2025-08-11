@@ -98,6 +98,8 @@ class MetadataHandler(metaclass=Singleton):
             sensor = 'GPFSNSDDisk'
         elif sensor == 'GPFSFCM':
             sensor = 'GPFSFCMDA'
+        elif sensor == 'GPFSEXPEL':
+            sensor = 'GPFSEXPELNODE'
         elif sensor == 'DomainStore':
             return 1
 
