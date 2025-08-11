@@ -34,6 +34,8 @@
     "/metrics_gpfs_fcmda": "GPFSFCMDA",
     "/metrics_gpfs_tscom": "GPFSTSCOM",
     "/metrics_gpfs_hardware": "GPFSHardware",
+    "/metrics_gpfs_expel": "GPFSEXPEL",
+    "/metrics_gpfs_expelnode": "GPFSEXPELNODE",
     "/metrics_nfsio": "NFSIO",
     "/metrics_smb_stats": "SMBStats",
     "/metrics_smb_globalstats": "SMBGlobalStats",
