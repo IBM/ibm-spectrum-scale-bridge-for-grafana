@@ -102,10 +102,13 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
     python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(python3 -V)" && \
-    echo "Installed python packages: $(python3 -m pip list)"; else \
+    echo "Installed python packages: $(python3 -m pip list)" && \
+    yum clean all -y; else \
     echo "Already using python container as base image. No need to install it." && \ 
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
+
+RUN rm -rf /usr/bin/pip*
 
 USER root
 
