@@ -1,3 +1,25 @@
+# Version 8.0.7 (08/14/2025)
+Published example dashboards for monitoring ESS Hardware metrics with Prometheus: \
+- ESS Hardware Performance overview \
+- HW Components Temperature \
+- HW Fan Rotation \
+- PSU Power(mA*Volt) \
+Added support for Prometheus scrape job params config \
+Added GPFSEvents, GPFSEXPEL, GPFSEXPELNODE sensors to PrometheusExporter supported sensors\
+Added helpful HTTP REST API endpoints for working with PrometheusExporter:
+/endpoints
+/labels
+/filters
+Modified handling of config file allowing to store and invoke custom config file outside the repository
+
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.6-1754586119 \ 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.6 (05/28/2025)
 Published example dashboard for observing high level health status of all gpfs devices rgistered and managed with Grafana\
 Improved rawCounters setting management by PrometheusExporter\
