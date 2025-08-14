@@ -38,7 +38,7 @@ class PrometheusExporter(object):
         self.__md = mdHandler
         self.port = port
         self.raw_data = raw_data
-        self.static_sensors_list = ['CPU', 'Memory', 'GPFSFileset']
+        self.static_sensors_list = ['CPU', 'Memory']
         self.cache_strategy = False
         self.endpoints = {}
         self.caching_collectors = []
@@ -75,7 +75,7 @@ class PrometheusExporter(object):
         return resp
 
     @execution_time()
-    def metrics(self, export_sensors: Optional[list] = None):
+    def metrics(self, export_sensors: Optional[list] = None, filters: Optional[dict] = None):
         export_sensors = export_sensors or []
         resp = []
 
@@ -84,18 +84,18 @@ class PrometheusExporter(object):
                 respList = self.format_response(collector.cached_metrics)
                 resp.extend(respList)
         elif len(export_sensors) > 0:
-            resp = self._metrics(export_sensors)
+            resp = self._metrics(export_sensors, filters)
         else:
             resp = self._metrics(self.static_sensors_list)
 
         return resp
 
-    def _metrics(self, export_sensors: list):
+    def _metrics(self, export_sensors: list, filters: Optional[dict] = None):
         resp = []
         collectors = []
 
         for sensor in export_sensors:
-            collector = self.build_collector(sensor)
+            collector = self.build_collector(sensor, filters)
             collectors.append(collector)
 
         for collector in collectors:
@@ -121,27 +121,30 @@ class PrometheusExporter(object):
                     name=thread_name).subscribe()
 
     @cond_execution_time(enabled=analytics.inspect)
-    def build_collector(self, sensor) -> SensorCollector:
+    def build_collector(self, sensor: str, filters: Optional[dict] = None) -> SensorCollector:
 
         period = self.md.getSensorPeriod(sensor)
         if period < 1:
             self.logger.error(MSG['SensorDisabled'].format(sensor))
             raise cherrypy.HTTPError(400, MSG['SensorDisabled'].format(sensor))
 
-        attrs = {}
+        attrs = {'sensor': sensor, 'period': period}
 
-        if self.raw_data:
-            attrs = {'sensor': sensor, 'period': period,
-                     'nsamples': period, 'rawData': True}
-        elif "counter" in self.TOPO.getSensorMetricTypes(sensor).values():
-            attrs = {'sensor': sensor, 'period': period,
-                     'nsamples': period, 'rawData': True}
+        if self.raw_data or "counter" in self.TOPO.getSensorMetricTypes(sensor).values():
+            attrs.update({'nsamples': period, 'rawData': True})
             self.logger.debug(MSG['SensorForceRawData'].format(sensor))
         else:
-            attrs = {'sensor': sensor, 'period': period,
-                     'nsamples': 1}
+            attrs.update({'nsamples': 1})
+        if filters:
+            for key, value in filters.items():
+                if isinstance(value, list):
+                    filters[key] = "|".join(value)
+            self.logger.debug(f"Collector filters: {filters}")
+            attrs['filters'] = filters
+
         request = QueryPolicy(**attrs)
         collector = SensorCollector(sensor, period, self.logger, request)
+        collector.validate_query_filters()
 
         # self.logger.trace(f'request instance {str(request.__dict__)}')
         # self.logger.trace(f'Created Collector instance {str(collector.__dict__)}')
@@ -154,6 +157,7 @@ class PrometheusExporter(object):
         resp = []
 
         self.logger.trace(f"Request headers:{str(cherrypy.request.headers)}")
+        self.logger.trace(f"Request params:{str(params)}")
         conn = cherrypy.request.headers.get('Host').split(':')
         if len(conn) == 2 and int(conn[1]) != int(self.port):
             self.logger.error(MSG['EndpointNotSupportedForPort'].
@@ -163,17 +167,46 @@ class PrometheusExporter(object):
         if self.endpoints and self.endpoints.get(cherrypy.request.script_name,
                                                  None):
             sensor = self.endpoints[cherrypy.request.script_name]
-            resp = self.metrics([sensor])
+            resp = self.metrics([sensor], params)
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
 
         # /metrics
         elif '/metrics' == cherrypy.request.script_name:
-            resp = self.metrics()
+            # resp = self.metrics()
+            self.logger.error(MSG['EndpointNotSupported'].
+                              format(cherrypy.request.script_name))
+            raise cherrypy.HTTPError(400, ERR[400])
+
+        # /endpoints
+        elif '/endpoints' == cherrypy.request.script_name:
+            resp = self.endpoints.keys()
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
             return resString
+
+        # /labels
+        elif '/labels' == cherrypy.request.script_name:
+            resp = {}
+            for k, v in self.endpoints.items():
+                labels = self.TOPO.getSensorLabels(v)
+                if labels:
+                    resp[k] = labels
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = json.dumps(resp)
+            return resp
+
+        # /filters
+        elif '/filters' == cherrypy.request.script_name:
+            resp = {}
+            all_filters = self.TOPO.allFiltersMaps
+            for k, v in self.endpoints.items():
+                if v in all_filters:
+                    resp[k] = all_filters[v]
+            cherrypy.response.headers['Content-Type'] = 'application/json'
+            resp = json.dumps(resp)
+            return resp
 
         else:
             self.logger.error(MSG['EndpointNotSupported'].

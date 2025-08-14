@@ -1,36 +1,56 @@
+import os
 from source.confParser import ConfigManager
 from source.__version__ import __version__ as version
+from nose2.tools.decorators import with_setup
+
+
+def my_setup():
+    global path, customConfigFile
+    path = os.getcwd()
+    customConfigFile = 'custom.ini'
 
 
 def test_case01():
     cm = ConfigManager()
     result = cm.readConfigFile('config.ini')
     assert isinstance(result, dict)
+    if version < "8.0.7":
+        assert len(result.keys()) > 0
+        assert 'tls' in result.keys()
+    else:
+        assert len(result) == 0
 
 
 def test_case02():
     cm = ConfigManager()
-    result = cm.readConfigFile('config.ini')
+    file = cm.get_template_path()
+    result = cm.readConfigFile(file)
+    assert isinstance(result, dict)
     assert len(result.keys()) > 0
+    assert 'tls' in result.keys()
 
 
 def test_case03():
     cm = ConfigManager()
-    result = cm.readConfigFile('config.ini')
-    assert 'tls' in result.keys()
+    if version < "8.0.7":
+        result = cm.readConfigFile('config.ini')
+        connection = result['connection']
+        assert len(connection) > 0
+        assert isinstance(connection, dict)
+        assert len(connection) > 0
+        if version < "8.0":
+            assert 'port' in connection.keys()
+        else:
+            assert 'port' not in connection.keys()
 
 
+@with_setup(my_setup)
 def test_case04():
+    customFile = os.path.join(path, "tests", "test_data", customConfigFile)
     cm = ConfigManager()
-    result = cm.readConfigFile('config.ini')
-    connection = result['connection']
-    assert len(connection) > 0
-    assert isinstance(connection, dict)
-    assert len(connection) > 0
-    if version < "8.0":
-        assert 'port' in connection.keys()
-    else:
-        assert 'port' not in connection.keys()
+    cm.customFile = customFile
+    result = cm.readConfigFile(cm.customFile)
+    assert 'tls' in result.keys()
 
 
 def test_case05():

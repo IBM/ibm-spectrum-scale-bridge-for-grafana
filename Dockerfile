@@ -1,5 +1,5 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.6-1747219013
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.6-1754586119
 
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
@@ -17,7 +17,7 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.0.6"
+LABEL com.ibm.version="8.0.7"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -102,10 +102,13 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
     python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(python3 -V)" && \
-    echo "Installed python packages: $(python3 -m pip list)"; else \
+    echo "Installed python packages: $(python3 -m pip list)" && \
+    yum clean all -y; else \
     echo "Already using python container as base image. No need to install it." && \ 
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
+
+RUN rm -rf /usr/bin/pip*
 
 USER root
 
