@@ -61,10 +61,10 @@ class PrometheusExporter(object):
     def format_response(self, data) -> [str]:
         resp = []
         for name, metric in data.items():
-            header = metric.str_descfmt(original_counters=self.raw_data)
+            header = metric.str_descfmt()
             resp.extend(header)
             for sts in metric.timeseries:
-                if self.raw_data:
+                if len(sts.dps) > 1:
                     sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
                     sts_resp = SingleTimeSeriesResponse(name, _key,
