@@ -117,7 +117,7 @@ class MetricTimeSeries(object):
     def __format__(self, spec):
         return f'{self.mname}_mTS'
 
-    def str_descfmt(self, original_counters=False) -> [str]:
+    def str_descfmt(self) -> [str]:
         """Format MetricTimeSeries description rows
             Output format:
                 '''# HELP {name} {desc}'''
