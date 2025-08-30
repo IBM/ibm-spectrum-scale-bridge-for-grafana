@@ -117,15 +117,12 @@ class MetricTimeSeries(object):
     def __format__(self, spec):
         return f'{self.mname}_mTS'
 
-    def str_descfmt(self, original_counters=False) -> [str]:
+    def str_descfmt(self) -> [str]:
         """Format MetricTimeSeries description rows
             Output format:
                 '''# HELP {name} {desc}'''
                 '''# TYPE {name} {mtype}'''
         """
-        metric_type = self.mtype
-        if not original_counters and metric_type == 'counter':
-            metric_type = 'gauge'
 
         myset = []
 
@@ -136,7 +133,7 @@ class MetricTimeSeries(object):
         myset.append(expfmt)
         expfmt1 = '''# TYPE {name} {mtype}'''.format(
             name=self.mname,
-            mtype=metric_type,
+            mtype=self.mtype,
         )
         myset.append(expfmt1)
 

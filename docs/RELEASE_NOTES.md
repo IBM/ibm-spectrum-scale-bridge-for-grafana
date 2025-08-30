@@ -1,4 +1,4 @@
-# Version 8.0.7 (08/14/2025)
+# Version 8.0.7 (09/01/2025)
 Published example dashboards for monitoring ESS Hardware metrics with Prometheus: \
 - ESS Hardware Performance overview \
 - HW Components Temperature \
