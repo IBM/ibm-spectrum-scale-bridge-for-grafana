@@ -1,5 +1,5 @@
 The following matrix gives a quick overview of the supported software for the IBM Storage Scale bridge for Grafana packages by version number:
-# Version 8.0.7 (08/14/2025)
+# Version 8.0.7 (09/01/2025)
 Classic Scale:
  - Python 3.9
  - CherryPy 18.10.0
