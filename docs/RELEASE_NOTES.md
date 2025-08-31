@@ -1,4 +1,13 @@
-# Version 8.0.7 (09/01/2025)
+# Version 8.0.8 (09/01/2025)
+Fixed the issue with PrometheusExporter handling the 'counter' type metric when rawCounters is set to false.
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
+# Version 8.0.7 (08/14/2025)
 Published example dashboards for monitoring ESS Hardware metrics with Prometheus: \
 - ESS Hardware Performance overview \
 - HW Components Temperature \
