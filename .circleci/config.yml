@@ -1,15 +1,13 @@
 version: 2.1
-
 orbs:
-  python: circleci/python@3.3.0
-
+  python: circleci/python@3.0.0
 jobs:
   build-and-test:
     executor: python/default
     working_directory: ~/ibm-spectrum-scale-bridge-for-grafana
     steps:
       - checkout
-      - python/load-cache
+      #- python/load-cache
       - python/install-deps
       - run:
           name: install dependencies
@@ -17,7 +15,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - python/save-cache
+      #- python/save-cache
       - run:
           name: Test
           command: |
@@ -30,8 +28,6 @@ jobs:
           command: |
             . venv/bin/activate
             docker build -t bridge_image:latest .
-
-
 workflows:
   main:
     jobs:
