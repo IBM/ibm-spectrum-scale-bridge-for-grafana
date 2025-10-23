@@ -4,12 +4,13 @@ from source.__version__ import __version__ as version
 
 def test_case01():
     result = os.system('python ./source/zimonGrafanaIntf.py')
-    assert result > 0
+    print(result)
+    assert result == 0
 
 
 def test_case02():
     result = os.system('python ./source/zimonGrafanaIntf.py -a 2')
-    assert result > 0
+    assert result == 0
 
 
 def test_case03():
@@ -19,7 +20,7 @@ def test_case03():
 
 def test_case04():
     result = os.system('python ./source/zimonGrafanaIntf.py -c 10 -m "/opt/registry/certs"')
-    assert result > 0
+    assert result == 0
 
 
 def test_case05():
