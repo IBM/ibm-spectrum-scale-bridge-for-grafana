@@ -210,3 +210,18 @@ def test_case17():
         assert len(result.keys()) > 0
         assert 'rawCounters' in result.keys()
         assert result.get('rawCounters') == eval("False")
+
+
+@with_setup(my_setup)
+def test_case18():
+    if version > "8.0.9":
+        z = y.copy()
+        z['apiKeyValue'] = ''
+        result = merge_defaults_and_args(y, r)
+        result1 = merge_defaults_and_args(z, r)
+        valid, msg = checkForInvalidsettings(result)
+        valid1, msg1 = checkForInvalidsettings(result1)
+        assert valid
+        assert not valid1
+        assert msg == ''
+        assert len(msg1) > 1
