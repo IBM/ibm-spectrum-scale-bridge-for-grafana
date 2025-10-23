@@ -1,7 +1,8 @@
 from source.confParser import (ConfigManager, merge_defaults_and_args,
                                parse_cmd_args, checkCAsettings,
                                checkApplicationPort,
-                               checkBasicAuthsettings)
+                               checkBasicAuthsettings,
+                               checkForInvalidsettings)
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
 
