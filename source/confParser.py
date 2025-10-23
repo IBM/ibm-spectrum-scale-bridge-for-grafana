@@ -91,6 +91,15 @@ def checkCAsettings(args):
     return True, ''
 
 
+def checkForInvalidsettings(args):
+    if not all(args.values()):
+        for key, value in args.items():
+            if value is None or value == '':
+                return False, MSG['InvalidConfigParm'].format(key)
+    else:
+        return True, ''
+
+
 def getSettings(argv):
     settings = {}
     args, msg = parse_cmd_args(argv)
@@ -101,6 +110,9 @@ def getSettings(argv):
     elif args:
         settings = vars(args)
     else:
+        return None, msg
+    valid, msg = checkForInvalidsettings(settings)
+    if not valid:
         return None, msg
     # check application port
     valid, msg = checkApplicationPort(settings)
@@ -127,7 +139,6 @@ def getSettings(argv):
 
 def merge_defaults_and_args(defaults, args):
     '''merge default config parameters with input parameters from the command line'''
-    brConfig = {}
     brConfig = dict(defaults)
     args = vars(args)
     brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
@@ -170,9 +181,9 @@ class ConfigManager(object, metaclass=Singleton):
                             value = int(value)
                         options[sect][name] = value
             except Exception as e:
-                print(f"cannot read config file {fileName} Exception {e}")
+                print(f"Error: Cannot read config file {fileName} Exception {e}")
         else:
-            print(f"cannot find config file {fileName}")
+            print(f"Error: Cannot find config file {fileName}")
         return options
 
     def get_template_path(self):
