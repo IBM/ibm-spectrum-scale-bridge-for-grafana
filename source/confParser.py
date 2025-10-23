@@ -92,11 +92,12 @@ def checkCAsettings(args):
 
 
 def checkForInvalidsettings(args):
-    if not all(args.values()):
+    if all(args.values()):
+        return True, ''
+    else:
         for key, value in args.items():
             if value is None or value == '':
                 return False, MSG['InvalidConfigParm'].format(key)
-    else:
         return True, ''
 
 
