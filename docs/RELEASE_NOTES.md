@@ -1,3 +1,13 @@
+# Version 8.1.0 (10/24/2025)
+Added check for empty/not acceptable values in the configuration file
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.6-1760340943 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.0.9 (09/01/2025)
 * Fixed issue with version tag.
 

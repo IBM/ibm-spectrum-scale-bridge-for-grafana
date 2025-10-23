@@ -7,7 +7,7 @@ autocommand==2.2.2
     # via jaraco-text
 backports-tarfile==1.2.0
     # via jaraco-context
-cheroot==10.0.1
+cheroot==11.0.0
     # via cherrypy
 cherrypy==18.10.0
     # via -r /root/requirements_ubi.in
@@ -15,14 +15,14 @@ jaraco-collections==5.2.1
     # via cherrypy
 jaraco-context==6.0.1
     # via jaraco-text
-jaraco-functools==4.2.1
+jaraco-functools==4.3.0
     # via
     #   cheroot
     #   jaraco-text
     #   tempora
 jaraco-text==4.0.0
     # via jaraco-collections
-more-itertools==10.7.0
+more-itertools==10.8.0
     # via
     #   cheroot
     #   cherrypy
@@ -32,13 +32,13 @@ portend==3.2.1
     # via cherrypy
 python-dateutil==2.9.0.post0
     # via tempora
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via -r /root/requirements_ubi.in
 six==1.17.0
     # via python-dateutil
 tempora==5.8.1
     # via portend
-zc-lockfile==3.0.post1
+zc-lockfile==4.0
     # via cherrypy
 
 # The following packages are considered to be unsafe in a requirements file:
