@@ -1,10 +1,11 @@
 version: 2.1
 orbs:
   python: circleci/python@3.0.0
-  tag: "3.11.14"
 jobs:
   build-and-test:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: "3.11.14"
     working_directory: ~/ibm-spectrum-scale-bridge-for-grafana
     steps:
       - checkout
