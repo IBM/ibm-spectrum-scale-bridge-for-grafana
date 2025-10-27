@@ -81,7 +81,7 @@ class PrometheusConfigGenerator(object):
                         self.attr.get('tlsKeyPath')
                         and self.attr.get('tlsCertFile')
                         and self.attr.get('tlsKeyFile')
-                        ):
+                            ):
                         self.logger.error(MSG['MissingSSLCert'])
                         return MSG['MissingSSLCert']
                     certPath = os.path.join(self.attr.get('tlsKeyPath'),
@@ -96,7 +96,7 @@ class PrometheusConfigGenerator(object):
                     if not (
                         self.attr.get('username', False)
                         and self.attr.get('password', False)
-                        ):
+                            ):
                         self.logger.error(MSG['MissingParm'])
                         return MSG['MissingParm']
                     basic_auth = {"username": self.attr.get('username')}
