@@ -76,7 +76,12 @@ class PrometheusConfigGenerator(object):
                 scrape_job["honor_timestamps"] = True
                 scrape_job["metrics_path"] = endpoint
                 scrape_job["scheme"] = self.attr.get('protocol')
-                if self.attr.get('tlsKeyPath'):
+                if self.attr.get('protocol') == "https":
+                    if not (self.attr.get('tlsKeyPath') and
+                            self.attr.get('tlsCertFile') and
+                            self.attr.get('tlsKeyFile')):
+                        self.logger.error(MSG['MissingSSLCert'])
+                        return MSG['MissingSSLCert']
                     certPath = os.path.join(self.attr.get('tlsKeyPath'),
                                             self.attr.get('tlsCertFile'))
                     keyPath = os.path.join(self.attr.get('tlsKeyPath'),
@@ -86,6 +91,10 @@ class PrometheusConfigGenerator(object):
                            "insecure_skip_verify": True}
                     scrape_job["tls_config"] = tls
                 if self.attr.get('enabled', False):
+                    if not (self.attr.get('username', False) and
+                            self.attr.get('password', False)):
+                        self.logger.error(MSG['MissingParm'])
+                        return MSG['MissingParm']
                     basic_auth = {"username": self.attr.get('username')}
                     if os.path.isfile(self.attr.get('password')):
                         pw = {"password_file": self.attr.get('password')}
