@@ -55,10 +55,13 @@ class PrometheusConfigGenerator(object):
     def TOPO(self):
         return self.__md.metaData
 
-    @staticmethod
-    def host_ip():
-        hostname = socket.getfqdn()
-        local_ip = socket.gethostbyname_ex(hostname)[2][0]
+    @property
+    def host_ip(self):
+        if self.attr.get('bindip') == '0.0.0.0' or self.attr.get('bindip') == '::':
+            hostname = socket.getfqdn()
+            local_ip = socket.gethostbyname_ex(hostname)[2][0]
+        else:
+            local_ip = self.attr.get('bindip')
         return local_ip
 
     def generate_config(self):
@@ -106,7 +109,7 @@ class PrometheusConfigGenerator(object):
                         pw = {"password": self.attr.get('password')}
                     basic_auth.update(pw)
                     scrape_job["basic_auth"] = basic_auth
-                targets = {"targets": [f"{self.host_ip()}:{self.attr.get('prometheus')}"]}
+                targets = {"targets": [f"{self.host_ip}:{self.attr.get('prometheus')}"]}
                 scrape_job["static_configs"] = [targets]
                 scrape_configs.append(scrape_job)
         prometheus_job = {}
