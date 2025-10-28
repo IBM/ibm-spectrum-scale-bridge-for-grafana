@@ -130,7 +130,7 @@ def check_basic_auth(realm, username, password):
 def bind_opentsdb_server(args):
     opentsdb_server = cherrypy._cpserver.Server()
     opentsdb_server.socket_port = args.get('port')
-    opentsdb_server._socket_host = '0.0.0.0'
+    opentsdb_server._socket_host = args.get('opentsdbBindIp', '0.0.0.0')
     if args.get('protocol') == "https":
         certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
         keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
@@ -144,7 +144,7 @@ def bind_opentsdb_server(args):
 def bind_prometheus_server(args):
     prometheus_server = cherrypy._cpserver.Server()
     prometheus_server.socket_port = args.get('prometheus')
-    prometheus_server._socket_host = '0.0.0.0'
+    prometheus_server._socket_host = args.get('promBindIp', '0.0.0.0')
     if args.get('protocol') == "https":
         certPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsCertFile'))
         keyPath = os.path.join(args.get('tlsKeyPath'), args.get('tlsKeyFile'))
