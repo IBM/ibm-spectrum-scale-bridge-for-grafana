@@ -57,7 +57,7 @@ class PrometheusConfigGenerator(object):
 
     @property
     def host_ip(self):
-        if self.attr.get('bindip') == '0.0.0.0' or self.attr.get('bindip') == '::':
+        if self.attr.get('promBindIp') == '0.0.0.0' or self.attr.get('promBindIp') == '::':
             hostname = socket.getfqdn()
             local_ip = socket.gethostbyname_ex(hostname)[2][0]
         else:
