@@ -62,7 +62,7 @@ def checkBasicAuthsettings(args):
     elif args.get('enabled') and ("/" in str(args.get('password')) and not
                                   os.path.isfile(args.get('password'))
                                   ):
-        return False, MSG['FileNotFound'].format("mandatory for basic auth")
+        return False, MSG['PathNotFound'].format("basic auth settings")
     elif args.get('enabled') and "/" not in str(args.get('password')):
         try:
             base64.b64decode(args.get('password'), validate=True)
@@ -81,7 +81,7 @@ def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
         return False, MSG['MissingParm']
     elif "/" in str(args.get('apiKeyValue')) and not os.path.isfile(args.get('apiKeyValue')):
-        return False, MSG['FileNotFound'].format(args.get('apiKeyValue'))
+        return False, MSG['PathNotFound'].format("api key settings")
     return True, ''
 
 
