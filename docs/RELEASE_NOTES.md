@@ -1,3 +1,15 @@
+# Version 9.0.0 (10/30/2025)
+Added example yaml files to configure Openshift ServiceMonitor for a scale cluster running outside of this Openshift cluster
+Expanded configuration parameters to allow grafana-bridge socket host to bind to ip of specific network interface
+Removed python3.9 support, set required minimum level to 3.11
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi10/ubi:10.0-1760519443 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.1.0 (10/24/2025)
 Added check for empty/not acceptable values in the configuration file
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.6-1760340943 
