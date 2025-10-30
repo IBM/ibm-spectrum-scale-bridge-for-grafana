@@ -1,4 +1,16 @@
 The following matrix gives a quick overview of the supported software for the IBM Storage Scale bridge for Grafana packages by version number:
+# Version 9.0.0 (10/30/2025)
+Classic Scale:
+ - Python 3.12
+ - CherryPy 18.10.0
+ - IBM Storage Scale system must run 6.0.0 and above
+ - Grafana 12.0.0 and above
+ - OpenTSDB 2.4
+
+  Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.1
+ - RedHat community-powered Grafana-Operator v5
+
 # Version 8.1.0 (10/24/2025)
 Classic Scale:
  - Python 3.9
@@ -6,6 +18,10 @@ Classic Scale:
  - IBM Storage Scale system must run 5.2.2 and above
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
+
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
+ - RedHat community-powered Grafana-Operator v5
 
 # Version 8.0.9 (09/01/2025)
 Classic Scale:
@@ -15,6 +31,10 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
+ - RedHat community-powered Grafana-Operator v5
+
 # Version 8.0.8 (09/01/2025)
 Classic Scale:
  - Python 3.9
@@ -23,6 +43,10 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
+ - RedHat community-powered Grafana-Operator v5
+
 # Version 8.0.7 (08/14/2025)
 Classic Scale:
  - Python 3.9
@@ -30,6 +54,10 @@ Classic Scale:
  - IBM Storage Scale system must run 5.2.2 and above
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
+
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
+ - RedHat community-powered Grafana-Operator v5
 
 # Version 8.0.6 (05/28/2025)
 Classic Scale:
@@ -42,7 +70,7 @@ Classic Scale:
  Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
  - RedHat community-powered Grafana-Operator v5
- 
+
 # Version 8.0.5 (05/10/2025)
 Classic Scale:
  - Python 3.9
@@ -54,7 +82,6 @@ Classic Scale:
  Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
  - RedHat community-powered Grafana-Operator v5
-
 
 # Version 8.0.4 (04/10/2025)
 Classic Scale:
