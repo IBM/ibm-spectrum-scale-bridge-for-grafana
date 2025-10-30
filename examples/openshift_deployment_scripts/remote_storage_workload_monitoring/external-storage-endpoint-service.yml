@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: ibm-example-external-storage-service
+  labels:
+    app.kubernetes.io/instance: ibm-external-storage
+    app.kubernetes.io/name: grafanabridgeexternal
+spec:
+  ports:
+  - name: externalhttp
+    port: 9250
+    protocol: TCP
+    targetPort: 9250
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

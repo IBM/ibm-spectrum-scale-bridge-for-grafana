@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  creationTimestamp: null
+  name: ibm-example-external-storage-service
+  labels:
+    app.kubernetes.io/instance: ibm-external-storage
+    app.kubernetes.io/name: grafanabridgeexternal
+subsets:
+- addresses:
+  - ip: <remote storage cluster node running PrometheusExporter>
+  ports:
+  - name: externalhttp
+    port: 9250
+    protocol: TCP

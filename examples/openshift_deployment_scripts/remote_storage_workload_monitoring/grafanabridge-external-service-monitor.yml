@@ -1,0 +1,89 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-external-storage
+    app.kubernetes.io/name: grafanabridgeexternal
+  name: prometheus-grafanabridge-external-monitor
+  namespace: ibm-external-storage
+spec:
+  endpoints:
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_filesystem
+    port: externalhttp
+    scheme: https
+    tlsConfig:
+      cert:
+        secret:
+          key: tls.crt
+          name: grafanabridge-external-tls-data
+      keySecret:
+        key: tls.key
+        name: grafanabridge-external-tls-data
+      insecureSkipVerify: true
+    serverName: ibm-example-external-storage-service.ibm-external-storage.svc    
+  - honorTimestamps: true
+    interval: 300s
+    path: /metrics_gpfs_pool
+    port: externalhttp
+    scheme: https
+    tlsConfig:
+      cert:
+        secret:
+          key: tls.crt
+          name: grafanabridge-external-tls-data
+      keySecret:
+        key: tls.key
+        name: grafanabridge-external-tls-data
+      insecureSkipVerify: true
+    serverName: ibm-example-external-storage-service.ibm-external-storagee.svc
+  - honorTimestamps: true
+    interval: 10s
+    path: /metrics_gpfs_nsddisk
+    port: externalhttp
+    scheme: https
+    tlsConfig:
+      cert:
+        secret:
+          key: tls.crt
+          name: grafanabridge-external-tls-data
+      keySecret:
+        key: tls.key
+        name: grafanabridge-external-tls-data
+      insecureSkipVerify: true
+    serverName: ibm-example-external-storage-service.ibm-external-storage.svc
+  - honorTimestamps: true
+    interval: 30s
+    path: /metrics_gpfs_mmhealth
+    port: externalhttp
+    scheme: https
+    tlsConfig:
+      cert:
+        secret:
+          key: tls.crt
+          name: grafanabridge-external-tls-data
+      keySecret:
+        key: tls.key
+        name: grafanabridge-external-tls-data
+      insecureSkipVerify: true
+    serverName: ibm-example-external-storage-service.ibm-external-storage.svc
+  - honorTimestamps: true
+    interval: 86400s
+    path: /metrics_gpfs_diskcap
+    port: externalhttp
+    scheme: https
+    tlsConfig:
+      cert:
+        secret:
+          key: tls.crt
+          name: grafanabridge-external-tls-data
+      keySecret:
+        key: tls.key
+        name: grafanabridge-external-tls-data
+      insecureSkipVerify: true
+    serverName: ibm-example-external-storage-service.ibm-external-storage.svc
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: ibm-external-storage
+      app.kubernetes.io/name: grafanabridgeexternal
