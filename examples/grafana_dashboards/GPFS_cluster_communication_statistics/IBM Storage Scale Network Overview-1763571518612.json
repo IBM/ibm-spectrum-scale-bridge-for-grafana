@@ -1,0 +1,1786 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_VM1-CLUSTER1",
+      "label": "vm1-cluster1",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "opentsdb",
+      "pluginName": "OpenTSDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "12.0.2"
+    },
+    {
+      "type": "panel",
+      "id": "heatmap",
+      "name": "Heatmap",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "opentsdb",
+      "name": "OpenTSDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "fromAnnotations": true,
+          "isGlobal": false,
+          "name": "Annotations & Alerts",
+          "target": ""
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "gridPos": {
+        "h": 7,
+        "w": 23,
+        "x": 0,
+        "y": 0
+      },
+      "id": 15,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Network Overview\n\nMonitor cluster network by looking at interface statistics (netdev_*) and Scale daemon socket statistics (gpfs_tscom_*).\nRDMA traffic is not considered on this dashboard.\n\nTypical network issues\n* TCP Packet loss \n  * Increased loss & retransmit counts\n  * Usually higher RTT \n  * CA state 3 (moderate loss) or 4 (significant loss)\n* Packet corruption\n  * Network drops on interface level\n  * Network errors on interface level\n* Slow network / delays\n  * High RTT / RTTVar\n* Network interruptions \n  * Increased number of reconnects \n  * Number of established connections goes down",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "IBM Storage Scale",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 16,
+      "panels": [],
+      "title": "Network Interface Statistics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 13,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM1-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "metric": "netdev_bytes_r",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "hide": false,
+          "metric": "netdev_bytes_s",
+          "refId": "B"
+        }
+      ],
+      "title": "Network Throughput receive/send",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "netdev_drops_r",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM1-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "hide": false,
+          "metric": "netdev_drops_s",
+          "refId": "B"
+        }
+      ],
+      "title": "Dropped Packets on all interfaces",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${Datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 18,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${DS_VM1-CLUSTER1}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "netdev_errors_r",
+          "refId": "A"
+        },
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "hide": false,
+          "metric": "netdev_errors_s",
+          "refId": "B"
+        }
+      ],
+      "title": "Packet Errors on all interfaces",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 14,
+      "panels": [],
+      "title": "Scale Daemon Socket statistics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "description": "New or reconnected socket connection between two nodes. Sockets can be established and closed on demand, depending on the role of the node",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 3,
+        "x": 0,
+        "y": 17
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "gpfs_tscom_reconnect",
+          "refId": "A"
+        }
+      ],
+      "title": "Reconnects",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "description": "Lost packets (snapshot of lost packets in flight) ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 3,
+        "x": 3,
+        "y": 17
+      },
+      "id": 8,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "/^gpfs_tscom_lost$/",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "gpfs_tscom_lost",
+          "refId": "A"
+        }
+      ],
+      "title": "Lost packets",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "description": "Current retrans packets in flight",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 3,
+        "x": 6,
+        "y": 17
+      },
+      "id": 21,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "/^gpfs_tscom_retrans$/",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "gpfs_tscom_retrans",
+          "refId": "A"
+        }
+      ],
+      "title": "Packet retrans",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "description": "The number of timeouts (RTO based re-transmissions) within a sequence. ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 3,
+        "x": 9,
+        "y": 17
+      },
+      "id": 10,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "/^gpfs_tscom_retransmits$/",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "metric": "gpfs_tscom_retransmits",
+          "refId": "A"
+        }
+      ],
+      "title": "Retransmits",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "super-light-green"
+              },
+              {
+                "color": "dark-green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 11,
+        "x": 12,
+        "y": 17
+      },
+      "id": 17,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "noop",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "20s",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "iliteral_or"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "literal_or"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_connection",
+              "type": "literal_or"
+            }
+          ],
+          "metric": "gpfs_tscom_stat",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": "30s",
+      "title": "Overall Number of established Socket Connections (Cluster Wide)",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {}
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "mode": "seriesToRows",
+            "reducers": [
+              "distinctCount"
+            ]
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "description": "Count the number of occurences when a socket ca_state is not OPEN (0) ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "dark-red",
+                "value": 11
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 12,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "top",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "limit": 10,
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {},
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "max",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": false,
+          "downsampleAggregator": "max",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "60m",
+          "explicitTags": false,
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "pm_filter"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "iliteral_or"
+            }
+          ],
+          "metric": "gpfs_tscom_ca_stat",
+          "refId": "A",
+          "shouldComputeRate": false
+        }
+      ],
+      "title": "Sockets with bad \"Congestion State\"",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {
+            "format": "wide"
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "count"
+            ]
+          }
+        },
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "greater",
+                  "options": {
+                    "value": "0"
+                  }
+                },
+                "fieldName": "Count"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Count"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 11,
+        "x": 12,
+        "y": 27
+      },
+      "id": 9,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "max": 4,
+          "min": 0,
+          "mode": "scheme",
+          "reverse": true,
+          "scale": "exponential",
+          "scheme": "Reds",
+          "steps": 4
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "max",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "none",
+          "downsampleInterval": "30m",
+          "explicitTags": false,
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "literal_or"
+            }
+          ],
+          "hide": false,
+          "metric": "gpfs_tscom_ca_stat",
+          "refId": "A",
+          "shouldComputeRate": false
+        }
+      ],
+      "title": "Congestion State by target host",
+      "type": "heatmap"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 19,
+      "panels": [],
+      "title": "Time Series",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "µs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 38
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "avg",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "iliteral_or"
+            }
+          ],
+          "metric": "gpfs_tscom_rtt",
+          "refId": "A"
+        }
+      ],
+      "title": "Round Trip Time (RTT) by target host",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "µs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 11,
+        "y": 38
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "avg",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "iliteral_or"
+            }
+          ],
+          "metric": "gpfs_tscom_rtt",
+          "refId": "A"
+        }
+      ],
+      "title": "Round Trip Time (RTT) by \"Source Host\"",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "µs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 46
+      },
+      "id": 11,
+      "interval": "1m",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "max",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "null",
+          "explicitTags": false,
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "literal_or"
+            }
+          ],
+          "metric": "gpfs_tscom_rto",
+          "refId": "A"
+        }
+      ],
+      "title": "Retransmission timeout (RTO )",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "µs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 11,
+        "y": 46
+      },
+      "id": 20,
+      "interval": "1m",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "max",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "null",
+          "explicitTags": false,
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "literal_or"
+            }
+          ],
+          "metric": "gpfs_tscom_rttvar",
+          "refId": "A"
+        }
+      ],
+      "title": "Round Trip Time Variance (RTTVAR)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "gpfs_tscom_reconnect{node=scale-17, gpfs_tscom_destination=10.0.100.23}"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 11,
+        "x": 0,
+        "y": 54
+      },
+      "id": 2,
+      "interval": "1m",
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "noop",
+          "downsampleFillPolicy": "null",
+          "explicitTags": false,
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "literal_or"
+            },
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "node",
+              "type": "pm_filter"
+            }
+          ],
+          "metric": "gpfs_tscom_reconnect",
+          "refId": "A"
+        }
+      ],
+      "title": "Reconnects",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "opentsdb",
+        "uid": "${DS_VM1-CLUSTER1}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 11,
+        "y": 54
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "aggregator": "sum",
+          "datasource": {
+            "type": "opentsdb",
+            "uid": "${Datasource}"
+          },
+          "disableDownsampling": true,
+          "downsampleAggregator": "avg",
+          "downsampleFillPolicy": "none",
+          "filters": [
+            {
+              "filter": "",
+              "groupBy": true,
+              "tagk": "gpfs_tscom_destination",
+              "type": "iliteral_or"
+            }
+          ],
+          "metric": "gpfs_tscom_lost",
+          "refId": "A"
+        }
+      ],
+      "title": "Network Lost Pakets",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {},
+        "label": "Data source",
+        "name": "Datasource",
+        "options": [],
+        "query": "opentsdb",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "IBM Storage Scale Network Overview",
+  "uid": "c7c55153-5b32-41a8-b5c2-5b81c6fd1ab8",
+  "version": 21,
+  "weekStart": ""
+}
