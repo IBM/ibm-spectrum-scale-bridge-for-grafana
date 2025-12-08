@@ -93,6 +93,7 @@ class Query(object):
         self.measurements = {}
         self.normalize_rates = True
         self.rawData = False
+        self.skipRangeData = False
         self.key = None
         self.sensor = None
 
@@ -209,15 +210,20 @@ class Query(object):
         else:
             raw = ''
 
-        if self.sensor is not None:
-            queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-                dd, raw, self.sensor, self.bucket_size, self.timeRep)
-        elif self.key is not None:
-            queryString = 'get -j {0} {1} {2} bucket_size {3} {4}'.format(
-                dd, raw, self.key, self.bucket_size, self.timeRep)
+        if self.skipRangeData:
+            domains = '-D'
         else:
-            queryString = 'get -j {0} {1} metrics {2} bucket_size {3} {4}'.format(
-                dd, raw, ','.join(self.metrics), self.bucket_size, self.timeRep)
+            domains = ''
+
+        if self.sensor is not None:
+            queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+                dd, raw, domains, self.sensor, self.bucket_size, self.timeRep)
+        elif self.key is not None:
+            queryString = 'get -j {0} {1} {2} {3} bucket_size {4} {5}'.format(
+                dd, raw, domains, self.key, self.bucket_size, self.timeRep)
+        else:
+            queryString = 'get -j {0} {1} {2} metrics {3} bucket_size {4} {5}'.format(
+                dd, raw, domains, ','.join(self.metrics), self.bucket_size, self.timeRep)
 
         if self.filters:
             queryString += ' from ' + ",".join(self.filters)

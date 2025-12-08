@@ -33,8 +33,8 @@ def test_case01():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-            '', '-z', prometheus_attrs.get('sensor'),
+        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+            '', '-z', '-D', prometheus_attrs.get('sensor'),
             prometheus_attrs.get('period'),
             f"last {prometheus_attrs.get('period')}")
         queryString += '\n'
@@ -54,8 +54,8 @@ def test_case02():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-            '', '', prometheus_attrs.get('sensor'),
+        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+            '', '', '-D', prometheus_attrs.get('sensor'),
             prometheus_attrs.get('period'),
             f"last {prometheus_attrs.get('nsamples')}")
         queryString += '\n'
@@ -74,8 +74,8 @@ def test_case03():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-            '', '-z', prometheus_attrs.get('sensor'),
+        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+            '', '-z', '-D', prometheus_attrs.get('sensor'),
             prometheus_attrs.get('period'),
             f"last {prometheus_attrs.get('period')}")
         queryString += ' from ' + ",".join(pquery_filters)
@@ -97,8 +97,8 @@ def test_case04():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} group {2} bucket_size {3} {4}'.format(
-            '', '', prometheus_attrs.get('sensor'),
+        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+            '', '', '-D', prometheus_attrs.get('sensor'),
             prometheus_attrs.get('period'),
             f"last {prometheus_attrs.get('nsamples')}")
         queryString += ' from ' + ",".join(pquery_filters)
