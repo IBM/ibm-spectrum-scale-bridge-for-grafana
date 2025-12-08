@@ -28,8 +28,10 @@ ERR = {400: 'Bad Request',
 MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'sysStart': 'Initial cherryPy server engine start have been invoked. Python version: {}, cherryPy version: {}.',
        'MissingParm': 'Missing mandatory parameters, quitting',
+       'MissingApiKeySettings': 'Missing mandatory ApiKey settings, quitting',
        'MissingPortParam': 'Missing applications port configuration, quitting',
-       'MissingSSLCert': 'Missing ssl configuration, quitting',
+       'MissingSSLCert': 'Missing ssl configuration settings, quitting',
+       'MissingBasicAuthSettings': 'Missing basic authentication settings, quitting',
        'KeyPathError': 'KeyPath directory not found, quitting',
        'MissingFileFromPathError': 'Missing certificates in the specified keyPath directory, quitting',
        'CollectorErr': 'Failed to initialize connection to pmcollector: {}, quitting',
@@ -85,5 +87,5 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'MetricNotInResults': 'Metric {} is not in Collector.metrcs',
        'ConnApplications': 'Registered applications: \n {}',
        'WrongFormat': 'The {} specified in wrong format.',
-       'AuthValidationError': 'Basic auth data not valid'
+       'AuthValidationError': 'Basic authentication data not valid'
        }
