@@ -217,6 +217,7 @@ class QueryPolicy(object):
         '''Returns zimon query string '''
         query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
+        query.skipRangeData = True
         query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
