@@ -2,7 +2,8 @@ from source.confParser import (ConfigManager, merge_defaults_and_args,
                                parse_cmd_args, checkCAsettings,
                                checkApplicationPort,
                                checkBasicAuthsettings,
-                               checkForInvalidsettings)
+                               checkForInvalidsettings,
+                               checkAPIsettings)
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
 
@@ -225,3 +226,22 @@ def test_case18():
         assert not valid1
         assert msg == ''
         assert len(msg1) > 1
+
+
+@with_setup(my_setup)
+def test_case19():
+    z = a.copy()
+    del z['apiKeyName']
+    result = merge_defaults_and_args(a, b)
+    result1 = merge_defaults_and_args(z, b)
+    assert len(result.keys()) > 0
+    assert len(result1.keys()) > 0
+    assert 'apiKeyValue' not in result.keys()
+    assert 'apiKeyValue' not in result1.keys()
+    assert 'apiKeyName' not in result1.keys()
+    valid, msg = checkAPIsettings(result)
+    valid1, msg1 = checkAPIsettings(result1)
+    assert not valid
+    assert not valid1
+    assert msg == 'Missing mandatory ApiKey settings, quitting'
+    assert msg1 == 'Missing mandatory ApiKey settings, quitting'
