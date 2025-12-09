@@ -42,7 +42,7 @@ def checkTLSsettings(args):
                                             args.get('tlsKeyFile') or not
                                             args.get('tlsCertFile')
                                             ):
-        return False, MSG['MissingParm']
+        return False, MSG['MissingSSLCert']
     elif args.get('protocol') == "https" and not os.path.exists(args.get('tlsKeyPath')):
         return False, MSG['KeyPathError']
     elif args.get('protocol') == "https":
@@ -58,16 +58,16 @@ def checkBasicAuthsettings(args):
     if args.get('enabled') and (not args.get('username') or not
                                 args.get('password')
                                 ):
-        return False, MSG['MissingParm']
+        return False, MSG['MissingBasicAuthSettings']
     elif args.get('enabled') and ("/" in str(args.get('password')) and not
                                   os.path.isfile(args.get('password'))
                                   ):
-        return False, MSG['PathNotFound'].format("basic auth settings")
+        return False, MSG['PathNotFound'].format("basic authentication settings")
     elif args.get('enabled') and "/" not in str(args.get('password')):
         try:
             base64.b64decode(args.get('password'), validate=True)
         except binascii.Error:
-            return False, MSG['WrongFormat'].format("basic auth password")
+            return False, MSG['WrongFormat'].format("basic authentication settings")
     return True, ''
 
 
@@ -79,9 +79,9 @@ def checkApplicationPort(args):
 
 def checkAPIsettings(args):
     if not args.get('apiKeyName') or not args.get('apiKeyValue'):
-        return False, MSG['MissingParm']
+        return False, MSG['MissingApiKeySettings']
     elif "/" in str(args.get('apiKeyValue')) and not os.path.isfile(args.get('apiKeyValue')):
-        return False, MSG['PathNotFound'].format("api key settings")
+        return False, MSG['PathNotFound'].format("ApiKey settings")
     return True, ''
 
 
