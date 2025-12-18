@@ -38,10 +38,10 @@ ARG HTTPBASICAUTH=True
 ENV BASICAUTH=$HTTPBASICAUTH
 
 ARG AUTHUSER=None
-ENV BASICAUTHUSER=$AUTHUSER
+ENV BASICU=$AUTHUSER
 
 ARG AUTHPASSW=NotSet
-ENV BASICAUTHPASSW=$AUTHPASSW
+ENV BASICP=$AUTHPASSW
 
 ARG HTTPPORT=None
 ENV PORT=$HTTPPORT
@@ -96,7 +96,8 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install -r /root/requirements_ubi10.txt && \
     echo "Installed python version: $(python3 -V)" && \
     echo "Installed python packages: $(python3 -m pip list)" && \
-    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.12/site-packages/pip*; else \
+    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.12/site-packages/pip* && \
+    rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test; else \
     echo "Already using python container as base image. No need to install it." && \ 
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
@@ -138,7 +139,7 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 # Switch user
 USER $UID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICAUTHUSER -a $BASICAUTHPASSW -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
 
 EXPOSE 4242 8443 9250
 
