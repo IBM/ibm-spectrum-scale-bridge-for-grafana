@@ -100,8 +100,8 @@ class PrometheusConfigGenerator(object):
                         self.attr.get('username', False)
                         and self.attr.get('password', False)
                     ):
-                        self.logger.error(MSG['MissingParm'])
-                        return MSG['MissingParm']
+                        self.logger.error(MSG['MissingBasicAuthSettings'])
+                        return MSG['MissingBasicAuthSettings']
                     basic_auth = {"username": self.attr.get('username')}
                     if os.path.isfile(self.attr.get('password')):
                         pw = {"password_file": self.attr.get('password')}
