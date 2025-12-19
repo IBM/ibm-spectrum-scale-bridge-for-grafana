@@ -5,7 +5,7 @@
 #
 autocommand==2.2.2
     # via jaraco-text
-cheroot==11.0.0
+cheroot==11.1.2
     # via cherrypy
 cherrypy==18.10.0
     # via -r /root/requirements_ubi.in

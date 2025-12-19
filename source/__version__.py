@@ -20,4 +20,4 @@ Created on Feb 17, 2021
 @author: HWASSMAN
 '''
 
-__version__ = '9.0.1-dev'
+__version__ = '9.0.1'

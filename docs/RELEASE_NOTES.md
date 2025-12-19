@@ -1,3 +1,16 @@
+# Version 9.0.1 (12/19/2025)
+Published [example dashboard](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/blob/master/examples/grafana_dashboards/GPFS_cluster_communication_statistics/IBM%20Storage%20Scale%20Network%20Overview-1763571518612.json) for observing the Network issues within the IBM Storage Scale clusters
+Switched to a non-root user in a docker image
+Addressed the findings of the MEND security scan
+Improved performance of prometheus scrap job queries by skipping the transfer of the domain RangeData
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi10/ubi:10.0-1762765098
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 9.0.0 (10/30/2025)
 Added example yaml files to configure Openshift ServiceMonitor for a scale cluster running outside of this Openshift cluster
 Expanded configuration parameters to allow grafana-bridge socket host to bind to ip of specific network interface
