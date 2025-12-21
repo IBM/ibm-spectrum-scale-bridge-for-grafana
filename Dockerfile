@@ -17,7 +17,7 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.1.0"
+LABEL com.ibm.version="8.1.1-dev"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -26,17 +26,10 @@ LABEL com.ibm.summary="It allows the IBM Storage Scale users to perform performa
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-ARG USERNAME=bridge
-ENV USER=$USERNAME
-
-ARG GROUPNAME=bridge
-ENV GROUP=$GROUPNAME
-
-ARG USERID=2001
-ENV UID=$USERID
-
-ARG GROUPID=0
-ENV GID=$GROUPID
+ARG USER=bridge
+ARG GROUP=bridge
+ARG UID=2001
+ARG GID=2099
 
 ARG HTTPPROTOCOL=http
 ENV PROTOCOL=$HTTPPROTOCOL
@@ -45,10 +38,10 @@ ARG HTTPBASICAUTH=True
 ENV BASICAUTH=$HTTPBASICAUTH
 
 ARG AUTHUSER=None
-ENV BASICAUTHUSER=$AUTHUSER
+ENV BASICU=$AUTHUSER
 
 ARG AUTHPASSW=NotSet
-ENV BASICAUTHPASSW=$AUTHPASSW
+ENV BASICP=$AUTHPASSW
 
 ARG HTTPPORT=None
 ENV PORT=$HTTPPORT
@@ -103,12 +96,13 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(python3 -V)" && \
     echo "Installed python packages: $(python3 -m pip list)" && \
-    yum clean all -y && rm -rf /usr/bin/pip*; else \
+    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
+    rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test; else \
     echo "Already using python container as base image. No need to install it." && \ 
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
 
-USER root
+# USER root
 
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
     mkdir -p /etc/ssl/certs /etc/perfmon-api-keys $CERTPATH $LOGPATH
@@ -129,25 +123,9 @@ RUN echo "$(pwd)"
 
 # Create a container user 
 RUN if [ "$GID" -gt "0" ]; then groupadd -g $GID $GROUP; else echo "Since root GID specified skipping groupadd"; fi && \
-    useradd -rm -d /home/$UID -s /bin/bash -g $GID -u $UID $USER
+    if [ "$UID" -gt "0" ]; then useradd -rm -d /home/$UID -s /bin/bash -g $GID -u $UID $USER; else echo "Since root UID specified skipping useradd"; fi
 
-# Change group ownership
-RUN chgrp -R $GID /opt/IBM/bridge && \
-    chgrp -R $GID /opt/IBM/zimon && \
-    chgrp -R $GID /var/mmfs/gen && \
-    chgrp -R $GID /etc/ssl/certs && \
-    chgrp -R $GID /etc/perfmon-api-keys && \
-    chgrp -R $GID $TLSKEYPATH && \
-    chgrp -R $GID $LOGPATH
-
-# Set group permissions 
-RUN chmod -R g=u /opt/IBM/bridge && \
-    chmod -R g=u /opt/IBM/zimon && \
-    chmod -R g=u /var/mmfs/gen && \
-    chmod -R g=u /etc/ssl/certs && \
-    chmod -R g=u /etc/perfmon-api-keys && \
-    chmod -R g=u $TLSKEYPATH && \
-    chmod -R g=u $LOGPATH
+RUN chmod -R a+w $LOGPATH
 
 # Chown all needed files 
 RUN chown -R $UID:$GID /opt/IBM/bridge && \
@@ -159,9 +137,9 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
     chown -R $UID:$GID $LOGPATH
 
 # Switch user
-USER $GID
+USER $UID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICAUTHUSER -a $BASICAUTHPASSW -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
 
 EXPOSE 4242 8443 9250
 

@@ -103,7 +103,7 @@ class TimeSeries(object):
                 {timestmp: self.dps[timestmp]} for timestmp in timestamps if
                 self.dps[timestmp] is not None), {})
             if len(self.dps) == 0:
-                logger.warning(f'Received null values in all data points for {self.metricname}')
+                logger.details(MSG['NullValues'].format(self.metricname))
 
 
 class MetricTimeSeries(object):
@@ -217,6 +217,7 @@ class QueryPolicy(object):
         '''Returns zimon query string '''
         query = Query(includeDiskData=self.md.includeDiskData)
         query.normalize_rates = False
+        query.skipRangeData = True
         query.rawData = self.rawData
 
         if not self.metricsaggr and not self.sensor:
