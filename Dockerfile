@@ -96,8 +96,8 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install -r /root/requirements_ubi9.txt && \
     echo "Installed python version: $(python3 -V)" && \
     echo "Installed python packages: $(python3 -m pip list)" && \
-    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python39/site-packages/pip* && \
-    rm -rf /usr/local/lib/python39/site-packages/cherrypy/test; else \
+    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
+    rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test; else \
     echo "Already using python container as base image. No need to install it." && \ 
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
