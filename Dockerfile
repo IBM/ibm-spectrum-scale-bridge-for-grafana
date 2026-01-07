@@ -102,7 +102,7 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
 
-#USER root
+USER root
 
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
     mkdir -p /etc/ssl/certs /etc/perfmon-api-keys $CERTPATH $LOGPATH
