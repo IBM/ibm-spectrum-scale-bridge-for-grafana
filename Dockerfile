@@ -1,5 +1,5 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.6-1760340943
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.7-1767674301
 
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
@@ -102,7 +102,7 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
 
-# USER root
+USER root
 
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
     mkdir -p /etc/ssl/certs /etc/perfmon-api-keys $CERTPATH $LOGPATH
