@@ -64,14 +64,20 @@ class PrometheusExporter(object):
             header = metric.str_descfmt()
             resp.extend(header)
             for sts in metric.timeseries:
-                if len(sts.dps) > 1:
+                if len(sts.dps) == 0:
+                    self.logger.warning(f"Received no data for : {name} {'|'.join(sts.tags.values())}")
+                elif len(sts.dps) > 1:
                     sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
-                    sts_resp = SingleTimeSeriesResponse(name, _key,
-                                                        _value, sts.tags,
-                                                        metric.mtype)
-                    self.logger.trace(f'sts_resp.str_expfmt output: {sts_resp.str_expfmt()}')
-                    resp.extend(sts_resp.str_expfmt())
+                    # Null values are not recognized by Prometheus
+                    if _value is not None:
+                        sts_resp = SingleTimeSeriesResponse(name, _key,
+                                                            _value, sts.tags,
+                                                            metric.mtype)
+                        formatted_str = sts_resp.str_expfmt()
+                        resp.extend(formatted_str)
+                    elif metric.mtype == "counter":
+                        self.logger.warning(f"Received null value for a counter: {name} {_key} {'|'.join(sts.tags.values())}")
         return resp
 
     @execution_time()
@@ -233,7 +239,7 @@ class SingleTimeSeriesResponse():
     def __init__(self, metricname, timestamp, value, tags, type):
         self.metric = metricname
         self.timestamp = timestamp * 1000
-        self.value = value if value is not None else 0     # TODO check if we should return None or null
+        self.value = value
         self.tags = tags
         self.type = type
 
