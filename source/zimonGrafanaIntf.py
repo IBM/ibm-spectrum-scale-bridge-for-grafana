@@ -90,11 +90,13 @@ def setup_cherrypy_logging(args):
     handler.setFormatter(cherrypy._cplogging.logfmt)
     log.error_log.addHandler(handler)
 
-    # Make a new RotatingFileHandler for the access log.
-    handler = handlers.RotatingFileHandler(accesslog, 'a', 1000000, 10)
-    handler.setLevel(logging.INFO)
-    handler.setFormatter(cherrypy._cplogging.logfmt)
-    log.access_log.addHandler(handler)
+    if args.get('cpAccessLog', "on") == "on":
+        # Make a new RotatingFileHandler for the access log.
+        bCount = args.get('cpAccessLogBackups', 10)
+        handler = handlers.RotatingFileHandler(accesslog, 'a', 1000000, bCount)
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(cherrypy._cplogging.logfmt)
+        log.access_log.addHandler(handler)
 
 
 def updateCherrypyConf(args):
