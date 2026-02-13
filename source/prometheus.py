@@ -186,7 +186,7 @@ class PrometheusExporter(object):
             raise cherrypy.HTTPError(400, ERR[400])
 
         # /endpoints
-        elif '/endpoints' == cherrypy.request.script_name:
+        elif '/exporter_metrics_endpoints' == cherrypy.request.script_name:
             resp = self.endpoints.keys()
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
