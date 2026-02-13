@@ -440,8 +440,8 @@ def main(argv):
         cherrypy.engine.subscribe('stop', refresher.stop_monitor)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
-        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)) +
-                    '\n \n' + MSG['RestApiInfo'] + '\n \n')
+        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps))
+                    + '\n \n' + MSG['RestApiInfo'] + '\n \n')
         logger.info("server started")
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()

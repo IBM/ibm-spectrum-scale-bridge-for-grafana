@@ -22,8 +22,6 @@ Created on Feb 15, 2026
 
 import cherrypy
 import json
-import socket
-import os
 from collections import defaultdict
 from messages import MSG, ERR
 
@@ -34,7 +32,6 @@ class RestHelpGenerator(object):
     def __init__(self, logger):
         self.logger = logger
 
-
     def generate_endpoints_list(self):
         ep = defaultdict(list)
         outp = ''
@@ -43,7 +40,7 @@ class RestHelpGenerator(object):
             endp = value.script_name
             ep[name].append(endp)
         for key, values in ep.items():
-            outp += key +'\n\t' + '\n\t'.join(values) + '\n\n'
+            outp += key + '\n\t' + '\n\t'.join(values) + '\n\n'
         return outp
 
     def GET(self, **params):
