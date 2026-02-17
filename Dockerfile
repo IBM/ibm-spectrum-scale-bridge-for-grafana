@@ -1,5 +1,5 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.7-1770267347
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.7-1770238273
 
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
