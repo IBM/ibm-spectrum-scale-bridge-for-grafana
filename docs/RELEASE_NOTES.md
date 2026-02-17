@@ -1,3 +1,14 @@
+# Version 8.1.2 (02/17/2026)
+Added a new REST API endpoint that lists all available  REST API endpoints for grafana-bridge at runtime \
+Changed logic for handling null values by PrometheusExporter \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.7-1770238273 \
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.1.1 (01/07/2026)
 Switched to a non-root user in a docker image \
 Improved performance of prometheus scrap job queries by skipping the transfer of the domain RangeData \
