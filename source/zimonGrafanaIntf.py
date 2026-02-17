@@ -42,6 +42,7 @@ from prometheus import PrometheusExporter
 from profiler import Profiler
 from refresher import TopoRefreshManager
 from watcher import ConfigWatcher
+from resthelper import RestHelpGenerator
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
 
@@ -352,14 +353,14 @@ def main(argv):
         exporter.endpoints.update(ENDPOINTS.get('prometheus',
                                                 {}))
         # test connection (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
+        # cherrypy.tree.mount(exporter, '/metrics',
+        #                    {'/':
+        #                     {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+        #                     }
+        #                    )
         if len(exporter.endpoints) > 0:
             # query for list of supported endpoints (prometheusExporter)
-            cherrypy.tree.mount(exporter, '/endpoints',
+            cherrypy.tree.mount(exporter, '/exporter_metrics_endpoints',
                                 {'/':
                                  {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                  }
@@ -416,6 +417,15 @@ def main(argv):
                              }
                             )
 
+    # register RestHelpGenerator
+    resthelper = RestHelpGenerator(logger)
+    # query for getting all available rest api endpoints
+    cherrypy.tree.mount(resthelper, '/endpoints',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
@@ -428,7 +438,8 @@ def main(argv):
         cherrypy.engine.subscribe('stop', refresher.stop_monitor)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
-        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps)))
+        logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps))
+                    + '\n \n' + MSG['RestApiInfo'] + '\n \n')
         logger.info("server started")
         with open("/proc/{}/stat".format(os.getpid())) as f:
             data = f.read()
