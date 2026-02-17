@@ -23,6 +23,30 @@ Classic Scale:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.1
  - RedHat community-powered Grafana-Operator v5
 
+# Version 8.1.2 (02/17/2026)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.10.0
+ - IBM Storage Scale system must run 5.2.2 and above
+ - Grafana 12.0.0 and above
+ - OpenTSDB 2.4
+
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3.7
+ - RedHat community-powered Grafana-Operator v5
+
+# Version 8.1.1 (01/07/2026)
+Classic Scale:
+ - Python 3.9
+ - CherryPy 18.10.0
+ - IBM Storage Scale system must run 5.2.2 and above
+ - Grafana 12.0.0 and above
+ - OpenTSDB 2.4
+
+ Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3.6
+ - RedHat community-powered Grafana-Operator v5
+
 # Version 8.1.0 (10/24/2025)
 Classic Scale:
  - Python 3.9
