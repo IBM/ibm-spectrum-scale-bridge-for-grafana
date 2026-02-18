@@ -355,11 +355,11 @@ def main(argv):
         exporter.endpoints.update(ENDPOINTS.get('prometheus',
                                                 {}))
         # test connection (PrometheusExporter)
-        cherrypy.tree.mount(exporter, '/metrics',
-                            {'/':
-                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
-                             }
-                            )
+        # cherrypy.tree.mount(exporter, '/metrics',
+        #                     {'/':
+        #                      {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+        #                      }
+        #                     )
         if len(exporter.endpoints) > 0:
             # query for list of supported endpoints (prometheusExporter)
             cherrypy.tree.mount(exporter, '/exporter_metrics_endpoints',
