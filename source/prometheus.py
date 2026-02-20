@@ -65,7 +65,7 @@ class PrometheusExporter(object):
             resp.extend(header)
             for sts in metric.timeseries:
                 if len(sts.dps) == 0:
-                    self.logger.warning(f"Received no data for : {name} {'|'.join(sts.tags.values())}")
+                    self.logger.warning(f"Received no dps for : {name} {'|'.join(sts.tags.values())}")
                 elif len(sts.dps) > 1:
                     sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
@@ -76,8 +76,8 @@ class PrometheusExporter(object):
                                                             metric.mtype)
                         formatted_str = sts_resp.str_expfmt()
                         resp.extend(formatted_str)
-                    elif metric.mtype == "counter":
-                        self.logger.warning(f"Received null value for a counter: {name} {_key} {'|'.join(sts.tags.values())}")
+                    else:
+                        self.logger.trace(f"Received null values in all {len(sts.dps)} dps for: {name} {'|'.join(sts.tags.values())}")
         return resp
 
     @execution_time()
@@ -113,6 +113,8 @@ class PrometheusExporter(object):
         for collector in collectors:
             self.logger.trace('Finished custom thread %r.' % collector.thread.name)
             respList = self.format_response(collector.metrics)
+            if len(respList) == 0:
+                self.logger.trace('No results to transfer for custom thread %r.' % collector.thread.name)
             resp.extend(respList)
         return resp
 
