@@ -112,8 +112,7 @@ class PrometheusExporter(object):
             self.logger.trace('Finished custom thread %r.' % collector.thread.name)
             respList = self.format_response(collector.metrics)
             if len(respList) <= len(collector.metrics) * 2:
-                self.logger.warning(MSG['AllDpsNullForSensor'].format(collector.sensor)
-                self.logger.trace('No results to transfer for custom thread %r.' % collector.thread.name)
+                self.logger.warning(MSG['AllDpsNullForSensor'].format(collector.sensor))
             resp.extend(respList)
         return resp
 
