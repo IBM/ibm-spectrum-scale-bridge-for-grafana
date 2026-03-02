@@ -103,7 +103,7 @@ class TimeSeries(object):
                 {timestmp: self.dps[timestmp]} for timestmp in timestamps if
                 self.dps[timestmp] is not None), {})
             if len(self.dps) == 0:
-                logger.details(MSG['NullValues'].format(self.metricname))
+                logger.debug(MSG['NullValues'].format(self.metricname, '|'.join(self.tags.values())))
 
 
 class MetricTimeSeries(object):
