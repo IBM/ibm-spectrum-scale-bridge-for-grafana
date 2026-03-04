@@ -64,14 +64,18 @@ class PrometheusExporter(object):
             header = metric.str_descfmt()
             resp.extend(header)
             for sts in metric.timeseries:
-                if len(sts.dps) > 1:
+                if len(sts.dps) == 0:
+                    self.logger.warning(MSG['NoDps'].format(name, '|'.join(self.tags.values())))
+                elif len(sts.dps) > 1:
                     sts.reduce_dps_to_first_not_none(reverse_order=True)
                 for _key, _value in sts.dps.items():
-                    sts_resp = SingleTimeSeriesResponse(name, _key,
-                                                        _value, sts.tags,
-                                                        metric.mtype)
-                    self.logger.trace(f'sts_resp.str_expfmt output: {sts_resp.str_expfmt()}')
-                    resp.extend(sts_resp.str_expfmt())
+                    # Null values are not recognized by Prometheus
+                    if _value is not None:
+                        sts_resp = SingleTimeSeriesResponse(name, _key,
+                                                            _value, sts.tags,
+                                                            metric.mtype)
+                        formatted_str = sts_resp.str_expfmt()
+                        resp.extend(formatted_str)
         return resp
 
     @execution_time()
@@ -107,6 +111,8 @@ class PrometheusExporter(object):
         for collector in collectors:
             self.logger.trace('Finished custom thread %r.' % collector.thread.name)
             respList = self.format_response(collector.metrics)
+            if len(respList) <= len(collector.metrics) * 2:
+                self.logger.warning(MSG['AllDpsNullForSensor'].format(collector.sensor))
             resp.extend(respList)
         return resp
 
@@ -180,7 +186,7 @@ class PrometheusExporter(object):
             raise cherrypy.HTTPError(400, ERR[400])
 
         # /endpoints
-        elif '/endpoints' == cherrypy.request.script_name:
+        elif '/exporter_metrics_endpoints' == cherrypy.request.script_name:
             resp = self.endpoints.keys()
             cherrypy.response.headers['Content-Type'] = 'text/plain'
             resString = '\n'.join(resp) + '\n'
@@ -233,7 +239,7 @@ class SingleTimeSeriesResponse():
     def __init__(self, metricname, timestamp, value, tags, type):
         self.metric = metricname
         self.timestamp = timestamp * 1000
-        self.value = value if value is not None else 0     # TODO check if we should return None or null
+        self.value = value
         self.tags = tags
         self.type = type
 

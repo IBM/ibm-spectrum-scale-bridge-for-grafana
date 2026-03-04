@@ -1,3 +1,15 @@
+# Version 9.0.2 (03/05/2026)
+Added a new REST API endpoint that lists all available  REST API endpoints for grafana-bridge at runtime \
+Added the new config parameter allowing to enable or disable cherrypy access traces \
+Changed logic for handling null values by PrometheusExporter (no export to Prometheus) \
+Reworked traces for different cases of receiving null values 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 9.0.1 (12/19/2025)
 Published [example dashboard](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/blob/master/examples/grafana_dashboards/GPFS_cluster_communication_statistics/IBM%20Storage%20Scale%20Network%20Overview-1763571518612.json) for observing the Network issues within the IBM Storage Scale clusters
 Switched to a non-root user in a docker image
@@ -16,6 +28,28 @@ Added example yaml files to configure Openshift ServiceMonitor for a scale clust
 Expanded configuration parameters to allow grafana-bridge socket host to bind to ip of specific network interface
 Removed python3.9 support, set required minimum level to 3.11
 Changed the Dockerfile parent image to the registry.access.redhat.com/ubi10/ubi:10.0-1760519443 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
+# Version 8.1.2 (02/17/2026)
+Added a new REST API endpoint that lists all available  REST API endpoints for grafana-bridge at runtime \
+Changed logic for handling null values by PrometheusExporter \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.7-1770238273 \
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.0
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
+# Version 8.1.1 (01/07/2026)
+Switched to a non-root user in a docker image \
+Improved performance of prometheus scrap job queries by skipping the transfer of the domain RangeData \
+Changed the Dockerfile parent image to the registry.access.redhat.com/ubi9/ubi:9.7-1767674301 \
 
 Tested with OpenTSDB version 2.4
 Tested with Grafana version 12.0.0

@@ -17,7 +17,7 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="9.0.1"
+LABEL com.ibm.version="9.0.2"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
@@ -31,16 +31,16 @@ ARG GROUP=bridge
 ARG UID=2001
 ARG GID=2099
 
-ARG HTTPPROTOCOL=http
+ARG HTTPPROTOCOL=None
 ENV PROTOCOL=$HTTPPROTOCOL
 
-ARG HTTPBASICAUTH=True
+ARG HTTPBASICAUTH=None
 ENV BASICAUTH=$HTTPBASICAUTH
 
 ARG AUTHUSER=None
 ENV BASICU=$AUTHUSER
 
-ARG AUTHPASSW=NotSet
+ARG AUTHPASSW=None
 ENV BASICP=$AUTHPASSW
 
 ARG HTTPPORT=None
@@ -67,16 +67,16 @@ ENV APIKEYNAME=$KEYNAME
 ARG KEYVALUE=None
 ENV APIKEYVALUE=$KEYVALUE
 
-ARG PMCOLLECTORIP=0.0.0.0
+ARG PMCOLLECTORIP=None
 ENV SERVER=$PMCOLLECTORIP
 
 ARG DEFAULTLOGPATH='/var/log/ibm_bridge_for_grafana'
 ENV LOGPATH=$DEFAULTLOGPATH
 
-ARG DEFAULTLOGLEVEL=15
+ARG DEFAULTLOGLEVEL=None
 ENV LOGLEVEL=$DEFAULTLOGLEVEL
 
-ARG RAWDATA=True
+ARG RAWDATA=None
 ENV RAWCOUNTERS=$RAWDATA
 
 RUN echo "the HTTP/S protocol is set to $PROTOCOL"  && \
@@ -102,7 +102,7 @@ RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
     python3 -m pip install  -r /root/requirements.in && \
     echo "Installed python packages: $(python3 -m pip list)"; fi
 
-#USER root
+USER root
 
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
     mkdir -p /etc/ssl/certs /etc/perfmon-api-keys $CERTPATH $LOGPATH

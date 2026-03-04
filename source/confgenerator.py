@@ -32,6 +32,12 @@ except ImportError as e:
 from messages import MSG, ERR
 
 
+class MyDumper(yaml.Dumper):
+
+    def increase_indent(self, flow=False, indentless=False):
+        return super(MyDumper, self).increase_indent(flow, False)
+
+
 class PrometheusConfigGenerator(object):
     exposed = True
 
@@ -69,6 +75,7 @@ class PrometheusConfigGenerator(object):
         global_config = {"scrape_interval": "15s",
                          "evaluation_interval": "15s",
                          "query_log_file": "/var/log/prometheus/query.log"}
+        storage_config = {"tsdb": [{"out_of_order_time_window": "2d"}]}
         alerting_config = {"alertmanagers": [{"static_configs": [{"targets": None}]}]}
         for endpoint, sensor in self.endpoints.items():
             period = self.md.getSensorPeriod(sensor)
@@ -118,9 +125,10 @@ class PrometheusConfigGenerator(object):
         scrape_configs.insert(0, prometheus_job)
         resp = {"global": global_config,
                 "alerting": alerting_config,
+                "storage": storage_config,
                 "rule_files": None,
                 "scrape_configs": scrape_configs}
-        yaml_string = yaml.dump(resp)
+        yaml_string = yaml.dump(resp, Dumper=MyDumper, default_flow_style=False)
         return yaml_string
 
     def GET(self, **params):

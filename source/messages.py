@@ -54,7 +54,9 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'NoData': 'Empty results received',  # Please check the pmcollector is properly configured and running.
        'NoSensorConfigData': 'No sensor configuration data parsed',
        'NoDataStartNextAttempt': 'No Metadata results received from the pmcollector. Start retry attempt {} in 60s (MAX_ATTEMPTS_COUNT:{})',
-       'NullValues': 'Received null values in all data points for {}',
+       'NullValues': 'Null values in all dps for {} {}',
+       'NoDps': 'No dps for {} {}',
+       'AllDpsNullForSensor': 'Null values in all timeseries for {}',
        'BucketsizeChange': 'Based on requested downsample value: {} the bucketsize will be set: {}',
        'BucketsizeToPeriod': 'Bucketsize will be set to sensors period: {}',
        'DownsampleAggregation': 'Perform downsample aggregation: {} for metric: {}',
@@ -87,5 +89,9 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'MetricNotInResults': 'Metric {} is not in Collector.metrcs',
        'ConnApplications': 'Registered applications: \n {}',
        'WrongFormat': 'The {} specified in wrong format.',
-       'AuthValidationError': 'Basic authentication data not valid'
+       'AuthValidationError': 'Basic authentication data not valid',
+       'RestApiInfo': 'Use http(s)://<graana-bridge ip>:<app port>/endpoints with optional flags \n\t \
+-u <credentials> for basic authentication and \n\t \
+-k to bypass certificate verification,\n \
+to list the available REST API endpoints registered with the system.'
        }
