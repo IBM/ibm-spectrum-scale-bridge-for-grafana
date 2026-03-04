@@ -1,3 +1,15 @@
+# Version 9.0.2 (03/05/2026)
+Added a new REST API endpoint that lists all available  REST API endpoints for grafana-bridge at runtime \
+Added the new config parameter allowing to enable or disable cherrypy access traces \
+Changed logic for handling null values by PrometheusExporter (no export to Prometheus) \
+Reworked traces for different cases of receiving null values 
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 9.0.1 (12/19/2025)
 Published [example dashboard](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/blob/master/examples/grafana_dashboards/GPFS_cluster_communication_statistics/IBM%20Storage%20Scale%20Network%20Overview-1763571518612.json) for observing the Network issues within the IBM Storage Scale clusters
 Switched to a non-root user in a docker image
