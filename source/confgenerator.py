@@ -32,10 +32,14 @@ except ImportError as e:
 from messages import MSG, ERR
 
 
-class MyDumper(yaml.Dumper):
+if not isinstance(yaml, ImportError):
+    class MyDumper(yaml.Dumper):
 
-    def increase_indent(self, flow=False, indentless=False):
-        return super(MyDumper, self).increase_indent(flow, False)
+        def increase_indent(self, flow=False, indentless=False):
+            return super(MyDumper, self).increase_indent(flow, False)
+else:
+    class MyDumper(object):
+        pass
 
 
 class PrometheusConfigGenerator(object):
