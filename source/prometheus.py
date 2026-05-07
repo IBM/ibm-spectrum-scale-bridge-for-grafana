@@ -76,6 +76,8 @@ class PrometheusExporter(object):
                                                             metric.mtype)
                         formatted_str = sts_resp.str_expfmt()
                         resp.extend(formatted_str)
+                    elif metric.mtype == "counter":
+                        self.logger.warning(f"Received null value for a counter: {name} {_key} {'|'.join(sts.tags.values())}")
         return resp
 
     @execution_time()
@@ -137,7 +139,7 @@ class PrometheusExporter(object):
         attrs = {'sensor': sensor, 'period': period}
 
         if self.raw_data or "counter" in self.TOPO.getSensorMetricTypes(sensor).values():
-            attrs.update({'nsamples': period, 'rawData': True})
+            attrs.update({'nsamples': period, 'rawData': True, 'skipNullValues': True})
             self.logger.debug(MSG['SensorForceRawData'].format(sensor))
         else:
             attrs.update({'nsamples': 1})
