@@ -1,0 +1,283 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ce6h5jw248poge",
+    "generation": 1,
+    "creationTimestamp": "2026-05-15T10:34:10Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {},
+            "labels": {
+              "grafana.app/export-label": "grafana-1"
+            }
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true,
+          "legacyOptions": {
+            "type": "dashboard"
+          }
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "noop",
+                        "alias": "$tag_gpfs_health_component",
+                        "disableDownsampling": false,
+                        "downsampleAggregator": "max",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "15m",
+                        "filters": [
+                          {
+                            "filter": "-",
+                            "groupBy": false,
+                            "tagk": "gpfs_health_entity",
+                            "type": "pm_filter"
+                          },
+                          {
+                            "filter": "$Node",
+                            "groupBy": true,
+                            "tagk": "node",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_health_status"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "status-history",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colWidth": 0.9,
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "rowHeight": 0.9,
+                "showValue": "never",
+                "tooltip": {
+                  "hideZeros": false,
+                  "maxHeight": 600,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "mappings": [
+                    {
+                      "type": "value",
+                      "options": {
+                        "0": {
+                          "text": "UNKNOWN",
+                          "color": "#808080",
+                          "index": 3
+                        },
+                        "10": {
+                          "text": "HEALTHY",
+                          "color": "dark-green",
+                          "index": 0
+                        },
+                        "20": {
+                          "text": "DEGRADED",
+                          "color": "dark-yellow",
+                          "index": 1
+                        },
+                        "40": {
+                          "text": "FAILED",
+                          "color": "dark-red",
+                          "index": 2
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "#4a4c4a"
+                  },
+                  "links": [
+                    {
+                      "targetBlank": true,
+                      "title": "Show entities states",
+                      "url": "/../d/fe6h5syrz4npcc/component-entities-health-details?orgId=1&refresh=30s&${Datasource:queryparam}&${Node:queryparam}&var-component=${__field.name}&from=${__from}&to=${__to}"
+                    }
+                  ],
+                  "custom": {
+                    "axisPlacement": "auto",
+                    "fillOpacity": 70,
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineWidth": 1
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 12,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [
+      "opentsdb",
+      "health",
+      "component"
+    ],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-24h",
+      "to": "now",
+      "autoRefresh": "30s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Component health view by node selection",
+    "variables": [
+      {
+        "kind": "DatasourceVariable",
+        "spec": {
+          "name": "Datasource",
+          "pluginId": "opentsdb",
+          "refresh": "onDashboardLoad",
+          "regex": "",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "Node",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "opentsdb",
+            "version": "v0",
+            "datasource": {
+              "name": "${Datasource}"
+            },
+            "spec": {
+              "__legacyStringValue": "tag_values(gpfs_health_status, node)"
+            }
+          },
+          "regex": "",
+          "sort": "disabled",
+          "definition": "tag_values(gpfs_health_status, node)",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": false
+        }
+      }
+    ]
+  }
+}
