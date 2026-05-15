@@ -147,7 +147,27 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 # Switch user
 USER $UID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+# CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+CMD ["sh", "-c", "\
+    ARGS=''; \
+    [ -n \"$LOGLEVEL\" ] && [ \"$LOGLEVEL\" != 'None' ] && ARGS=\"$ARGS -c $LOGLEVEL\"; \
+    [ -n \"$SERVER\" ] && [ \"$SERVER\" != 'None' ] && ARGS=\"$ARGS -s $SERVER\"; \
+    [ -n \"$PROTOCOL\" ] && [ \"$PROTOCOL\" != 'None' ] && ARGS=\"$ARGS -r $PROTOCOL\"; \
+    [ -n \"$BASICAUTH\" ] && [ \"$BASICAUTH\" != 'None' ] && ARGS=\"$ARGS -b $BASICAUTH\"; \
+    [ -n \"$BASICU\" ] && [ \"$BASICU\" != 'None' ] && ARGS=\"$ARGS -u $BASICU\"; \
+    [ -n \"$BASICP\" ] && [ \"$BASICP\" != 'None' ] && ARGS=\"$ARGS -a $BASICP\"; \
+    [ -n \"$PORT\" ] && [ \"$PORT\" != 'None' ] && ARGS=\"$ARGS -p $PORT\"; \
+    [ -n \"$PROMETHEUS\" ] && [ \"$PROMETHEUS\" != 'None' ] && ARGS=\"$ARGS -e $PROMETHEUS\"; \
+    [ -n \"$SERVERPORT\" ] && [ \"$SERVERPORT\" != 'None' ] && ARGS=\"$ARGS -P $SERVERPORT\"; \
+    [ -n \"$TLSKEYPATH\" ] && [ \"$TLSKEYPATH\" != 'None' ] && ARGS=\"$ARGS -t $TLSKEYPATH\"; \
+    [ -n \"$LOGPATH\" ] && [ \"$LOGPATH\" != 'None' ] && ARGS=\"$ARGS -l $LOGPATH\"; \
+    [ -n \"$TLSKEYFILE\" ] && [ \"$TLSKEYFILE\" != 'None' ] && ARGS=\"$ARGS -k $TLSKEYFILE\"; \
+    [ -n \"$TLSCERTFILE\" ] && [ \"$TLSCERTFILE\" != 'None' ] && ARGS=\"$ARGS -m $TLSCERTFILE\"; \
+    [ -n \"$APIKEYNAME\" ] && [ \"$APIKEYNAME\" != 'None' ] && ARGS=\"$ARGS -n $APIKEYNAME\"; \
+    [ -n \"$APIKEYVALUE\" ] && [ \"$APIKEYVALUE\" != 'None' ] && ARGS=\"$ARGS -v $APIKEYVALUE\"; \
+    [ -n \"$RAWCOUNTERS\" ] && [ \"$RAWCOUNTERS\" != 'None' ] && ARGS=\"$ARGS -w $RAWCOUNTERS\"; \
+    exec python3 zimonGrafanaIntf.py $ARGS \
+"]
 
 EXPOSE 4242 8443 9250
 
