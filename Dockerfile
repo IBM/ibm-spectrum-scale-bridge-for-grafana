@@ -1,19 +1,61 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.7-1770238273
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.7-1778576335
 
+# ==========================================
+# STAGE 1: Production Build Template
+# ==========================================
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
-ONBUILD RUN mkdir -p /licenses
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
+ONBUILD RUN mkdir -p /licenses && \
+            dnf install -y python3 python3-pip && dnf clean all -y && \
+            python3 -m pip install --no-cache-dir -r /root/requirements_ubi9.txt && \
+            echo "Installed python version: $(python3 -V)" && \
+            echo "Installed python packages: $(python3 -m pip list)" && \
+            python3 /tmp/get_licenses.py && \
+            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
+            cat /licenses/packages_licenses.tsv && \
+            rm /tmp/get_licenses.py && \
+            dnf remove -y python3-pip && dnf clean all -y && \
+            rm -rf /usr/lib/python3.9/site-packages/pip* && \
+            rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test
 
+# ==========================================
+# STAGE 2: Test Build Template
+# ==========================================
 FROM $BASE AS build_test
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
-ONBUILD RUN mkdir -p /licenses
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
+ONBUILD RUN mkdir -p /licenses && \
+            dnf install -y python3 python3-pip && dnf clean all -y && \
+            # yum install -y python39 python3-pip && \
+            python3 -m pip install pip-tools && \
+            python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
+            echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)" && \
+            python3 -m pip install --no-cache-dir --ignore-installed -r /root/requirements_ubi9.txt && \
+            echo "Installed python version: $(python3 -V)" && \
+            echo "Installed python packages: $(python3 -m pip list)" && \
+            python3 /tmp/get_licenses.py && \
+            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
+            cat /licenses/packages_licenses.tsv && \
+            rm /tmp/get_licenses.py && \
+            dnf remove -y python3-pip && dnf clean all -y && \
+            # rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
+            rm -rf /usr/lib/python3.9/site-packages/pip* && \
+            rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test
 
+# ==========================================
+# STAGE 3: Custom Build Template
+# ==========================================
 FROM $BASE AS build_custom
 ONBUILD COPY ./requirements/requirements.in  /root/requirements.in
+ONBUILD RUN echo "Already using python container as base image. No need to install it." && \ 
+            python3 -m pip install --no-cache-dir -r /root/requirements.in && \
+            echo "Installed python packages: $(python3 -m pip list)"
 
+# ==========================================
+# FINAL STAGE: Target Image
+# ==========================================
 FROM build_${BUILD_ENV}
 
 ARG BUILD_ENV
@@ -90,25 +132,6 @@ RUN echo "the HTTP/S protocol is set to $PROTOCOL"  && \
     echo "the PERFMONPORT port is set to $SERVERPORT" && \
     echo "the pmcollector server ip is set to $SERVER" && \
     echo "the log will use $LOGPATH" 
-
-RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
-    yum install -y python39 python3-pip; \
-    if [ "$BUILD_ENV" = "test" ]; then \
-    python3 -m pip install pip-tools && \
-    python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
-    echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)"; fi && \
-    python3 -m pip install -r /root/requirements_ubi9.txt && \
-    echo "Installed python version: $(python3 -V)" && \
-    echo "Installed python packages: $(python3 -m pip list)" && \
-    python3 /tmp/get_licenses.py && \
-    echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
-    cat /licenses/packages_licenses.tsv && \
-    rm /tmp/get_licenses.py && \
-    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
-    rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test; else \
-    echo "Already using python container as base image. No need to install it." && \ 
-    python3 -m pip install  -r /root/requirements.in && \
-    echo "Installed python packages: $(python3 -m pip list)"; fi
 
 USER root
 
