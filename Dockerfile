@@ -16,7 +16,7 @@ ONBUILD RUN mkdir -p /licenses && \
             echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
             cat /licenses/packages_licenses.tsv && \
             rm /tmp/get_licenses.py && \
-            python3 -m pip uninstall -y pip setuptools && \
+            dnf remove -y python3-pip && dnf clean all -y && \
             rm -rf /usr/lib/python3.9/site-packages/pip* && \
             rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test
 
@@ -39,7 +39,7 @@ ONBUILD RUN mkdir -p /licenses && \
             echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
             cat /licenses/packages_licenses.tsv && \
             rm /tmp/get_licenses.py && \
-            python3 -m pip uninstall -y pip setuptools && \
+            dnf remove -y python3-pip && dnf clean all -y && \
             # rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
             rm -rf /usr/lib/python3.9/site-packages/pip* && \
             rm -rf /usr/local/lib/python3.9/site-packages/cherrypy/test
