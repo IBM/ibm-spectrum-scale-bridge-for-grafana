@@ -22,14 +22,193 @@ Created on Oct 24, 2023
 
 import cherrypy
 import re
+import json
+import sys
 import analytics
+from functools import lru_cache
 from messages import ERR, MSG
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+from threading import Lock
 from collector import SensorCollector, QueryPolicy
-from utils import getTimeMultiplier, execution_time, cond_execution_time
-from typing import List, TypeVar
+from utils import getTimeMultiplier, execution_time, cond_execution_time, get_request_host
+from typing import List, TypeVar, Tuple, Optional, Union, Dict, Any
 
 T = TypeVar('T', dict, list)
+
+
+# ============================================================================
+# Bundle ID Generation with Caching and Registry
+# ============================================================================
+
+# Bundle ID registry for debugging/logging (limited size, thread-safe)
+_opentsdb_bundle_registry: OrderedDict[str, Dict[str, Any]] = OrderedDict()
+_registry_lock = Lock()
+_MAX_REGISTRY_SIZE = 100  # Keep last 100 bundle_ids for debugging
+
+def _normalize_query(query: dict) -> dict:
+    """Extract and normalize query parameters for consistent hashing."""
+    return {
+        'metric': query.get('metric'),
+        'aggregator': query.get('aggregator'),
+        'tags': query.get('tags', {}),
+        'filters': query.get('filters', []),
+        'downsample': query.get('downsample'),
+        'explicitTags': query.get('explicitTags', False),
+        'isCounter': query.get('isCounter', False),
+        'datasource_uid': query.get('datasource', {}).get('uid') if isinstance(query.get('datasource'), dict) else None
+    }
+
+
+def _queries_to_hashable(queries: List[dict]) -> Tuple[str, ...]:
+    """Convert list of queries to a hashable tuple for caching."""
+    normalized = []
+    for q in queries:
+        norm_query = _normalize_query(q)
+        query_str = json.dumps(norm_query, sort_keys=True)
+        normalized.append(query_str)
+    return tuple(sorted(normalized))
+
+
+@lru_cache(maxsize=1000)
+def _generate_bundle_id_from_tuple(queries_tuple: Tuple[str, ...], host: str) -> str:
+    """
+    Cached function that generates bundle_id using Python's built-in hash.
+    Args:
+        queries_tuple: Tuple of JSON-serialized query strings
+        host: Request host (without port)
+        
+    Returns:
+        16-character hexadecimal bundle identifier
+    """
+    # Combine queries tuple and host for hashing
+    combined = (queries_tuple, host)
+    hash_value = hash(combined)
+    return f"{abs(hash_value):016x}"
+
+
+def generate_query_bundle_id_cached(jreq: dict) -> str:
+    """
+    Generate a deterministic, cached identifier for a bundle of queries.
+    Includes host and datasource UID in the hash.
+    Also stores the mapping in a registry for debugging/logging purposes.
+    Args:
+        jreq: Request dictionary containing 'queries' list
+    Returns:
+        16-character hexadecimal bundle identifier
+    """
+    queries = jreq.get('queries', [])
+    if not queries:
+        return '0000000000000000'
+
+    # Get host from request headers
+    host = get_request_host()
+
+    # Convert queries to hashable tuple (includes datasource.uid)
+    queries_tuple = _queries_to_hashable(queries)
+
+    # Generate bundle ID with host included
+    bundle_id = _generate_bundle_id_from_tuple(queries_tuple, host)
+
+    # Store in registry for debugging (thread-safe, size-limited)
+    _register_bundle_id(bundle_id, queries, host, jreq)
+
+    return bundle_id
+
+
+def get_bundle_id_cache_info():
+    """Get cache statistics for monitoring."""
+    return _generate_bundle_id_from_tuple.cache_info()
+
+
+def clear_bundle_id_cache():
+    """Clear the bundle ID cache."""
+    _generate_bundle_id_from_tuple.cache_clear()
+
+
+def _register_bundle_id(bundle_id: str, queries: List[dict], host: str, jreq: dict) -> None:
+    """
+    Register a bundle_id with its query information for debugging/logging.
+    Maintains a size-limited registry using LRU eviction.
+    
+    Args:
+        bundle_id: The generated bundle identifier
+        queries: List of query dictionaries
+        host: Request host
+        jreq: Full request dictionary used to extract start and end values
+    """
+    with _registry_lock:
+        # If bundle_id already exists, move it to end (most recent)
+        if bundle_id in _opentsdb_bundle_registry:
+            _opentsdb_bundle_registry.move_to_end(bundle_id)
+        else:
+            # Add new entry
+            _opentsdb_bundle_registry[bundle_id] = {
+                'queries': queries,
+                'host': host,
+                'start': jreq.get('start'),
+                'end': jreq.get('end')
+            }
+
+            # Evict oldest entry if size limit exceeded
+            if len(_opentsdb_bundle_registry) > _MAX_REGISTRY_SIZE:
+                _opentsdb_bundle_registry.popitem(last=False)
+
+
+def get_bundle_info(bundle_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Retrieve query information for a given bundle_id (for debugging/logging).
+    Args:
+        bundle_id: The bundle identifier to look up
+    Returns:
+        Dictionary containing query information, or None if not found
+    Example:
+        >>> info = get_bundle_info('a3f5c8d9e2b1f4a7')
+        >>> if info:
+        ...     print(f"Host: {info['host']}")
+        ...     print(f"Queries: {info['queries']}")
+    """
+    with _registry_lock:
+        return _opentsdb_bundle_registry.get(bundle_id)
+
+
+def get_all_bundle_ids() -> Dict[str, Dict[str, Any]]:
+    """
+    Get all registered bundle_ids with their query information (for debugging).
+    Returns:
+        Dictionary mapping bundle_ids to their query information
+    Example:
+        >>> all_bundles = get_all_bundle_ids()
+        >>> for bundle_id, info in all_bundles.items():
+        ...     print(f"{bundle_id}: {len(info['queries'])} queries")
+    """
+    with _registry_lock:
+        return dict(_opentsdb_bundle_registry)
+
+
+def clear_bundle_registry():
+    """Clear the bundle ID registry (for debugging/testing)."""
+    with _registry_lock:
+        _opentsdb_bundle_registry.clear()
+
+
+def get_bundle_registry_stats() -> Dict[str, Any]:
+    """
+    Get statistics about the bundle ID registry.
+    
+    Returns:
+        Dictionary with registry statistics
+    """
+    with _registry_lock:
+        memory_size = sys.getsizeof(_opentsdb_bundle_registry) + sum(
+            sys.getsizeof(bundle_id) + sys.getsizeof(bundle_info)
+            for bundle_id, bundle_info in _opentsdb_bundle_registry.items()
+        )
+        return {
+            'size': len(_opentsdb_bundle_registry),
+            'max_size': _MAX_REGISTRY_SIZE,
+            'memory_size': memory_size,
+            'bundle_ids': list(_opentsdb_bundle_registry.keys())
+        }
 
 
 class OpenTsdbApi(object):
@@ -39,6 +218,7 @@ class OpenTsdbApi(object):
         self.logger = logger
         self.__md = mdHandler
         self.port = port
+        self.internal_metrics: defaultdict[int, dict[str, Union[int, float]]] = defaultdict(dict)
 
     @property
     def md(self):
@@ -52,7 +232,7 @@ class OpenTsdbApi(object):
     def TOPO(self):
         return self.__md.metaData
 
-    @cond_execution_time(enabled=analytics.inspect_special)
+    @cond_execution_time(detail_level=1)
     def format_response(self, data: dict, jreq: dict) -> List[dict]:
         respList = []
         metrics = set(data.values())
@@ -82,7 +262,11 @@ class OpenTsdbApi(object):
         return respList
 
     @execution_time()
-    def query(self, jreq: dict) -> List[dict]:
+    def query(self, jreq: dict, bundle_id: Optional[str] = None) -> List[dict]:
+
+        import threading
+        current = threading.current_thread()
+
         resp = []
         collectors = []
 
@@ -105,6 +289,7 @@ class OpenTsdbApi(object):
             request_data = jreq.copy()
             request_data.pop('queries')
             request_data['inputQuery'] = q
+            request_data['bundle_id'] = bundle_id
 
             collector = self.build_collector(request_data)
             collectors.append((collector, request_data))
@@ -121,15 +306,53 @@ class OpenTsdbApi(object):
             self.logger.trace('Finished custom thread %r.' % collector.thread.name)
 
             coll_resp = self.format_response(collector.metrics, request_data)
+            if analytics.http_metrics_enabled:
+                try:
+                    from stats import get_metrics_collector
+
+                    # Get metrics from query handler
+                    metrics = collector.md.qh.internal_metrics.pop(collector.thread.ident)
+
+                    # Collect metrics from both thread identifiers efficiently
+                    keys_to_remove = [collector.thread.ident, current.ident]
+                    col_metrics = {}
+                    for key in keys_to_remove:
+                        if key in collector.internal_metrics:
+                            col_metrics.update(collector.internal_metrics.pop(key))
+
+                    # Merge all metrics
+                    metrics.update(col_metrics)
+
+                    # Build labels dict
+                    labels = {
+                        "bundle_id": bundle_id,
+                        "collector_name": collector.thread.name
+                    }
+
+                    if collector.request.filters:
+                        labels.update(collector.request.filters)
+
+                    self.logger.trace(
+                        MSG['CollectorThreadTrace'],
+                        metrics,
+                        labels,
+                        bundle_id,
+                    )
+
+                    stats_collector = get_metrics_collector()
+                    stats_collector.record_metric(labels=labels, metrics=metrics)
+                except Exception as exc:
+                    self.logger.debug(MSG['HttpMetricsRecordFailed'].format(exc))
             # cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
             resp.extend(coll_resp)
         cherrypy.response.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(detail_level=1)
     def build_collector(self, jreq: dict) -> SensorCollector:
 
         q = jreq.get('inputQuery')
+        bundle_id = jreq.get('bundle_id', None)
 
         sensor = self.TOPO.getSensorForMetric(q.get('metric'))
         period = self.md.getSensorPeriod(sensor)
@@ -171,7 +394,7 @@ class OpenTsdbApi(object):
         request = QueryPolicy(**args)
         self.logger.trace(f'request instance {str(request.__dict__)}')
 
-        collector = SensorCollector(sensor, period, self.logger, request)
+        collector = SensorCollector(sensor, period, self.logger, request, bundle_id=bundle_id)
         self.logger.trace(f'Collector instance {str(collector.__dict__)}')
 
         collector.validate_query_filters()
@@ -354,7 +577,44 @@ class OpenTsdbApi(object):
             jreq['start'] = 'last'
             jreq['queries'] = queries
 
-            resp = self.query(jreq)
+            # Generate bundle_id only if metrics are enabled
+            bundle_id = None
+            if analytics.http_metrics_enabled:
+                bundle_id = generate_query_bundle_id_cached(jreq)
+                self.logger.trace(MSG['BundleIdGenerated'].format(cherrypy.request.script_name, bundle_id))
+
+            resp = self.query(jreq, bundle_id=bundle_id)
+
+        # /api/bundle_ids - List all registered bundle IDs (only if http_metrics_enabled)
+        elif '/api/bundle_ids' == cherrypy.request.script_name:
+            if not analytics.http_metrics_enabled:
+                self.logger.error('Bundle ID endpoint requires http_metrics_enabled=True')
+                raise cherrypy.HTTPError(503, MSG['BundleIdTrackingDisabled'])
+            if params.get('bundle_id'):
+                # Get specific bundle ID info
+                bundle_id = params.get('bundle_id')
+                info = get_bundle_info(bundle_id)
+                if info:
+                    resp = {
+                        'bundle_id': bundle_id,
+                        'found': True,
+                        'info': info
+                    }
+                else:
+                    resp = {
+                        'bundle_id': bundle_id,
+                        'found': False,
+                        'message': 'Bundle ID not found in registry'
+                    }
+            else:
+                # List all bundle IDs with stats
+                all_bundles = get_all_bundle_ids()
+                stats = get_bundle_registry_stats()
+                resp = {
+                    'registry_type': 'opentsdb',
+                    'stats': stats,
+                    'bundles': all_bundles
+                }
 
         elif 'aggregators' in cherrypy.request.script_name:
             resp = ["noop", "sum", "avg", "max", "min", "rate"]
@@ -407,7 +667,35 @@ class OpenTsdbApi(object):
             if params and params.get('arrays') == 'true':
                 jreq['arrays'] = True
 
-            return self.query(jreq)
+            # Generate bundle_id only if metrics are enabled
+            bundle_id = None
+            if analytics.http_metrics_enabled:
+                bundle_id = generate_query_bundle_id_cached(jreq)
+                self.logger.trace(MSG['BundleIdGenerated'].format(cherrypy.request.script_name, bundle_id))
+
+            resp = self.query(jreq, bundle_id=bundle_id)
+
+            if analytics.http_metrics_enabled:
+                try:
+                    import threading
+                    current = threading.current_thread()
+                    if current.ident in self.internal_metrics:
+                        metrics = self.internal_metrics.pop(current.ident)
+                        metric_name = jreq['queries'][0].get('metric') if len(jreq['queries']) == 1 else "multiple_metrics"
+
+                        # Build labels dict in one operation instead of multiple updates
+                        labels = {
+                            "bundle_id": bundle_id,
+                            "collector_name": metric_name,
+                            **params  # Unpack params directly
+                        }
+
+                        from stats import get_metrics_collector
+                        stats_collector = get_metrics_collector()
+                        stats_collector.record_metric(labels=labels, metrics=metrics)
+                except Exception as exc:
+                    self.logger.debug(MSG['HttpMetricsRecordFailed'].format(exc))
+            return resp
 
     def OPTIONS(self):
         # print('options_post')
