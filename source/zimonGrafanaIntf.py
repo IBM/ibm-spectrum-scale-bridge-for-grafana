@@ -45,6 +45,7 @@ from watcher import ConfigWatcher
 from resthelper import RestHelpGenerator
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
+from stats import HTTPMetricsAPI, get_metrics_collector
 
 ENDPOINTS = {}
 AUTH_DICT = {}
@@ -428,6 +429,45 @@ def main(argv):
                          }
                         )
 
+    # register HTTP Metrics API endpoint
+    # if args.get('httpMetrics', True):
+    #     Initialize metrics collector with configuration
+    #     from http_metrics import get_metrics_collector
+    #     max_history = args.get('httpMetricsMaxHistory', 1000)
+    #     retention_seconds = args.get('httpMetricsRetentionSeconds', 3600)
+
+    # register HTTP Metrics API endpoint
+    if analytics.http_metrics_enabled:
+        # Get or create collector with configured parameters
+        max_history = 1000
+        retention_seconds = 3600
+        cleanup_interval = 300  # 5 minutes
+        collector = get_metrics_collector()
+        collector.max_history = max_history
+        collector.retention_seconds = retention_seconds
+        collector.cleanup_interval = cleanup_interval
+        collector.metrics = __import__('collections').deque(maxlen=max_history)
+
+        http_metrics_api = HTTPMetricsAPI(logger)
+        cherrypy.tree.mount(http_metrics_api, '/http_metrics',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        cherrypy.tree.mount(http_metrics_api, '/internal_stats',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+        cherrypy.tree.mount(http_metrics_api, '/bundle_ids',
+                            {'/':
+                             {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                             }
+                            )
+
+        registered_apps.append("HTTP Metrics API for monitoring request/response data transfer")
+        logger.info(f"HTTP Metrics enabled: max_history={max_history}, retention={retention_seconds}s, cleanup_interval={cleanup_interval}s")
+
     logger.info("%s", MSG['sysStart'].format(sys.version, cherrypy.__version__))
 
     try:
@@ -438,6 +478,10 @@ def main(argv):
         refresher = TopoRefreshManager(refresh_metadata, refresh_all=False)
         cherrypy.engine.subscribe('start', refresher.start_monitor)
         cherrypy.engine.subscribe('stop', refresher.stop_monitor)
+        if analytics.http_metrics_enabled:
+            # Subscribe HTTP metrics cleanup to engine lifecycle
+            cherrypy.engine.subscribe('start', collector.start_periodic_cleanup)
+            cherrypy.engine.subscribe('stop', collector.stop_periodic_cleanup)
         cherrypy.engine.start()
         cherrypy.engine.log('test')
         logger.info("%s", MSG['ConnApplications'].format(",\n ".join(registered_apps))

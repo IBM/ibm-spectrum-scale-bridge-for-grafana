@@ -1,0 +1,827 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "adftpvb",
+    "generation": 31,
+    "creationTimestamp": "2026-05-19T06:26:15Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {},
+            "labels": {
+              "grafana.app/export-label": "grafana-1"
+            }
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "editable": true,
+    "elements": {
+      "panel-10": {
+        "kind": "Panel",
+        "spec": {
+          "id": 10,
+          "title": "Total job execution in comparison to  $time_shift  ago",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"})",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "AA",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "AB",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "(avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"}) - avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)) / avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift) * 100",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "BB",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(perfmon_response_amount{collector_name=~\"$collector_name\", job=~\"$job_name\"})",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "CA",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(perfmon_response_amount{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "CC",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "(avg by (collector_name,job)(perfmon_response_amount{collector_name=~\"$collector_name\", job=~\"$job_name\"}) - avg by (collector_name,job)(perfmon_response_amount{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)) / avg by (collector_name,job)(perfmon_response_amount{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift) * 100",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "DD",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(perfmon_response_duration{collector_name=~\"$collector_name\", job=~\"$job_name\"})",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "EA",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "avg by (collector_name,job)(perfmon_response_duration{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "EE",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "(avg by (collector_name,job)(perfmon_response_duration{collector_name=~\"$collector_name\", job=~\"$job_name\"}) - avg by (collector_name,job)(perfmon_response_duration{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)) / avg by (collector_name,job)(perfmon_response_duration{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift) * 100",
+                        "format": "table",
+                        "instant": true,
+                        "legendFormat": "{{collector_name}}",
+                        "range": false
+                      }
+                    },
+                    "refId": "FF",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "merge",
+                  "spec": {
+                    "options": {}
+                  }
+                },
+                {
+                  "kind": "Transformation",
+                  "group": "organize",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {
+                        "Time": true
+                      },
+                      "includeByName": {},
+                      "indexByName": {},
+                      "renameByName": {}
+                    }
+                  }
+                },
+                {
+                  "kind": "Transformation",
+                  "group": "sortBy",
+                  "spec": {
+                    "options": {
+                      "fields": {},
+                      "sort": [
+                        {
+                          "desc": true,
+                          "field": "Value #BB"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.0.1",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": true,
+                "frameIndex": 0,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 0,
+                        "color": "#EAB839"
+                      },
+                      {
+                        "value": 10,
+                        "color": "dark-red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false,
+                    "minWidth": 120,
+                    "wrapHeaderText": true,
+                    "wrapText": true
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #AA"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "total execution time"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "s"
+                      },
+                      {
+                        "id": "links",
+                        "value": [
+                          {
+                            "targetBlank": true,
+                            "title": "Show historical data",
+                            "url": "/../d/ad9fs9q/d3c03d0?orgId=1&from=${__from}&to=${__to}&timezone=browser&var-Datasource=${Datasource}&var-job_name=${__data.fields.job}&var-collector_name=${__data.fields.collector_name}&var-time_shift=${time_shift}&refresh=1m"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #AB"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "execution before $time_shift"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "s"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #BB"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "execution vs. $time_shift"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "color",
+                        "value": {
+                          "mode": "thresholds"
+                        }
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "type": "color-text"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #CA"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "perfmon response amount"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "bytes"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #CC"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "amount before $time_shift"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "bytes"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #DD"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "amount vs. $time_shift"
+                      },
+                      {
+                        "id": "custom.width"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #EA"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "perfmon response duration"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "s"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #EE"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "duration before $time_shift"
+                      },
+                      {
+                        "id": "custom.width"
+                      },
+                      {
+                        "id": "unit",
+                        "value": "s"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Value #FF"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "duration vs. $time_shift"
+                      },
+                      {
+                        "id": "custom.width"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-11": {
+        "kind": "Panel",
+        "spec": {
+          "id": 11,
+          "title": "Total job execution vs. last $time_shift (%)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "disableTextWrap": false,
+                        "editorMode": "code",
+                        "exemplar": false,
+                        "expr": "(avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"}) - avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift)) / avg by (collector_name,job)(PrometheusExporter_metrics{collector_name=~\"$collector_name\", job=~\"$job_name\"} offset $time_shift) * 100",
+                        "format": "time_series",
+                        "fullMetaSearch": false,
+                        "includeNullMetadata": true,
+                        "instant": true,
+                        "legendFormat": "{{collector_name}} ({{job}})",
+                        "range": false,
+                        "useBackend": false
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "bargauge",
+            "version": "13.0.1",
+            "spec": {
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 0,
+                        "color": "#EAB839"
+                      },
+                      {
+                        "value": 10,
+                        "color": "dark-red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "links": [
+                    {
+                      "targetBlank": true,
+                      "title": "show details",
+                      "url": "/../d/ad9fs9q/d3c03d0?orgId=1&from=${__from}&to=${__to}&timezone=browser&var-Datasource=${Datasource}&var-job_name=${__field.labels.job}&var-collector_name=${__field.labels.collector_name}&var-time_shift=${time_shift}&refresh=1m"
+                    }
+                  ]
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 12,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-11"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 12,
+              "width": 24,
+              "height": 11,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-10"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-12h",
+      "to": "now",
+      "autoRefresh": "5m",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Prometheus scrape jobs execution comparison over time",
+    "variables": [
+      {
+        "kind": "DatasourceVariable",
+        "spec": {
+          "name": "Datasource",
+          "pluginId": "prometheus",
+          "refresh": "onDashboardLoad",
+          "regex": "",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "job_name",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "${Datasource}"
+            },
+            "spec": {
+              "qryType": 1,
+              "query": "label_values(PrometheusExporter_metrics,job)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(PrometheusExporter_metrics,job)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
+          "allowCustomValue": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "collector_name",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "hide": "dontHide",
+          "refresh": "onTimeRangeChanged",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "${Datasource}"
+            },
+            "spec": {
+              "qryType": 1,
+              "query": "label_values(PrometheusExporter_metrics{job=~\"$job_name\"},collector_name)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(PrometheusExporter_metrics{job=~\"$job_name\"},collector_name)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
+          "allowCustomValue": false
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "time_shift",
+          "query": "1h, 3h, 6h, 12h, 1d, 7d",
+          "current": {
+            "text": "1d",
+            "value": "1d"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Timeshift",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": false,
+          "valuesFormat": "csv"
+        }
+      }
+    ]
+  }
+}
