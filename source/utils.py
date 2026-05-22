@@ -26,7 +26,7 @@ import cherrypy
 import analytics
 import threading
 from threading import Lock
-from typing import Callable, TypeVar
+from typing import Any, Callable, TypeVar
 from functools import wraps
 from messages import MSG
 from profiler import Profiler
