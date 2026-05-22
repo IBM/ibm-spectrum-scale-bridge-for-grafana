@@ -20,10 +20,8 @@ Unit tests for stats.py module
 
 import unittest
 import time
-import json
 import csv
 from io import StringIO
-from unittest import mock
 from source.stats import HTTPRequestMetric, HTTPMetricsCollector, get_metrics_collector
 
 
@@ -66,7 +64,6 @@ class TestHTTPRequestMetric(unittest.TestCase):
             self.assertIn(metric_name, result)
             timeseries_list = result[metric_name]
             self.assertEqual(len(timeseries_list), 1)
-            
             timeserie = timeseries_list[0]
             self.assertEqual(timeserie['labels'], self.labels)
             self.assertEqual(timeserie['value'], metric_value)

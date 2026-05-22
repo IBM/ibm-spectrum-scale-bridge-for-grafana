@@ -26,7 +26,7 @@ import analytics
 from queryHandler.Query import Query
 from messages import MSG
 from collections import defaultdict
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Union
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger

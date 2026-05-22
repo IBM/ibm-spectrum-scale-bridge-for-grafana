@@ -21,13 +21,12 @@ Created on Oct 30, 2023
 '''
 
 import cherrypy
-import copy
 import json
 import sys
 import analytics
 from functools import lru_cache
 from messages import ERR, MSG
-from typing import Optional, Union, List, Tuple, Dict, Any
+from typing import Optional, Union, Dict, Any
 from collections import OrderedDict, defaultdict
 from threading import Lock
 from cherrypy.process.plugins import Monitor
@@ -43,6 +42,7 @@ from utils import execution_time, cond_execution_time, get_request_host
 _prometheus_bundle_registry: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 _prometheus_registry_lock = Lock()
 _PROMETHEUS_MAX_REGISTRY_SIZE = 100  # Keep last 100 bundle_ids for debugging
+
 
 def _normalize_prometheus_request(sensors: list, filters: Optional[dict] = None) -> dict:
     """Extract and normalize Prometheus request parameters for consistent hashing."""

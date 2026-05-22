@@ -45,6 +45,7 @@ _opentsdb_bundle_registry: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 _registry_lock = Lock()
 _MAX_REGISTRY_SIZE = 100  # Keep last 100 bundle_ids for debugging
 
+
 def _normalize_query(query: dict) -> dict:
     """Extract and normalize query parameters for consistent hashing."""
     return {
@@ -76,7 +77,6 @@ def _generate_bundle_id_from_tuple(queries_tuple: Tuple[str, ...], host: str) ->
     Args:
         queries_tuple: Tuple of JSON-serialized query strings
         host: Request host (without port)
-        
     Returns:
         16-character hexadecimal bundle identifier
     """
@@ -129,7 +129,6 @@ def _register_bundle_id(bundle_id: str, queries: List[dict], host: str, jreq: di
     """
     Register a bundle_id with its query information for debugging/logging.
     Maintains a size-limited registry using LRU eviction.
-    
     Args:
         bundle_id: The generated bundle identifier
         queries: List of query dictionaries
@@ -194,7 +193,6 @@ def clear_bundle_registry():
 def get_bundle_registry_stats() -> Dict[str, Any]:
     """
     Get statistics about the bundle ID registry.
-    
     Returns:
         Dictionary with registry statistics
     """

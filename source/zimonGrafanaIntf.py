@@ -430,11 +430,11 @@ def main(argv):
                         )
 
     # register HTTP Metrics API endpoint
-    # if args.get('httpMetrics', True):  # Default to True
-        # Initialize metrics collector with configuration
-        # from http_metrics import get_metrics_collector
-        # max_history = args.get('httpMetricsMaxHistory', 1000)
-        # retention_seconds = args.get('httpMetricsRetentionSeconds', 3600)
+    # if args.get('httpMetrics', True):
+    #     Initialize metrics collector with configuration
+    #     from http_metrics import get_metrics_collector
+    #     max_history = args.get('httpMetricsMaxHistory', 1000)
+    #     retention_seconds = args.get('httpMetricsRetentionSeconds', 3600)
 
     # register HTTP Metrics API endpoint
     if analytics.http_metrics_enabled:

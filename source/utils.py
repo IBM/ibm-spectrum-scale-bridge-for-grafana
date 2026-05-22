@@ -26,7 +26,7 @@ import cherrypy
 import analytics
 import threading
 from threading import Lock
-from typing import Callable, TypeVar, Any
+from typing import Callable, TypeVar
 from functools import wraps
 from messages import MSG
 from profiler import Profiler
@@ -37,7 +37,6 @@ T = TypeVar('T')
 def get_request_host() -> str:
     """
     Extract host (without port) from cherrypy request headers.
-    
     Returns:
         Host string without port, or 'unknown' if not available
     """
@@ -112,7 +111,6 @@ def execution_time() -> Callable[[Callable[..., T]], Callable[..., T]]:
 @get_runtime_statistics(enabled=analytics.runtime_profiling)
 def cond_execution_time(detail_level: int = 1) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """ Wrapper method that measures execution time of wrapped methods.
-    
     This decorator conditionally logs the name of the given function with
     passed parameter values and the time it takes to execute it, based on
     the analytics.inspect_special detail level setting.
@@ -135,7 +133,7 @@ def cond_execution_time(detail_level: int = 1) -> Callable[[Callable[..., T]], C
     """
     # Check analytics settings at decoration time
     should_measure = analytics.inspect_special >= detail_level
-    
+
     def outer(f: Callable[..., T]) -> Callable[..., T]:
         # Pre-compute metric name prefix for detail_levels 2-4 (optimization)
         if detail_level == 4:
@@ -146,7 +144,7 @@ def cond_execution_time(detail_level: int = 1) -> Callable[[Callable[..., T]], C
             metric_prefix = "collector_"
         else:
             metric_prefix = None
-            
+
         @wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             self = args[0]

@@ -21,7 +21,6 @@ Created on Apr 17, 2026
 '''
 
 import time
-import copy
 import cherrypy
 import json
 import sys
@@ -351,7 +350,7 @@ class HTTPMetricsCollector:
         return output.getvalue()
 
     def get_opentsdb_metrics(self, limit: Optional[int] = None,
-                            aggregated_tags: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+                             aggregated_tags: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """
         Generate OpenTSDB format metrics.
         The response format follows the OpenTSDB specification at:
@@ -370,7 +369,6 @@ class HTTPMetricsCollector:
                 },
                 ...
             ]
-            
         Example:
             >>> collector.record_metric(
             ...     labels={"bundle_id": "abc123", "collector_name": "test"},
@@ -522,7 +520,6 @@ class HTTPMetricsAPI:
             supported_formats = ['json', 'prometheus', 'csv', 'opentsdb', 'stats']
             if format not in supported_formats:
                 raise cherrypy.HTTPError(400, f"Unsupported format '{format}'. Supported formats: {', '.join(supported_formats)}")
-            
             try:
                 if format == 'prometheus':
                     metrics_lines = self.collector.get_prometheus_metrics()
