@@ -1,15 +1,60 @@
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi10/ubi:10.0-1762765098
+ARG BASE=registry.access.redhat.com/ubi10/ubi:10.1-1776834862
 
+# ==========================================
+# STAGE 1: Production Build Template
+# ==========================================
 FROM $BASE AS build_prod
 ONBUILD COPY ./requirements/requirements_ubi10.txt /root/requirements_ubi10.txt
+ONBUILD COPY get_licenses.py /tmp/get_licenses.py
+ONBUILD RUN mkdir -p /licenses && \
+            dnf install -y python3.12 python3.12-pip && dnf clean all -y && \
+            python3 -m pip install --no-cache-dir -r /root/requirements_ubi10.txt && \
+            echo "Installed python version: $(python3 -V)" && \
+            echo "Installed python packages: $(python3 -m pip list)" && \
+            python3 /tmp/get_licenses.py && \
+            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
+            cat /licenses/packages_licenses.tsv && \
+            rm /tmp/get_licenses.py && \
+            dnf remove -y python3-pip && dnf clean all -y && \
+            rm -rf /usr/lib/python3.12/site-packages/pip* && \
+            rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test
 
+# ==========================================
+# STAGE 2: Test Build Template
+# ==========================================
 FROM $BASE AS build_test
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
+ONBUILD COPY get_licenses.py /tmp/get_licenses.py
+ONBUILD RUN mkdir -p /licenses && \
+            dnf install -y python3.12 python3.12-pip && dnf clean all -y && \
+            python3 -m pip install pip-tools && \
+            python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi10.txt && \
+            echo "Compiled python packages: $(cat /root/requirements_ubi10.txt)" && \
+            python3 -m pip install --no-cache-dir --ignore-installed -r /root/requirements_ubi10.txt && \
+            echo "Installed python version: $(python3 -V)" && \
+            echo "Installed python packages: $(python3 -m pip list)" && \
+            python3 /tmp/get_licenses.py && \
+            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
+            cat /licenses/packages_licenses.tsv && \
+            rm /tmp/get_licenses.py && \
+            dnf remove -y python3.12-pip && dnf clean all -y && \
+            # rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.12/site-packages/pip* && \
+            rm -rf /usr/lib/python3.12/site-packages/pip* && \
+            rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test
 
+# ==========================================
+# STAGE 3: Custom Build Template
+# ==========================================
 FROM $BASE AS build_custom
 ONBUILD COPY ./requirements/requirements.in  /root/requirements.in
+ONBUILD RUN echo "Already using python container as base image. No need to install it." && \ 
+            python3 -m pip install --no-cache-dir -r /root/requirements.in && \
+            echo "Installed python packages: $(python3 -m pip list)"
 
+# ==========================================
+# FINAL STAGE: Target Image
+# ==========================================
 FROM build_${BUILD_ENV}
 
 ARG BUILD_ENV
@@ -87,21 +132,6 @@ RUN echo "the HTTP/S protocol is set to $PROTOCOL"  && \
     echo "the pmcollector server ip is set to $SERVER" && \
     echo "the log will use $LOGPATH" 
 
-RUN if [ $(expr "$BASE" : '.*python.*') -eq 0 ]; then \
-    yum install -y python3.12 python3.12-pip; \
-    if [ "$BUILD_ENV" = "test" ]; then \
-    python3 -m pip install pip-tools && \
-    python3 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi10.txt && \
-    echo "Compiled python packages: $(cat /root/requirements_ubi10.txt)"; fi && \
-    python3 -m pip install -r /root/requirements_ubi10.txt && \
-    echo "Installed python version: $(python3 -V)" && \
-    echo "Installed python packages: $(python3 -m pip list)" && \
-    yum clean all -y && rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.12/site-packages/pip* && \
-    rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test; else \
-    echo "Already using python container as base image. No need to install it." && \ 
-    python3 -m pip install  -r /root/requirements.in && \
-    echo "Installed python packages: $(python3 -m pip list)"; fi
-
 USER root
 
 RUN mkdir -p /opt/IBM/bridge /opt/IBM/zimon /var/mmfs/gen && \
@@ -139,7 +169,27 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 # Switch user
 USER $UID
 
-CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+# CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
+CMD ["sh", "-c", "\
+    ARGS=''; \
+    [ -n \"$LOGLEVEL\" ] && [ \"$LOGLEVEL\" != 'None' ] && ARGS=\"$ARGS -c $LOGLEVEL\"; \
+    [ -n \"$SERVER\" ] && [ \"$SERVER\" != 'None' ] && ARGS=\"$ARGS -s $SERVER\"; \
+    [ -n \"$PROTOCOL\" ] && [ \"$PROTOCOL\" != 'None' ] && ARGS=\"$ARGS -r $PROTOCOL\"; \
+    [ -n \"$BASICAUTH\" ] && [ \"$BASICAUTH\" != 'None' ] && ARGS=\"$ARGS -b $BASICAUTH\"; \
+    [ -n \"$BASICU\" ] && [ \"$BASICU\" != 'None' ] && ARGS=\"$ARGS -u $BASICU\"; \
+    [ -n \"$BASICP\" ] && [ \"$BASICP\" != 'None' ] && ARGS=\"$ARGS -a $BASICP\"; \
+    [ -n \"$PORT\" ] && [ \"$PORT\" != 'None' ] && ARGS=\"$ARGS -p $PORT\"; \
+    [ -n \"$PROMETHEUS\" ] && [ \"$PROMETHEUS\" != 'None' ] && ARGS=\"$ARGS -e $PROMETHEUS\"; \
+    [ -n \"$SERVERPORT\" ] && [ \"$SERVERPORT\" != 'None' ] && ARGS=\"$ARGS -P $SERVERPORT\"; \
+    [ -n \"$TLSKEYPATH\" ] && [ \"$TLSKEYPATH\" != 'None' ] && ARGS=\"$ARGS -t $TLSKEYPATH\"; \
+    [ -n \"$LOGPATH\" ] && [ \"$LOGPATH\" != 'None' ] && ARGS=\"$ARGS -l $LOGPATH\"; \
+    [ -n \"$TLSKEYFILE\" ] && [ \"$TLSKEYFILE\" != 'None' ] && ARGS=\"$ARGS -k $TLSKEYFILE\"; \
+    [ -n \"$TLSCERTFILE\" ] && [ \"$TLSCERTFILE\" != 'None' ] && ARGS=\"$ARGS -m $TLSCERTFILE\"; \
+    [ -n \"$APIKEYNAME\" ] && [ \"$APIKEYNAME\" != 'None' ] && ARGS=\"$ARGS -n $APIKEYNAME\"; \
+    [ -n \"$APIKEYVALUE\" ] && [ \"$APIKEYVALUE\" != 'None' ] && ARGS=\"$ARGS -v $APIKEYVALUE\"; \
+    [ -n \"$RAWCOUNTERS\" ] && [ \"$RAWCOUNTERS\" != 'None' ] && ARGS=\"$ARGS -w $RAWCOUNTERS\"; \
+    exec python3 zimonGrafanaIntf.py $ARGS \
+"]
 
 EXPOSE 4242 8443 9250
 
