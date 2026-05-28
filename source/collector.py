@@ -203,7 +203,7 @@ class SensorTimeSeries(object):
 
 @classattributes(dict(metricsaggr=None, filters=None, grouptags=None,
                       start='', end='', nsamples=0, duration=0,
-                      dsBucketSize=0, dsOp='', rawData=False, skipNullValues=False, dpsArrays=False),
+                      dsBucketSize=0, dsOp='', rawData=False, dpsArrays=False),
                  ['sensor', 'period'])
 class QueryPolicy(object):
 
@@ -220,7 +220,6 @@ class QueryPolicy(object):
         query.normalize_rates = False
         query.skipRangeData = True
         query.rawData = self.rawData
-        query.skipNullValues = self.skipNullValues
 
         if not self.metricsaggr and not self.sensor:
             raise ValueError('Missing metric or sensor name')
