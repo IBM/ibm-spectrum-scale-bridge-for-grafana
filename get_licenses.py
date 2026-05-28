@@ -28,10 +28,10 @@ for d in distributions():
     name = m['Name']
     version = m['Version']
 
-    lic = m['License']
+    lic = m.get('License')
 
     if not lic or str(lic).upper() in ['NONE', 'UNKNOWN', 'UNBEKANNT', '']:
-        lic = m['License-Expression']
+        lic = m.get('License-Expression')
 
     if not lic or str(lic).upper() in ['NONE', 'UNKNOWN', 'UNBEKANNT', '']:
         classifiers = m.get_all('Classifier') or []
