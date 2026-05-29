@@ -1,0 +1,1600 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ee6h4z9seyosgc",
+    "generation": 1,
+    "creationTimestamp": "2026-05-15T10:16:58Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {},
+            "labels": {
+              "grafana.app/export-label": "grafana-1"
+            }
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true,
+          "legacyOptions": {
+            "type": "dashboard"
+          }
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "max",
+                        "alias": "$tag_node",
+                        "disableDownsampling": false,
+                        "downsampleAggregator": "max",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "15m",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "node",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_health_status"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "state-timeline",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "alignValue": "left",
+                "legend": {
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "mergeValues": true,
+                "rowHeight": 0.9,
+                "showValue": "auto",
+                "tooltip": {
+                  "hideZeros": false,
+                  "maxHeight": 600,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "mappings": [
+                    {
+                      "type": "value",
+                      "options": {
+                        "0": {
+                          "text": "UNKNOWN",
+                          "color": "#808080",
+                          "index": 0
+                        },
+                        "10": {
+                          "text": "HEALTHY",
+                          "color": "#2f8224",
+                          "index": 1
+                        },
+                        "20": {
+                          "text": "DEGRADED",
+                          "color": "dark-yellow",
+                          "index": 2
+                        },
+                        "40": {
+                          "text": "FAILED",
+                          "color": "dark-red",
+                          "index": 3
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed"
+                  },
+                  "links": [
+                    {
+                      "targetBlank": true,
+                      "title": "node status drill down",
+                      "url": "/../d/ce6h5jw248poge/component-health-view-by-node-selection?orgId=1&refresh=30s&var-Datasource=${Datasource}&var-Node=${__field.name}&from=${__from}&to=${__to}"
+                    }
+                  ],
+                  "custom": {
+                    "axisPlacement": "auto",
+                    "fillOpacity": 70,
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineWidth": 0,
+                    "spanNulls": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-10": {
+        "kind": "Panel",
+        "spec": {
+          "id": 10,
+          "title": "Filesystem READ OPS",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "spec": {
+                        "aggregator": "avg",
+                        "alias": "$tag_gpfs_cluster_name",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_cluster_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_fs_read_ops"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "opentsdb-1"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "last"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "ops",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "continuous-RdYlGr"
+                  },
+                  "noValue": "0"
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-11": {
+        "kind": "Panel",
+        "spec": {
+          "id": 11,
+          "title": "CPU Utilization",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "max",
+                        "downsampleAggregator": "avg",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "1m",
+                        "metric": "cpu_system"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "max",
+                        "downsampleAggregator": "avg",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "1m",
+                        "metric": "cpu_user"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "maxHeight": 600,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 32,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-12": {
+        "kind": "Panel",
+        "spec": {
+          "id": 12,
+          "title": "Network Adapter errors",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_netdev_name",
+                        "downsampleAggregator": "avg",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "5m",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "netdev_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "netdev_errors_r"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": true
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_netdev_name",
+                        "downsampleAggregator": "avg",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "5m",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "netdev_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "netdev_errors_s"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": true
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "__expr__",
+                      "version": "v0",
+                      "spec": {
+                        "expression": "$A + $B",
+                        "type": "math"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "__expr__-1"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "labelsToFields",
+                  "spec": {
+                    "options": {
+                      "mode": "columns",
+                      "valueLabel": "netdev_name"
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 5,
+                        "color": "#EAB839"
+                      },
+                      {
+                        "value": 50,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "links": [
+                    {
+                      "targetBlank": true,
+                      "title": "Show network adapter details",
+                      "url": "/../d/1Px99Yh7k/network-adapters-summary-test?orgId=1&refresh=30s&var-system=${Datasource}&var-byNode=All&var-byNetworkAdapter=${__field.name}&from=${__from}&to=${__to}"
+                    }
+                  ]
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "id": 2,
+          "title": "Warning events ",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "-",
+                            "groupBy": false,
+                            "tagk": "gpfs_health_entity",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_health_warning_events"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "decimals": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "dark-yellow"
+                  },
+                  "noValue": "0"
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-3": {
+        "kind": "Panel",
+        "spec": {
+          "id": 3,
+          "title": "Error events ",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "spec": {
+                        "aggregator": "sum",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "-",
+                            "groupBy": false,
+                            "tagk": "gpfs_health_entity",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_health_error_events"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "opentsdb-1"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "decimals": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 5,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "dark-red"
+                  },
+                  "noValue": "0"
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "id": 4,
+          "title": "Disk capacity usage by Filesystem",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_gpfs_fs_name",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_fs_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_disk_free_fullkb"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": true
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_gpfs_fs_name",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_fs_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_disk_disksize"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": true
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "__expr__",
+                      "version": "v0",
+                      "spec": {
+                        "expression": "($B-$A)/$B",
+                        "type": "math"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "__expr__-1"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "labelsToFields",
+                  "spec": {
+                    "options": {
+                      "valueLabel": "gpfs_fs_name"
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "gauge",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percentunit",
+                  "decimals": 0,
+                  "thresholds": {
+                    "mode": "percentage",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 85,
+                        "color": "#EAB839"
+                      },
+                      {
+                        "value": 95,
+                        "color": "dark-red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "dark-yellow"
+                  },
+                  "links": [
+                    {
+                      "targetBlank": true,
+                      "title": "fileset capacity quotas",
+                      "url": "/../d/bdbb60a6-b34d-4fcf-944f-9c0715021127/fileset-quota-limits?orgId=1&refresh=10s&var-System=${Datasource}&var-byFilesystem=${__field.name}&from=now-12h&to=now"
+                    },
+                    {
+                      "targetBlank": true,
+                      "title": "Filesystem AFM statistics",
+                      "url": "/../d/u240wk9Gk/afm-fs-view?orgId=1&refresh=5s&var-system=${Datasource}&var-afmFS=${__field.name}&from=now-1h&to=now"
+                    },
+                    {
+                      "targetBlank": true,
+                      "title": "AFM over NFS (home/cache cluster view)",
+                      "url": "/../d/wiV9Y39Mk/afm-over-nfs-home-cache-cluster-view?orgId=1&refresh=10&var-homeCluster=${Datasource}&from=now-12h&to=now"
+                    }
+                  ]
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "id": 5,
+          "title": "Filelsystems",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_gpfs_fs_name",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_fs_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_disk_disksize"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "reduce",
+                  "spec": {
+                    "options": {
+                      "includeTimeField": false,
+                      "labelsToFields": true,
+                      "mode": "seriesToRows",
+                      "reducers": [
+                        "count"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "count"
+                  ],
+                  "fields": "/^Count$/",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "decimals": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "dark-yellow"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-6": {
+        "kind": "Panel",
+        "spec": {
+          "id": 6,
+          "title": "Used disks",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_gpfs_disk_name",
+                        "disableDownsampling": true,
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "filters": [
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_disk_name",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_disk_disksize"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "reduce",
+                  "spec": {
+                    "options": {
+                      "includeTimeField": false,
+                      "labelsToFields": true,
+                      "mode": "seriesToRows",
+                      "reducers": [
+                        "count"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "count"
+                  ],
+                  "fields": "/^Count$/",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "decimals": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "dark-yellow"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "id": 7,
+          "title": "Filesystem MGR",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "noop",
+                        "alias": "$tag_gpfs_health_entity on $tag_node",
+                        "downsampleAggregator": "max",
+                        "downsampleFillPolicy": "none",
+                        "downsampleInterval": "15m",
+                        "filters": [
+                          {
+                            "filter": "FILESYSMGR",
+                            "groupBy": false,
+                            "tagk": "gpfs_health_component",
+                            "type": "pm_filter"
+                          },
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "gpfs_health_entity",
+                            "type": "pm_filter"
+                          },
+                          {
+                            "filter": "",
+                            "groupBy": true,
+                            "tagk": "node",
+                            "type": "pm_filter"
+                          }
+                        ],
+                        "metric": "gpfs_health_status"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "filterFieldsByName",
+                  "spec": {
+                    "options": {
+                      "byVariable": false,
+                      "include": {
+                        "pattern": "^(?!-).*$"
+                      }
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "text": {
+                  "titleSize": 14
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "mappings": [
+                    {
+                      "type": "value",
+                      "options": {
+                        "0": {
+                          "text": "UNKNOWN",
+                          "color": "#808080",
+                          "index": 3
+                        },
+                        "10": {
+                          "text": "HEALTHY",
+                          "color": "green",
+                          "index": 0
+                        },
+                        "20": {
+                          "text": "DEGRADED",
+                          "color": "yellow",
+                          "index": 1
+                        },
+                        "40": {
+                          "text": "FAILED",
+                          "color": "dark-red",
+                          "index": 2
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed"
+                  },
+                  "noValue": "lost"
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "opentsdb",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${Datasource}"
+                      },
+                      "spec": {
+                        "aggregator": "sum",
+                        "alias": "$tag_gpfs_cluster_name",
+                        "downsampleAggregator": "noop",
+                        "downsampleFillPolicy": "none",
+                        "metric": "gpfs_pool_total_dataKB"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "12.0.2",
+            "spec": {
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "name",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "kbytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": null,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "transparent"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 2,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-8"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 2,
+              "width": 15,
+              "height": 19,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 15,
+              "y": 2,
+              "width": 3,
+              "height": 5,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-2"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 18,
+              "y": 2,
+              "width": 6,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-11"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 15,
+              "y": 7,
+              "width": 3,
+              "height": 5,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-3"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 18,
+              "y": 12,
+              "width": 3,
+              "height": 6,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-10"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 21,
+              "y": 12,
+              "width": 3,
+              "height": 6,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-12"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 21,
+              "width": 2,
+              "height": 3,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-5"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 2,
+              "y": 21,
+              "width": 9,
+              "height": 6,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-4"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 11,
+              "y": 21,
+              "width": 7,
+              "height": 6,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-7"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 24,
+              "width": 2,
+              "height": 3,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-6"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [
+      "overview",
+      "health",
+      "opentsdb"
+    ],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-24h",
+      "to": "now",
+      "autoRefresh": "15m",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "GPFS Cluster overview",
+    "variables": [
+      {
+        "kind": "DatasourceVariable",
+        "spec": {
+          "name": "Datasource",
+          "pluginId": "opentsdb",
+          "refresh": "onDashboardLoad",
+          "regex": "",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true
+        }
+      }
+    ]
+  }
+}

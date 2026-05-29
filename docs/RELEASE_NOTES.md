@@ -1,3 +1,18 @@
+# Version 9.0.3 (05/29/2026)
+
+Added a new function to track HTTP request execution time overall and by waiting backend. For more information, see [How to monitor performance of the IBM Storage Scale bridge for Grafana](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-monitor-performance-of-the-IBM-Storage-Scale-bridge-for-Grafana) \
+Added new REST API endpoints to list http_metrics, internal statistics, and their associated bundle_ids \
+Published [example dashboards](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/tree/master/examples/grafana_dashboards/internal_performance_observability) for monitoring the performance of PrometheusExporter scrape jobs over time \
+Reworked multiple dashboards to improve query performance by selecting _all_ items in template variables [#423](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/pull/423) \
+Added script to check open-source package licenses during image build \
+Changed the Dockerfile parent image to registry.access.redhat.com/ubi10/ubi:10.1-1776834862
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 9.0.2 (03/05/2026)
 Added a new REST API endpoint that lists all available  REST API endpoints for grafana-bridge at runtime \
 Added the new config parameter allowing to enable or disable cherrypy access traces \

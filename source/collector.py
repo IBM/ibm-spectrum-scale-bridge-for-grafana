@@ -26,7 +26,7 @@ import analytics
 from queryHandler.Query import Query
 from messages import MSG
 from collections import defaultdict
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Union
 from threading import Thread
 from metadata import MetadataHandler
 from bridgeLogger import getBridgeLogger
@@ -48,7 +48,7 @@ class TimeSeries(object):
 
         self.parse_tags(filtersMap, defaultLabels)
 
-    @cond_execution_time(enabled=analytics.inspect_special)
+    @cond_execution_time(detail_level=2)
     def parse_tags(self, filtersMap, defaultLabels):
         logger = getBridgeLogger()
         if not (filtersMap and defaultLabels):
@@ -146,6 +146,7 @@ class SensorTimeSeries(object):
         self.sensor = sensor
         self.period = period
         self.metrics = {}
+        self.internal_metrics: defaultdict[int, dict[str, Union[int, float]]] = defaultdict(dict)
         self.filtersMap = self._get_all_filters()
         self.labels = self._get_sensor_labels()
 
@@ -266,12 +267,14 @@ class SensorCollector(SensorTimeSeries):
     thread = None
 
     def __init__(self, sensor: str, period: str, logger, request: QueryPolicy,
+                 bundle_id: Optional[str] = None,
                  *args: Any, **kwargs: Any) -> None:
         super().__init__(sensor, period)
         self.__query = None
         self.__ds_interval = None
         self.request = request
         self.logger = logger
+        self.bundle_id = bundle_id  # Store bundle_id as instance property
         self.removeNoData = False
         self.cache = False
         self.cached_metrics = {}
@@ -301,13 +304,11 @@ class SensorCollector(SensorTimeSeries):
         """ Function to start collect in a thread"""
         self.running = True
         if not self.thread:
-            thread_name = list(
-                self.request.metricsaggr.keys())[0] +\
-                '_Collector' if self.request.metricsaggr else self.sensor +\
-                '_Collector'
+            thread_name = list(self.request.metricsaggr.keys())[0] if self.request.metricsaggr else self.sensor
             self.thread = Thread(name=thread_name, target=self.collect)
             self.thread.start()
-            self.thread.name += '_' + str(self.thread.ident)
+            # self.thread.name += '_' + str(self.thread.ident)
+            # self.logger.info(f"Started col thread with ident {self.thread.ident}")
             self.logger.trace(
                 MSG['StartCustomThread'].format(self.thread.name))
 
@@ -396,13 +397,13 @@ class SensorCollector(SensorTimeSeries):
                 self.metrics[columnInfo.keys[0].metric] = mt
         # self.logger.info(f'rows data {str(columnValues)}')
 
-    @cond_execution_time(enabled=analytics.inspect_special)
+    @cond_execution_time(detail_level=2)
     def prepare_static_metrics_data(self):
         incl_metrics = list(self.request.metricsaggr.keys()
                             ) if self.request.metricsaggr else None
         self.setup_static_metrics_data(incl_metrics)
 
-    @cond_execution_time(enabled=analytics.inspect_special)
+    @cond_execution_time(detail_level=2)
     def validate_query_filters(self):
         # check filterBy settings
         if self.request.filters:
@@ -451,7 +452,7 @@ class SensorCollector(SensorTimeSeries):
                 raise cherrypy.HTTPError(
                     400, MSG['AttrNotValid'].format('filter'))
 
-    @cond_execution_time(enabled=analytics.inspect_special)
+    @cond_execution_time(detail_level=2)
     def validate_group_tags(self):
         # check groupBy settings
         if self.request.grouptags:

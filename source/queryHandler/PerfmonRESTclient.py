@@ -103,7 +103,7 @@ class perfHTTPrequestHelper(object):
         self.requestData = reqdata
         self.logger = logger
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(detail_level=4)
     def doRequest(self):
         if self.requestData and isinstance(self.requestData, requests.Request):
             self.session.verify = self.caCert

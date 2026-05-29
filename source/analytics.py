@@ -20,11 +20,16 @@ Created on Feb 09, 2024
 @author: HWASSMAN
 '''
 
-global inspect
-inspect = False
+# Enable or disable HTTP metrics collection for internal execution time tracking
+# When enabled, execution time metrics are stored in internal_metrics
+# When disabled, execution times are only logged
+global http_metrics_enabled
+http_metrics_enabled = False
 
+# Detail level for special inspection (0=disabled, 1-5=increasing detail)
+# Higher values enable more detailed tracing
 global inspect_special
-inspect_special = False
+inspect_special = 0
 
 global urllib3_debug
 urllib3_debug = 0

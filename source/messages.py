@@ -90,7 +90,13 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'ConnApplications': 'Registered applications: \n {}',
        'WrongFormat': 'The {} specified in wrong format.',
        'AuthValidationError': 'Basic authentication data not valid',
-       'RestApiInfo': 'Use http(s)://<graana-bridge ip>:<app port>/endpoints with optional flags \n\t \
+       'BundleIdTrackingDisabled': 'Bundle ID tracking is disabled. Enable http_metrics_enabled in analytics.py',
+       'HttpMetricsRecordFailed': 'Failed to record HTTP metrics: {}',
+       'CollectorThreadTrace': 'Collector thread statistics:\n%s\nCollector thread labels:\n%s\nCollector thread bundle_id:\n%s',
+       'InternalExecutionMetricsCacheFailed': 'Failed to cache internal execution time metrics: {}',
+       'BundleIdGenerated': '{} bundle_id: {}',
+       'BundleIdNotFound': 'Bundle ID not found in registry',
+       'RestApiInfo': 'Use http(s)://<grafana-bridge ip>:<app port>/endpoints with optional flags \n\t \
 -u <credentials> for basic authentication and \n\t \
 -k to bypass certificate verification,\n \
 to list the available REST API endpoints registered with the system.'

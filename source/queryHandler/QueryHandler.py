@@ -27,7 +27,7 @@ import time
 import analytics
 from collections import namedtuple, defaultdict
 from itertools import chain
-from typing import NamedTuple, Tuple
+from typing import NamedTuple, Tuple, Union
 from utils import cond_execution_time, get_runtime_statistics
 
 from .PerfmonRESTclient import perfHTTPrequestHelper, createRequestDataObj, getAuthHandler
@@ -428,6 +428,7 @@ class QueryHandler2:
         self.remote_ip = socket.gethostbyname(server)
         self.port = port
         self.logger = logger
+        self.internal_metrics: defaultdict[int, dict[str, Union[int, float]]] = defaultdict(dict)
 
     @property
     def apiKeyData(self):
@@ -437,7 +438,7 @@ class QueryHandler2:
     def caCert(self):
         return self.__caCert
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(detail_level=3)
     def getTopology(self, ignoreMetrics=False):
         '''
         Returns complete topology as a single JSON string
@@ -487,7 +488,7 @@ class QueryHandler2:
             self.logger.error(
                 'QueryHandler: deleteKeysFromTopology response not valid json: {0} {1}'.format(response[:20], e))
 
-    @cond_execution_time(enabled=analytics.inspect)
+    @cond_execution_time(detail_level=3)
     def runQuery(self, query):
         '''
         runQuery: executes the given query based on the arguments.
@@ -529,6 +530,14 @@ class QueryHandler2:
                 # only terminates after the whole message has been received (Time-To-Last-Byte, TTLB).
                 if analytics.requests_elapsed_time:
                     self.logger.debug(f'response elapsed time: {_response.elapsed.total_seconds()} for request: {str(params)}')
+                if analytics.http_metrics_enabled:
+                    response_size = len(_response.content)
+                    duration = _response.elapsed.total_seconds()
+                    import threading
+                    current = threading.current_thread()
+                    if current.ident is not None:
+                        self.internal_metrics[current.ident]['perfmon_response_duration'] = duration
+                        self.internal_metrics[current.ident]['perfmon_response_amount'] = response_size
                 return _response.content.decode('utf-8', "strict")
             elif _response.status_code == 401:
                 self.logger.trace('Request headers:{}'.format(_response.request.headers))
