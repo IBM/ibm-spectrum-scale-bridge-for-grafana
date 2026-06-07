@@ -24,7 +24,7 @@ Created on Feb 09, 2024
 # When enabled, execution time metrics are stored in internal_metrics
 # When disabled, execution times are only logged
 global http_metrics_enabled
-http_metrics_enabled = False
+http_metrics_enabled = True
 
 # Detail level for special inspection (0=disabled, 1-5=increasing detail)
 # Higher values enable more detailed tracing
