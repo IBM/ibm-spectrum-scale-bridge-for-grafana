@@ -1,4 +1,16 @@
 The following matrix gives a quick overview of the supported software for the IBM Storage Scale bridge for Grafana packages by version number:
+# Version 9.1.0 (06/06/2026)
+Classic Scale:
+ - Python 3.12
+ - CherryPy 18.10.0
+ - IBM Storage Scale system must run 6.0.1 and above
+ - Grafana 12.0.2 and above
+ - OpenTSDB 2.4
+
+Cloud native:
+ - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.1.1
+ - RedHat community-powered Grafana-Operator v5
+
 # Version 9.0.3 (05/29/2026)
 Classic Scale:
  - Python 3.12
@@ -7,7 +19,7 @@ Classic Scale:
  - Grafana 12.0.2 and above
  - OpenTSDB 2.4
 
-  Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.2
  - RedHat community-powered Grafana-Operator v5
 
@@ -19,7 +31,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
-  Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.2
  - RedHat community-powered Grafana-Operator v5
 
@@ -31,7 +43,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
-  Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.2
  - RedHat community-powered Grafana-Operator v5
 
@@ -43,7 +55,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
-  Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 6.0.0.1
  - RedHat community-powered Grafana-Operator v5
 
@@ -55,7 +67,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
- Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3.7
  - RedHat community-powered Grafana-Operator v5
 
@@ -67,7 +79,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
- Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3.6
  - RedHat community-powered Grafana-Operator v5
 
@@ -79,7 +91,7 @@ Classic Scale:
  - Grafana 12.0.0 and above
  - OpenTSDB 2.4
 
- Cloud native:
+Cloud native:
  - IBM Storage Scale Container Native Storage Access(CNSA) devices having minReleaseLevel 5.2.3
  - RedHat community-powered Grafana-Operator v5
 
