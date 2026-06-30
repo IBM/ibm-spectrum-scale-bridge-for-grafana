@@ -5,10 +5,16 @@
 #
 annotated-doc==0.0.4
     # via typer
+certifi==2026.6.17
+    # via requests
+charset-normalizer==3.4.7
+    # via requests
 cheroot==11.1.2
     # via cherrypy
 cherrypy==18.10.0
     # via -r /root/requirements_ubi.in
+idna==3.18
+    # via requests
 jaraco-collections==5.2.1
     # via
     #   cherrypy
@@ -43,6 +49,8 @@ python-dateutil==2.9.0.post0
     # via tempora
 pyyaml==6.0.3
     # via -r /root/requirements_ubi.in
+requests==2.34.2
+    # via -r /root/requirements_ubi.in
 rich==15.0.0
     # via typer
 shellingham==1.5.4
@@ -55,6 +63,8 @@ typer==0.26.8
     # via typer-slim
 typer-slim==0.24.0
     # via jaraco-text
+urllib3==2.7.0
+    # via requests
 zc-lockfile==4.0
     # via cherrypy
 
