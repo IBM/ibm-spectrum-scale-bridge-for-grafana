@@ -1,63 +1,79 @@
+# Global ARGs defined before any FROM statement
 ARG BUILD_ENV=prod
 ARG BASE=registry.access.redhat.com/ubi9/ubi:9.8-1782365825
+# Default to 3.12 if no PY_VER is passed via --build-arg
+ARG PY_VER=3.12
 
 # ==========================================
 # STAGE 1: Production Build Template
 # ==========================================
 FROM $BASE AS build_prod
-ONBUILD COPY ./requirements/requirements_ubi9.txt  /root/requirements_ubi9.txt
+
+ONBUILD ARG PY_VER
+ONBUILD COPY ./requirements/requirements_ubi9.txt /root/requirements_ubi9.txt
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
 ONBUILD RUN mkdir -p /licenses && \
-            dnf install -y python3.12 python3.12-pip && dnf clean all -y && \
-            python3.12 -m pip install --no-cache-dir -r /root/requirements_ubi9.txt && \
-            echo "Installed python version: $(python3.12 -V)" && \
-            echo "Installed python packages: $(python3.12 -m pip list)" && \
-            python3.12 /tmp/get_licenses.py && \
+            dnf install -y python${PY_VER} python${PY_VER}-pip && dnf clean all -y && \
+            python${PY_VER} -m pip install --no-cache-dir -r /root/requirements_ubi9.txt && \
+            echo "Installed python version: $(python${PY_VER} -V)" && \
+            echo "Installed python packages: $(python${PY_VER} -m pip list)" && \
+            python${PY_VER} /tmp/get_licenses.py && \
             echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
             cat /licenses/packages_licenses.tsv && \
-            rm /tmp/get_licenses.py && \
-            dnf remove -y python3.12-pip && dnf clean all -y && \
-            rm -rf /usr/lib/python3.12/site-packages/pip* && \
-            rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test
+            rm -f /tmp/get_licenses.py && \
+            dnf remove -y python${PY_VER}-pip && dnf clean all -y && \
+            rm -rf /usr/lib/python${PY_VER}/site-packages/pip* && \
+            rm -rf /usr/local/lib/python${PY_VER}/site-packages/cherrypy/test && \
+            # Enforce the chosen python version for ENTRYPOINT
+            ln -sf $(which python${PY_VER}) /usr/bin/python3
 
 # ==========================================
 # STAGE 2: Test Build Template
 # ==========================================
 FROM $BASE AS build_test
+
+ONBUILD ARG PY_VER
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
 ONBUILD RUN mkdir -p /licenses && \
-            dnf install -y python3.12 python3.12-pip && dnf clean all -y && \
-            # yum install -y python39 python3-pip && \
-            python3.12 -m pip install pip-tools && \
-            python3.12 -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
+            dnf install -y python${PY_VER} python${PY_VER}-pip && dnf clean all -y && \
+            python${PY_VER} -m pip install pip-tools && \
+            python${PY_VER} -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
             echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)" && \
-            python3.12 -m pip install --no-cache-dir --ignore-installed -r /root/requirements_ubi9.txt && \
-            echo "Installed python version: $(python3.12 -V)" && \
-            echo "Installed python packages: $(python3.12 -m pip list)" && \
-            python3.12 /tmp/get_licenses.py && \
+            python${PY_VER} -m pip install --no-cache-dir --ignore-installed -r /root/requirements_ubi9.txt && \
+            echo "Installed python version: $(python${PY_VER} -V)" && \
+            echo "Installed python packages: $(python${PY_VER} -m pip list)" && \
+            python${PY_VER} /tmp/get_licenses.py && \
             echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
             cat /licenses/packages_licenses.tsv && \
-            rm /tmp/get_licenses.py && \
-            dnf remove -y python3.12-pip && dnf clean all -y && \
-            # rm -rf /usr/bin/pip* && rm -rf /usr/lib/python3.9/site-packages/pip* && \
-            rm -rf /usr/lib/python3.12/site-packages/pip* && \
-            rm -rf /usr/local/lib/python3.12/site-packages/cherrypy/test
+            rm -f /tmp/get_licenses.py && \
+            dnf remove -y python${PY_VER}-pip && dnf clean all -y && \
+            rm -rf /usr/lib/python${PY_VER}/site-packages/pip* && \
+            rm -rf /usr/local/lib/python${PY_VER}/site-packages/cherrypy/test && \
+            # Enforce the chosen python version for ENTRYPOINT
+            ln -sf $(which python${PY_VER}) /usr/bin/python3
 
 # ==========================================
 # STAGE 3: Custom Build Template
 # ==========================================
 FROM $BASE AS build_custom
+
+USER root
+
 ONBUILD COPY ./requirements/requirements.in  /root/requirements.in
-ONBUILD RUN echo "Already using python container as base image. No need to install it." && \ 
-            python3 -m pip install --no-cache-dir -r /root/requirements.in && \
-            echo "Installed python packages: $(python3 -m pip list)"
+ONBUILD RUN echo "Already using python container as base image. No need to install it." && \
+            _PY_VER=$(python3 --version 2>&1 | sed 's/Python \([0-9]*\.[0-9]*\).*/\1/') && \
+            echo "Working with python version: ${_PY_VER}" && \
+            python${_PY_VER} -m pip install --no-cache-dir -r /root/requirements.in && \
+            echo "Installed python packages: $(python${_PY_VER} -m pip list)" && \
+            # Enforce the chosen python version for ENTRYPOINT
+            ln -sf $(which python${_PY_VER}) /usr/bin/python3
 
 # ==========================================
 # FINAL STAGE: Target Image
 # ==========================================
 FROM build_${BUILD_ENV}
-
+ARG PY_VER
 ARG BUILD_ENV
 ARG BASE
 
@@ -169,6 +185,8 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 
 # Switch user
 USER $UID
+
+RUN echo "Used python version: python${PY_VER}"
 
 # CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
 CMD ["sh", "-c", "\
