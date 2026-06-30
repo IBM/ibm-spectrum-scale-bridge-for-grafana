@@ -11,4 +11,4 @@ cherrypy
 PyYAML
 # psutil
 # urllib3
-# requests
+requests
