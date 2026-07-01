@@ -9,8 +9,6 @@ cheroot==11.1.2
     # via cherrypy
 cherrypy==18.10.0
     # via -r /root/requirements_ubi.in
-click==8.4.1
-    # via typer
 jaraco-collections==5.2.1
     # via
     #   cherrypy
@@ -53,7 +51,7 @@ six==1.17.0
     # via python-dateutil
 tempora==5.9.0
     # via portend
-typer==0.25.1
+typer==0.26.8
     # via typer-slim
 typer-slim==0.24.0
     # via jaraco-text
