@@ -2,11 +2,21 @@ import logging
 import os
 import json
 from unittest import mock
+from nose2.tools.such import helper as assert_helper
+from nose2.tools.decorators import with_setup
 from source.bridgeLogger import configureLogging
 from source.queryHandler.Topo import Topo
 from source.collector import QueryPolicy, SensorCollector
-from nose2.tools.such import helper as assert_helper
-from nose2.tools.decorators import with_setup
+from source.__version__ import __version__ as version
+
+
+def _parse_version(v):
+    """Return a comparable tuple of ints, ignoring any pre/dev suffix."""
+    return tuple(int(x) for x in v.split('+')[0].split('-')[0].split('.'))
+
+
+_v = _parse_version(version)
+_old_query_frmat = _v < (8, 1, 4) or (9, 0, 0) <= _v < (9, 0, 3)
 
 
 def my_setup():
@@ -33,10 +43,16 @@ def test_case01():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
-            '', '-z', '-D', prometheus_attrs.get('sensor'),
-            prometheus_attrs.get('period'),
-            f"last {prometheus_attrs.get('period')}")
+        if _old_query_frmat:
+            queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+                '', '-z', '-D', prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('period')}")
+        else:
+            queryString = 'get -jzD group {0} bucket_size {1} {2}'.format(
+                prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('period')}")
         queryString += '\n'
         assert "group" in query.__str__()
         assert "last" in query.__str__()
@@ -54,10 +70,16 @@ def test_case02():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
-            '', '', '-D', prometheus_attrs.get('sensor'),
-            prometheus_attrs.get('period'),
-            f"last {prometheus_attrs.get('nsamples')}")
+        if _old_query_frmat:
+            queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+                '', '', '-D', prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('nsamples')}")
+        else:
+            queryString = 'get -jD group {0} bucket_size {1} {2}'.format(
+                prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('nsamples')}")
         queryString += '\n'
         assert "group" in query.__str__()
         assert "last" in query.__str__()
@@ -74,10 +96,16 @@ def test_case03():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
-            '', '-z', '-D', prometheus_attrs.get('sensor'),
-            prometheus_attrs.get('period'),
-            f"last {prometheus_attrs.get('period')}")
+        if _old_query_frmat:
+            queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+                '', '-z', '-D', prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('period')}")
+        else:
+            queryString = 'get -jzD group {0} bucket_size {1} {2}'.format(
+                prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('period')}")
         queryString += ' from ' + ",".join(pquery_filters)
         queryString += '\n'
         assert "group" in query.__str__()
@@ -97,12 +125,20 @@ def test_case04():
         request = QueryPolicy(**prometheus_attrs)
         query = request.get_zimon_query()
         query.includeDiskData = md_instance.includeDiskData.return_value
-        queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
-            '', '', '-D', prometheus_attrs.get('sensor'),
-            prometheus_attrs.get('period'),
-            f"last {prometheus_attrs.get('nsamples')}")
+        if _old_query_frmat:
+            queryString = 'get -j {0} {1} {2} group {3} bucket_size {4} {5}'.format(
+                '', '', '-D', prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('nsamples')}")
+        else:
+            queryString = 'get -jD group {0} bucket_size {1} {2}'.format(
+                prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('nsamples')}")
         queryString += ' from ' + ",".join(pquery_filters)
         queryString += '\n'
+        print(query.__str__())
+        print(queryString)
         assert "group" in query.__str__()
         assert "last" in query.__str__()
         assert "from" in query.__str__()
@@ -110,10 +146,33 @@ def test_case04():
 
 
 @with_setup(my_setup)
+def test_case05():
+    if not _old_query_frmat:
+        prometheus_attrs.update({'skipNullValues': True})
+        with mock.patch('source.collector.QueryPolicy.md') as md:
+            md_instance = md.return_value
+            md_instance.includeDiskData.return_value = False
+            md_instance.logger = logging.getLogger(__name__)
+            request = QueryPolicy(**prometheus_attrs)
+            query = request.get_zimon_query()
+            query.includeDiskData = md_instance.includeDiskData.return_value
+            queryString = 'get -jzsD group {0} bucket_size {1} {2}'.format(
+                prometheus_attrs.get('sensor'),
+                prometheus_attrs.get('period'),
+                f"last {prometheus_attrs.get('period')}")
+            queryString += '\n'
+            assert "group" in query.__str__()
+            assert "last" in query.__str__()
+            assert "from" not in query.__str__()
+            assert query.skipNullValues is True
+            assert queryString == query.__str__()
+
+
+@with_setup(my_setup)
 @mock.patch('source.collector.QueryPolicy.md')
 @mock.patch('source.collector.SensorTimeSeries.md')
 @mock.patch('source.collector.SensorCollector.md')
-def test_case05(col_md, sts_md, md):
+def test_case06(col_md, sts_md, md):
     sensor = prometheus_attrs.get('sensor')
     period = prometheus_attrs.get('period')
     logger = logging.getLogger(__name__)
@@ -143,7 +202,7 @@ def test_case05(col_md, sts_md, md):
 @mock.patch('source.collector.QueryPolicy.md')
 @mock.patch('source.collector.SensorTimeSeries.md')
 @mock.patch('source.collector.SensorCollector.md')
-def test_case06(col_md, sts_md, md):
+def test_case07(col_md, sts_md, md):
     sensor = prometheus_attrs.get('sensor')
     period = prometheus_attrs.get('period')
     logger = logging.getLogger(__name__)

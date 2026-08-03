@@ -137,7 +137,7 @@ class PrometheusExporter(object):
         attrs = {'sensor': sensor, 'period': period}
 
         if self.raw_data or "counter" in self.TOPO.getSensorMetricTypes(sensor).values():
-            attrs.update({'nsamples': period, 'rawData': True})
+            attrs.update({'nsamples': period, 'rawData': True, 'skipNullValues': True})
             self.logger.debug(MSG['SensorForceRawData'].format(sensor))
         else:
             attrs.update({'nsamples': 1})

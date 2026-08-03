@@ -15,14 +15,15 @@ def test_case01():
     assert len(str(query)) > 0
     assert "cpu_user" in str(query)
     assert "-ar" not in str(query)
+    assert "-j" in str(query)
 
 
 @with_setup(my_setup)
 def test_case02():
     query = Query(metrics1)
-    assert "-ar" in str(query)
+    assert "-jar" in str(query)
     query.addMetric('cpu_user')
-    assert "-ar" in str(query)
+    assert "-jar" in str(query)
 
 
 @with_setup(my_setup)
@@ -30,11 +31,12 @@ def test_case03():
     for sensor in capSensors:
         query = Query()
         query.sensor = sensor
-        assert "-ar" in str(query)
+        assert "-jar" in str(query)
     query = Query()
     query.sensor = 'CPU'
-    assert "-ar" not in str(query)
+    assert "-jar" not in str(query)
+    assert "-j" in str(query)
     assert "group" in str(query)
     query = Query(includeDiskData=True)
     query.sensor = 'GPFSDiskCap'
-    assert "-ar" in str(query)
+    assert "-jar" in str(query)
