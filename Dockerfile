@@ -12,18 +12,19 @@ FROM $BASE AS build_prod
 ONBUILD ARG PY_VER
 ONBUILD COPY ./requirements/requirements_ubi9.txt /root/requirements_ubi9.txt
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
-ONBUILD RUN mkdir -p /licenses && \
+ONBUILD RUN LICENSES_DIR=/licenses && \
+            mkdir -p ${LICENSES_DIR} && \
             dnf install -y python${PY_VER} python${PY_VER}-pip && dnf clean all -y && \
             python${PY_VER} -m pip install --no-cache-dir -r /root/requirements_ubi9.txt && \
-            echo "Installed python version: $(python${PY_VER} -V)" && \
-            echo "Installed python packages: $(python${PY_VER} -m pip list)" && \
-            python${PY_VER} /tmp/get_licenses.py && \
-            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
-            cat /licenses/packages_licenses.tsv && \
-            rm -f /tmp/get_licenses.py && \
             dnf remove -y python${PY_VER}-pip && dnf clean all -y && \
             rm -rf /usr/lib/python${PY_VER}/site-packages/pip* && \
             rm -rf /usr/local/lib/python${PY_VER}/site-packages/cherrypy/test && \
+            echo "Installed python version: $(python${PY_VER} -V)" && \
+            echo "Installed python packages compiled in requirements_ubi10 file" && \
+            python${PY_VER} /tmp/get_licenses.py ${LICENSES_DIR}/packages_licenses.tsv && \
+            echo "Installed packages license info stored in ${LICENSES_DIR}/packages_licenses.tsv:" && \
+            cat ${LICENSES_DIR}/packages_licenses.tsv && \
+            rm -f /tmp/get_licenses.py && \
             # Enforce the chosen python version for ENTRYPOINT
             ln -sf $(which python${PY_VER}) /usr/bin/python3
 
@@ -35,21 +36,22 @@ FROM $BASE AS build_test
 ONBUILD ARG PY_VER
 ONBUILD COPY ./requirements/requirements_ubi.in  /root/requirements_ubi.in
 ONBUILD COPY get_licenses.py /tmp/get_licenses.py
-ONBUILD RUN mkdir -p /licenses && \
+ONBUILD RUN LICENSES_DIR=/licenses && \
+            mkdir -p ${LICENSES_DIR} && \
             dnf install -y python${PY_VER} python${PY_VER}-pip && dnf clean all -y && \
             python${PY_VER} -m pip install pip-tools && \
             python${PY_VER} -m piptools compile /root/requirements_ubi.in  --output-file /root/requirements_ubi9.txt && \
             echo "Compiled python packages: $(cat /root/requirements_ubi9.txt)" && \
             python${PY_VER} -m pip install --no-cache-dir --ignore-installed -r /root/requirements_ubi9.txt && \
-            echo "Installed python version: $(python${PY_VER} -V)" && \
-            echo "Installed python packages: $(python${PY_VER} -m pip list)" && \
-            python${PY_VER} /tmp/get_licenses.py && \
-            echo "Installed packages license info stored in /licenses/packages_licenses.tsv:" && \
-            cat /licenses/packages_licenses.tsv && \
-            rm -f /tmp/get_licenses.py && \
             dnf remove -y python${PY_VER}-pip && dnf clean all -y && \
             rm -rf /usr/lib/python${PY_VER}/site-packages/pip* && \
             rm -rf /usr/local/lib/python${PY_VER}/site-packages/cherrypy/test && \
+            echo "Installed python version: $(python${PY_VER} -V)" && \
+            echo "Installed python packages compiled in requirements_ubi10 file" && \
+            python${PY_VER} /tmp/get_licenses.py ${LICENSES_DIR}/packages_licenses.tsv && \
+            echo "Installed packages license info stored in ${LICENSES_DIR}/packages_licenses.tsv:" && \
+            cat ${LICENSES_DIR}/packages_licenses.tsv && \
+            rm -f /tmp/get_licenses.py && \
             # Enforce the chosen python version for ENTRYPOINT
             ln -sf $(which python${PY_VER}) /usr/bin/python3
 
@@ -185,8 +187,6 @@ RUN chown -R $UID:$GID /opt/IBM/bridge && \
 
 # Switch user
 USER $UID
-
-RUN echo "Used python version: python${PY_VER}"
 
 # CMD ["sh", "-c", "python3 zimonGrafanaIntf.py -c $LOGLEVEL -s $SERVER -r $PROTOCOL -b $BASICAUTH -u $BASICU -a $BASICP -p $PORT -e $PROMETHEUS -P $SERVERPORT -t $TLSKEYPATH -l $LOGPATH -k $TLSKEYFILE -m $TLSCERTFILE -n $APIKEYNAME -v $APIKEYVALUE -w $RAWCOUNTERS"]
 CMD ["sh", "-c", "\
