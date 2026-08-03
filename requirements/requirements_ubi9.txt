@@ -3,11 +3,11 @@
 #
 #    pip-compile --output-file=/root/requirements_ubi9.txt /root/requirements_ubi.in
 #
-annotated-doc==0.0.4
+annotated-doc==0.0.5
     # via typer
-certifi==2026.6.17
+certifi==2026.7.22
     # via requests
-charset-normalizer==3.4.7
+charset-normalizer==3.4.9
     # via requests
 cheroot==11.1.2
     # via cherrypy
@@ -23,12 +23,12 @@ jaraco-context==6.1.2
     # via
     #   jaraco-text
     #   tempora
-jaraco-functools==4.5.0
+jaraco-functools==4.6.0
     # via
     #   cheroot
     #   jaraco-text
     #   tempora
-jaraco-text==4.2.0
+jaraco-text==4.3.0
     # via jaraco-collections
 markdown-it-py==4.2.0
     # via rich
@@ -40,7 +40,6 @@ more-itertools==11.1.0
     #   cherrypy
     #   jaraco-functools
     #   jaraco-text
-    #   tempora
 portend==3.2.1
     # via cherrypy
 pygments==2.20.0
@@ -57,12 +56,14 @@ shellingham==1.5.4
     # via typer
 six==1.17.0
     # via python-dateutil
-tempora==5.9.0
+tempora==5.12.0
     # via portend
-typer==0.26.8
+typer==0.27.1
     # via typer-slim
 typer-slim==0.24.0
     # via jaraco-text
+typing-extensions==4.16.0
+    # via tempora
 urllib3==2.7.0
     # via requests
 zc-lockfile==4.0

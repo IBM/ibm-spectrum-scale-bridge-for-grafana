@@ -1,6 +1,6 @@
 # Global ARGs defined before any FROM statement
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.8-1782365825
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.8-1785388874
 # Default to 3.12 if no PY_VER is passed via --build-arg
 ARG PY_VER=3.12
 
@@ -82,7 +82,7 @@ ARG BASE
 
 LABEL com.ibm.name="IBM Storage Scale bridge for Grafana"
 LABEL com.ibm.vendor="IBM"
-LABEL com.ibm.version="8.1.4-dev"
+LABEL com.ibm.version="8.1.4"
 LABEL com.ibm.url="https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana"
 LABEL com.ibm.description="This tool translates the IBM Storage Scale performance data collected internally \
 to the query requests acceptable by the Grafana integrated openTSDB plugin"
