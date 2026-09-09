@@ -27,7 +27,7 @@ import logging
 import os
 import re
 
-from messages import ERR, MSG
+from messages import MSG
 from bridgeLogger import getBridgeLogger
 
 
@@ -138,10 +138,6 @@ def _build_section_maps(config_manager, brFullConfig=None):
          (already handled by configparser above).
       2. ``_parse_commented_keys`` — scans all INI files for commented-out
          assignments; custom file wins over template (last-file-wins).
-    Since CLI args only override values of keys already in the config schema,
-    any *brFullConfig* key that remains unmapped after both passes indicates a
-    bug (e.g. unreadable template or unknown CLI flag) and is logged as a
-    warning rather than silently placed in an arbitrary section.
     """
     key_to_section = {}
 
@@ -227,8 +223,6 @@ class ConfigApi(object):
         self._config = brFullConfig
         self._cm = config_manager
 
-        # Build section maps dynamically from the INI files, with self._config
-        # providing coverage for keys that are commented-out in the template.
         self._key_to_section, self._section_to_keys = _build_section_maps(
             config_manager, self._config)
 
@@ -275,25 +269,13 @@ class ConfigApi(object):
     def _persist(self, updates):
         """Write *updates* back to the effective custom config file.
 
-        A value of ``None`` removes the key from the file so the bridge
-        ignores it on next restart.  A real value writes the key under the
-        correct section.
-
-        In both cases the key is first evicted from every section in the file
-        so that a key previously written to the wrong section by an older code
-        version is corrected automatically.
-
-        The authoritative section for a key is resolved from the template INI
-        (via ``_parse_commented_keys``) rather than from ``self._key_to_section``
-        which may be tainted by a misplaced entry in the custom file.
-
         Returns ``True`` when written successfully, a message string explaining
         why persistence was skipped, or ``False`` on an I/O error.
         """
-        target = (self._cm.customFile or
-                  (self._cm.DEFAULT_CUSTOM_CONFIG
-                   if os.path.isfile(self._cm.DEFAULT_CUSTOM_CONFIG)
-                   else None))
+        target = (self._cm.customFile
+                  or (self._cm.DEFAULT_CUSTOM_CONFIG
+                      if os.path.isfile(self._cm.DEFAULT_CUSTOM_CONFIG)
+                      else None))
         if not target:
             self.logger.warning(MSG['ConfigApiNoTarget'])
             return MSG['ConfigApiNoTarget']
@@ -316,8 +298,8 @@ class ConfigApi(object):
             if value is not None:
                 # Template-derived section wins; fall back to runtime map for
                 # keys that are live (not commented) in the template.
-                section = (template_sections.get(key) or
-                           self._key_to_section.get(key))
+                section = (template_sections.get(key)
+                           or self._key_to_section.get(key))
                 if section:
                     if not cfg.has_section(section):
                         cfg.add_section(section)

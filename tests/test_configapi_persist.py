@@ -6,12 +6,8 @@ import sys
 import tempfile
 import configparser
 from unittest.mock import MagicMock
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'source'))
-
-from configapi import ConfigApi, RESTART_REQUIRED_KEYS
-from messages import MSG
-
+from source.configapi import ConfigApi
+from source.messages import MSG
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -50,7 +46,6 @@ def _read_ini(path):
     cfg.optionxform = str
     cfg.read(path)
     return cfg
-
 
 # ---------------------------------------------------------------------------
 # _persist(): null removes the key
@@ -142,8 +137,6 @@ def test_persist_null_removes_key_from_wrong_section():
             "port unexpectedly appeared in [opentsdb_plugin]"
     finally:
         os.unlink(tmp)
-
-
 
 # ---------------------------------------------------------------------------
 # _apply_update(): RESTART_REQUIRED_KEYS are persisted

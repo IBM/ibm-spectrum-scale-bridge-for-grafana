@@ -12,11 +12,8 @@ import os
 import re
 import sys
 import tempfile
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'source'))
-
-from confParser import ConfigManager
-from metaclasses import Singleton
+from source.confParser import ConfigManager  # noqa: E402
+from source.metaclasses import Singleton  # noqa: E402
 
 CUSTOM_WITH_AUTH = os.path.join(
     os.path.dirname(__file__), 'test_data', 'custom_with_basic_auth.ini')

@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'source'))
 
-from configapi import ConfigApi
+from configapi import ConfigApi  # noqa: E402
 
 SOURCE_DIR = os.path.join(os.path.dirname(__file__), '..', 'source')
 TEMPLATE = os.path.join(SOURCE_DIR, 'config.ini')
@@ -103,6 +103,7 @@ def test_basic_auth_section_contains_only_expected_keys():
     basic_auth = view.get('basic_auth', {})
     assert set(basic_auth.keys()) == {'enabled', 'username'}, \
         f"unexpected keys in basic_auth: {set(basic_auth.keys())}"
+
 
 def test_section_to_keys_basic_auth_contains_only_expected_keys():
     """_section_to_keys['basic_auth'] must contain exactly the keys documented

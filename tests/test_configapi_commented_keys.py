@@ -1,10 +1,6 @@
 import os
 import tempfile
-import sys
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'source'))
-
-from configapi import _parse_commented_keys
+from source.configapi import _parse_commented_keys
 
 
 def _write_ini(content):
