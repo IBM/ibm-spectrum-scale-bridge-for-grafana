@@ -156,6 +156,7 @@ def test_malformed_ini_detected_by_base64_key_check():
     f = tempfile.NamedTemporaryFile(mode='w', suffix='.ini', delete=False)
     f.write(malformed_content)
     f.close()
+
     def _clear_cm_singletons():
         stale = [cls for cls in list(Singleton._instances)
                  if cls.__name__ == 'ConfigManager']
