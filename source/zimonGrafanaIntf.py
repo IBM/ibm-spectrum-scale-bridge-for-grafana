@@ -43,6 +43,8 @@ from profiler import Profiler
 from refresher import TopoRefreshManager
 from watcher import ConfigWatcher
 from resthelper import RestHelpGenerator
+from configapi import ConfigApi
+from confParser import ConfigManager
 from cherrypy import _cperror
 from cherrypy.lib.cpstats import StatsPage
 from stats import HTTPMetricsAPI, get_metrics_collector
@@ -419,6 +421,30 @@ def main(argv):
                              {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                              }
                             )
+
+    # register Config REST API
+    config_api = ConfigApi(logger, args, ConfigManager())
+    cherrypy.tree.mount(config_api, '/config',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    cherrypy.tree.mount(config_api.sections, '/config/sections',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    cherrypy.tree.mount(config_api.section, '/config/section',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    cherrypy.tree.mount(config_api.init, '/config/init',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+    registered_apps.append("Config REST API for runtime configuration management")
 
     # register RestHelpGenerator
     resthelper = RestHelpGenerator(logger)
