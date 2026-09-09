@@ -2,16 +2,12 @@
 persistence introduced to support "disabling" optional keys via the API.
 """
 import os
-import sys
 import tempfile
 import configparser
 from unittest.mock import MagicMock
 from source.configapi import ConfigApi
 from source.messages import MSG
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 def _make_config_api(ini_content):
     """Return a ConfigApi instance backed by a real temp custom file."""
@@ -47,9 +43,6 @@ def _read_ini(path):
     cfg.read(path)
     return cfg
 
-# ---------------------------------------------------------------------------
-# _persist(): null removes the key
-# ---------------------------------------------------------------------------
 
 def test_persist_null_removes_existing_key():
     """Passing None for a key that exists in the file removes it."""
@@ -102,7 +95,6 @@ def test_persist_mixed_set_and_remove():
         os.unlink(tmp)
 
 
-
 def test_persist_moves_key_from_wrong_section_to_correct_one():
     """If a key was previously written to the wrong section (e.g. 'server'
     instead of 'opentsdb_plugin'), _persist() evicts it from all sections
@@ -138,9 +130,6 @@ def test_persist_null_removes_key_from_wrong_section():
     finally:
         os.unlink(tmp)
 
-# ---------------------------------------------------------------------------
-# _apply_update(): RESTART_REQUIRED_KEYS are persisted
-# ---------------------------------------------------------------------------
 
 def test_apply_update_restart_key_is_pending_and_persisted():
     """A RESTART_REQUIRED_KEY goes into restart_required (not rejected) and is persisted."""
@@ -214,9 +203,6 @@ def test_apply_update_restart_and_writable_together():
     finally:
         os.unlink(tmp)
 
-# ---------------------------------------------------------------------------
-# _persist(): string return when write is blocked
-# ---------------------------------------------------------------------------
 
 def _make_config_api_no_custom():
     """ConfigApi with no custom file and a non-existent DEFAULT_CUSTOM_CONFIG."""

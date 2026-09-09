@@ -10,7 +10,6 @@ These tests confirm that the live custom_with_basic_auth.ini file:
 """
 import os
 import re
-import sys
 import tempfile
 from source.confParser import ConfigManager  # noqa: E402
 from source.metaclasses import Singleton  # noqa: E402
