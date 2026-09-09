@@ -63,7 +63,8 @@ def _fresh_cm(custom_file):
 
 def test_parse_defaults_contains_expected_keys():
     """parse_defaults() must include all expected keys from the custom file."""
-    cm = _fresh_cm(CUSTOM_WITH_AUTH)
+    cm = ConfigManager()
+    cm.customFile = CUSTOM_WITH_AUTH
     flat = cm.parse_defaults()
     missing = EXPECTED_KEYS - flat.keys()
     assert not missing, f"Keys missing from parsed config: {missing}"
@@ -102,7 +103,8 @@ def test_parse_defaults_has_no_extra_unknown_keys():
 
 def test_password_value_is_correct_base64_string():
     """The 'password' key must hold exactly the base64 string from the INI."""
-    cm = _fresh_cm(CUSTOM_WITH_AUTH)
+    cm = ConfigManager()
+    cm.customFile = CUSTOM_WITH_AUTH
     flat = cm.parse_defaults()
     assert 'password' in flat, "'password' key must be present"
     assert flat['password'] == 'TXlWZXJ5U3Ryb25nUGFzc3cwcmQhCg==', (
