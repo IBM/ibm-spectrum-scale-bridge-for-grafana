@@ -42,8 +42,18 @@ _BASE64_KEY_RE = re.compile(r'^[A-Za-z0-9+/]{20,}={0,2}$')
 
 
 def _fresh_cm(custom_file):
-    """Return a fresh (non-singleton) ConfigManager pointed at *custom_file*."""
-    Singleton._instances.clear()
+    """Return a fresh ConfigManager instance pointed at *custom_file*.
+
+    Clears ALL singleton keys whose class name is 'ConfigManager' to handle
+    the case where confParser is imported under two different module paths
+    (e.g. 'confParser' via sys.path and 'source.confParser' as a package),
+    which would produce two distinct class objects and therefore two
+    independent singleton slots that a plain .clear() call may miss.
+    """
+    stale = [cls for cls in list(Singleton._instances)
+             if cls.__name__ == 'ConfigManager']
+    for cls in stale:
+        del Singleton._instances[cls]
     return ConfigManager(custom_file)
 
 
@@ -146,8 +156,14 @@ def test_malformed_ini_detected_by_base64_key_check():
     f = tempfile.NamedTemporaryFile(mode='w', suffix='.ini', delete=False)
     f.write(malformed_content)
     f.close()
+    def _clear_cm_singletons():
+        stale = [cls for cls in list(Singleton._instances)
+                 if cls.__name__ == 'ConfigManager']
+        for cls in stale:
+            del Singleton._instances[cls]
+
     try:
-        Singleton._instances.clear()
+        _clear_cm_singletons()
         cm = ConfigManager(f.name)
         flat = cm.parse_defaults()
         # The base64 string should be detected as a suspicious key
@@ -159,4 +175,4 @@ def test_malformed_ini_detected_by_base64_key_check():
                 f"detection regex missed garbage key: {k!r}"
     finally:
         os.unlink(f.name)
-        Singleton._instances.clear()
+        _clear_cm_singletons()
