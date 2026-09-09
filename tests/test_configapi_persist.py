@@ -31,7 +31,7 @@ def _make_config_api(ini_content):
 
     # Minimal brFullConfig with the keys used in tests
     brFullConfig = {'port': 4242, 'rawCounters': True, 'prometheus': None,
-                'logLevel': 15, 'includeDiskData': False, 'retryDelay': 60}
+                    'logLevel': 15, 'includeDiskData': False, 'retryDelay': 60}
 
     api = ConfigApi(logger, brFullConfig, cm)
     return api, f.name
