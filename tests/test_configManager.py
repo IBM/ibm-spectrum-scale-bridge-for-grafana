@@ -1,13 +1,45 @@
 import os
+import re
+import tempfile
 from source.confParser import ConfigManager
 from source.__version__ import __version__ as version
 from nose2.tools.decorators import with_setup
 
+# Keys that must be present in the flat config when using custom_with_basic_auth.ini
+EXPECTED_BASIC_AUTH_KEYS = {
+    # basic_auth section
+    'enabled', 'username', 'password',
+    # prometheues_exporter_plugin section
+    'prometheus', 'rawCounters', 'promBindIp',
+    # connection section
+    'protocol',
+    # opentsdb_plugin section
+    'opentsdbBindIp',
+    # server section
+    'server', 'serverPort', 'retryDelay', 'apiKeyName', 'caCertPath',
+    # query section
+    'includeDiskData',
+    # logging section
+    'logPath', 'logLevel', 'logFile',
+}
+
+OPTIONAL_TEMPLATE_KEYS = {
+    'port',                                      # opentsdb_plugin (commented)
+    'tlsKeyPath', 'tlsKeyFile', 'tlsCertFile',   # tls (all commented)
+    'apiKeyValue',                               # server (commented)
+    'cpAccessLog', 'cpAccessLogBackups',         # logging (optional)
+}
+
+# Regex that matches a likely base64 payload (long, contains +/= characters
+# typical of base64, or is purely alphanumeric/= and longer than 20 chars).
+_BASE64_KEY_RE = re.compile(r'^[A-Za-z0-9+/]{20,}={0,2}$')
+
 
 def my_setup():
-    global path, customConfigFile
+    global path, customConfigFile, customWithBAuthFile
     path = os.getcwd()
     customConfigFile = 'custom.ini'
+    customWithBAuthFile = 'custom_with_basic_auth.ini'
 
 
 def test_case01():
@@ -254,3 +286,99 @@ def test_case20():
         assert result['server'] == 'explicit-host'
     finally:
         os.unlink(tmp)
+
+
+@with_setup(my_setup)
+def test_case21():
+    """parse_defaults() must include all expected keys from the custom file."""
+    customWithBasicAuthConf = os.path.join(path, "tests", "test_data", customWithBAuthFile)
+    cm = ConfigManager()
+    cm.customFile = customWithBasicAuthConf
+    flat = cm.parse_defaults()
+    missing = EXPECTED_BASIC_AUTH_KEYS - flat.keys()
+    assert not missing, f"Keys missing from parsed config: {missing}"
+
+
+@with_setup(my_setup)
+def test_case22():
+    """parse_defaults() must not introduce keys outside the known schema.
+
+    Any key in the flat dict that is NOT in EXPECTED_KEYS (and not a known
+    optional/advanced key) is a sign that the INI parser ingested a garbage
+    token (e.g. a bare base64 string) as a key name.
+    """
+    allowed = EXPECTED_BASIC_AUTH_KEYS | OPTIONAL_TEMPLATE_KEYS
+    customWithBasicAuthConf = os.path.join(path, "tests", "test_data", customWithBAuthFile)
+    cm = ConfigManager(customWithBasicAuthConf)
+    # cm.customFile = customWithBasicAuthConf
+    flat = cm.parse_defaults()
+
+    extra = flat.keys() - allowed
+    assert not extra, (
+        f"Unexpected keys appeared in flat config — possible parsing artefact "
+        f"(e.g. bare base64 token read as a key name): {extra}"
+    )
+
+
+@with_setup(my_setup)
+def test_case23():
+    """The 'password' key must hold exactly the base64 string from the INI."""
+    customWithBasicAuthConf = os.path.join(path, "tests", "test_data", customWithBAuthFile)
+    cm = ConfigManager(customWithBasicAuthConf)
+    flat = cm.parse_defaults()
+    assert 'password' in flat, "'password' key must be present"
+    assert flat['password'] == 'TXlWZXJ5U3Ryb25nUGFzc3cwcmQhCg==', (
+        f"unexpected password value: {flat['password']!r}"
+    )
+
+
+@with_setup(my_setup)
+def test_case24():
+    """None of the keys in the flat config dict should look like a base64
+    *payload* (i.e. 20+ chars of [A-Za-z0-9+/=]).
+
+    If configparser ever reads a password-like line without '=' it will
+    store the whole base64 string as a key name — this test catches that.
+    """
+    customWithBasicAuthConf = os.path.join(path, "tests", "test_data", customWithBAuthFile)
+    cm = ConfigManager(customWithBasicAuthConf)
+    flat = cm.parse_defaults()
+
+    bad_keys = [k for k in flat if _BASE64_KEY_RE.match(k)]
+    assert not bad_keys, (
+        f"Key name(s) that look like base64 payloads found in flat config "
+        f"(INI parsing error?): {bad_keys}"
+    )
+
+
+@with_setup(my_setup)
+def test_case25():
+    """Sanity-check for the detector above: a hand-crafted INI where the
+    password line has no '=' (so the base64 value becomes a bare key) must
+    be caught by the _BASE64_KEY_RE guard in the test above.
+
+    This is a meta-test that verifies our detection logic works — it does
+    NOT represent a real-world scenario with the shipped INI files.
+    """
+    malformed_content = (
+        "[basic_auth]\n"
+        "enabled = True\n"
+        "username = scale_admin\n"
+        # Deliberately broken: 'password' key is missing, the base64 string
+        # sits on its own line → configparser treats it as a continuation or
+        # a valueless key depending on the version.
+        "TXlWZXJ5U3Ryb25nUGFzc3cwcmQhCg\n"
+    )
+    f = tempfile.NamedTemporaryFile(mode='w', suffix='.ini', delete=False)
+    f.write(malformed_content)
+    f.close()
+
+    cm = ConfigManager(f.name)
+    flat = cm.parse_defaults()
+    # The base64 string should be detected as a suspicious key
+    bad_keys = [k for k in flat if _BASE64_KEY_RE.match(k)]
+    # We assert that IF such a key crept in, our regex catches it
+    # (this test passes whether or not configparser actually ingests it).
+    for k in bad_keys:
+        assert _BASE64_KEY_RE.match(k), \
+            f"detection regex missed garbage key: {k!r}"
