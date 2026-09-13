@@ -20,6 +20,7 @@ Created on Apr 4, 2017
 @author: HWASSMAN
 '''
 
+import zipbootstrap  # noqa: F401 — extends sys.path before any third-party import
 import cherrypy
 import json
 import sys
