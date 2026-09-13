@@ -20,6 +20,28 @@ Created on Apr 4, 2017
 @author: HWASSMAN
 '''
 
+# ---------------------------------------------------------------------------
+# Zip bootstrap — must run before any third-party import.
+# On bare-metal GPFS nodes cherrypy may not be installed system-wide but is
+# bundled in the GPFS external-libs zip.  If cherrypy is not importable and
+# the zip exists, add it to sys.path so the rest of the imports succeed
+# without any change to the environment outside this process.
+# ---------------------------------------------------------------------------
+import sys as _sys
+import os as _os
+
+_EXT_LIBS_ZIP = '/usr/lpp/mmfs/lib/python_external_libs.zip'
+
+try:
+    import cherrypy as _cherrypy
+    del _cherrypy
+except ImportError:
+    if _os.path.isfile(_EXT_LIBS_ZIP) and _EXT_LIBS_ZIP not in _sys.path:
+        _sys.path.insert(0, _EXT_LIBS_ZIP)
+
+del _os, _EXT_LIBS_ZIP
+# ---------------------------------------------------------------------------
+
 import cherrypy
 import json
 import sys
