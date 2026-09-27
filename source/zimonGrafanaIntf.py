@@ -44,6 +44,7 @@ from profiler import Profiler
 from refresher import TopoRefreshManager
 from watcher import ConfigWatcher
 from resthelper import RestHelpGenerator
+from healthcheck import HealthCheck
 from configapi import ConfigApi
 from confParser import ConfigManager
 from cherrypy import _cperror
@@ -451,6 +452,13 @@ def main(argv):
     resthelper = RestHelpGenerator(logger)
     # query for getting all available rest api endpoints
     cherrypy.tree.mount(resthelper, '/endpoints',
+                        {'/':
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         }
+                        )
+
+    # register liveness probe
+    cherrypy.tree.mount(HealthCheck(), '/health',
                         {'/':
                          {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                          }
