@@ -40,5 +40,6 @@
     "/metrics_smb_stats": "SMBStats",
     "/metrics_smb_globalstats": "SMBGlobalStats",
     "/metrics_ctdb_stats": "CTDBStats",
-    "/metrics_ctdb_dbstats": "CTDBDBStats"
+    "/metrics_ctdb_dbstats": "CTDBDBStats",
+    "/metrics_gpfs_cess3": "CesS3"
 }

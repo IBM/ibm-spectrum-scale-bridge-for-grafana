@@ -110,11 +110,14 @@ def parseSensorsConfig(sensorsConfig, logger):
     """ Returns a list of dicts, describing definitions of sensors """
     try:
         sensors = []
+        sensorsIdx = sensorsConfig.find("sensors =")
+        if sensorsIdx == -1:
+            return sensors
         sensorsStr = ""
         if sensorsConfig.find("smbstat") != -1:
-            sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):sensorsConfig.find("smbstat")]
+            sensorsStr = sensorsConfig[sensorsIdx:sensorsConfig.find("smbstat")]
         else:
-            sensorsStr = sensorsConfig[sensorsConfig.find("sensors"):]
+            sensorsStr = sensorsConfig[sensorsIdx:]
         sensorsList = re.findall('(?P<sensor>{.*?})(?:,|$)', sensorsStr)
         for sensorString in sensorsList:
             sensorAttr = re.findall(r'(?P<name>\w+) = (?P<value>\"\S*\"|\d+)', sensorString)

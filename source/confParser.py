@@ -140,17 +140,17 @@ def getSettings(argv):
 
 def merge_defaults_and_args(defaults, args):
     '''merge default config parameters with input parameters from the command line'''
-    brConfig = dict(defaults)
+    brFullConfig = dict(defaults)
     args = vars(args)
-    brConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
-    for k, v in brConfig.items():
+    brFullConfig.update({k: v for k, v in args.items() if v is not None and not (v == str(None))})
+    for k, v in brFullConfig.items():
         if isinstance(v, str) and v.lower() in ("no", "false"):
-            brConfig[k] = False
+            brFullConfig[k] = False
         elif isinstance(v, str) and v.lower() in ("yes", "true"):
-            brConfig[k] = True
+            brFullConfig[k] = True
         elif isinstance(v, str) and v.isdigit():
-            brConfig[k] = int(v)
-    return brConfig
+            brFullConfig[k] = int(v)
+    return brFullConfig
 
 
 class ConfigManager(object, metaclass=Singleton):

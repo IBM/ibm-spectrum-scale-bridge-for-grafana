@@ -1,3 +1,19 @@
+# Version 9.1.2 (09/30/2026)
+
+Added CesS3 sensor to PrometheusExporter supported sensors \
+Added health probe endpoint \
+Fixed parsing of sensor configs: skip configs that do not contain a `sensors =` key, preventing spurious sensor entries from unrelated config files such as ZIMonCollector.cfg \
+Added config validation endpoints to the configapi:
+- `GET /config/validate` – validates the live configuration
+- `POST /config/validate` – dry-run validation of a supplied config body without applying changes \
+Moved external library bootstrap logic to a dedicated `zipbootstrap` module \
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 9.1.1 (08/12/2026)
 
 Added support for the new api endpoint schema introduced by the IBM Performance Monitoring tool, which returns a significantly smaller dataset of zimon metadata \

@@ -1,5 +1,5 @@
 import os
-from source.queryHandler.SensorConfig import readSensorsConfig
+from source.queryHandler.SensorConfig import readSensorsConfig, parseSensorsConfig
 from source.bridgeLogger import configureLogging
 from nose2.tools.such import helper as assert_helper
 from nose2.tools.decorators import with_setup
@@ -51,4 +51,24 @@ def test_case04():
     zimonFile = os.path.join(path, "tests", "test_data")
     sensorsList1 = readSensorsConfig(logger, zimonFile)
     assert isinstance(sensorsList1, list)
-    assert len(sensorsList1) > len(sensorsList)
+    # directory contains ZIMonSensors.cfg (32), ZIMonSensors-protocols-wrong.cfg (1),
+    # ZIMonSensors-protocols.cfg (1) — ZIMonCollector.cfg must contribute 0
+    assert len(sensorsList1) == 34
+
+
+@with_setup(my_setup)
+def test_case05():
+    """ZIMonCollector.cfg has no 'sensors =' key and must return an empty list."""
+    zimonFile = os.path.join(path, "tests", "test_data", "ZIMonCollector.cfg")
+    sensorsList = readSensorsConfig(logger, zimonFile)
+    assert isinstance(sensorsList, list)
+    assert len(sensorsList) == 0
+
+
+@with_setup(my_setup)
+def test_case06():
+    """parseSensorsConfig returns [] for any content without a 'sensors =' assignment."""
+    no_sensors_content = "daemonize = Yquerysocket = \"/run/perfmon/pmcollector.socket\""
+    result = parseSensorsConfig(no_sensors_content, logger)
+    assert isinstance(result, list)
+    assert len(result) == 0

@@ -97,8 +97,28 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'InternalExecutionMetricsCacheFailed': 'Failed to cache internal execution time metrics: {}',
        'BundleIdGenerated': '{} bundle_id: {}',
        'BundleIdNotFound': 'Bundle ID not found in registry',
-       'RestApiInfo': 'Use http(s)://<grafana-bridge ip>:<app port>/endpoints with optional flags \n\t \
--u <credentials> for basic authentication and \n\t \
--k to bypass certificate verification,\n \
-to list the available REST API endpoints registered with the system.'
+       'RestApiInfo': ('Use http(s)://<grafana-bridge ip>:<app port>/endpoints with optional flags \n\t '
+                       '-u <credentials> for basic authentication and \n\t '
+                       '-k to bypass certificate verification,\n '
+                       'to list the available REST API endpoints registered with the system.'),
+       'ConfigApiUpdated': 'Config key "{}" updated to value "{}" via REST API',
+       'ConfigApiPersisted': 'Config changes persisted to file: {}',
+       'ConfigApiPersistError': 'Failed to persist config changes to file: {}',
+       'ConfigApiRestartRequired': 'read-only: restart the bridge to apply this change',
+       'ConfigApiNoTarget': ('Config changes applied in-memory only - no custom '
+                             'config file available. Call POST /config/init to '
+                             'create one, or start the bridge with -F <path> to '
+                             'persist changes across restarts.'),
+       'ConfigApiTemplateWriteBlocked': ('Config changes applied in-memory only '
+                                         '- the template config.ini was passed as '
+                                         '-F and will not be written to. Call '
+                                         'POST /config/init to create a custom '
+                                         'config file, then restart the bridge '
+                                         'with -F pointing to the new file.'),
+       'ConfigApiInitAlreadyExists': 'POST /config/init: file already exists: {}',
+       'ConfigApiInitCreated': 'Custom config file created: {}',
+       'ConfigApiInitError': 'Failed to create custom config file: {}',
+       'ConfigApiInitRestartRequired': ("Restart required: update your service "
+                                        "to add '-F {}' and restart the bridge "
+                                        "before writes are persisted to this file."),
        }

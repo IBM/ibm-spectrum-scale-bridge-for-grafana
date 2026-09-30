@@ -1,6 +1,6 @@
 '''
 ##############################################################################
-# Copyright 2024 IBM Corp.
+# Copyright 2026 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,18 @@
 # limitations under the License.
 ##############################################################################
 
-Created on Feb 17, 2021
+Created on Sep 29, 2026
 
 @author: HWASSMAN
 '''
 
-__version__ = '9.1.2'
+import cherrypy
+
+
+class HealthCheck:
+    """Liveness probe. With ?details=true also returns process/container resource usage."""
+    exposed = True
+
+    def GET(self, details='false'):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        return b'{"status": "ok"}'
