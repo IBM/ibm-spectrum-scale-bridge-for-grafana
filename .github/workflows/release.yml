@@ -1,0 +1,50 @@
+name: Create Release
+
+# Fires when a vX.Y.Z tag is pushed — which happens on a release branch (e.g. v9)
+# after __version__.py has been changed from X.Y.Z-dev to X.Y.Z.
+on:
+  push:
+    tags:
+      - 'v*.*.*'      # matches v9.1.2, v8.1.4, etc. — not plain branch names like v9
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from __version__.py
+        id: version
+        run: |
+          # Strips any trailing -dev suffix so the lookup in RELEASE_NOTES.md
+          # still works even if the tag is pushed before the -dev is removed.
+          VERSION=$(python3 -c "
+          import re
+          raw = re.search(r\"'(.+)'\", open('source/__version__.py').read()).group(1)
+          print(raw.split('-')[0])
+          ")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes for this version
+        run: |
+          python3 - <<'EOF'
+          import re
+          version = "${{ steps.version.outputs.version }}"
+          text = open("docs/RELEASE_NOTES.md").read()
+          pattern = rf"(# Version {re.escape(version)} \(.*?\)\n.*?)(?=\n# Version |\Z)"
+          match = re.search(pattern, text, re.DOTALL)
+          if not match:
+              raise SystemExit(f"ERROR: No entry found for Version {version} in docs/RELEASE_NOTES.md")
+          with open("release_notes.txt", "w") as f:
+              f.write(match.group(1).strip())
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Version ${{ steps.version.outputs.version }}"
+          body_path: release_notes.txt
+          generate_release_notes: true   # appends auto-generated PR list below your hand-written notes

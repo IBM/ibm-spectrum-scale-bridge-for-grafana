@@ -5,12 +5,19 @@ changelog:
     labels:
       - ignore-for-release
   categories:
-    - title: Software maintenance 🛠 
+    - title: "Features / Enhancements 🎉"
       labels:
-        - "*"
-    - title: Features / Enhancements 🎉
+        - enhancement
+        - feature
+    - title: "Bug Fixes 🐛"
       labels:
-        - "*"
-    - title: Other Changes
+        - bug
+        - fix
+    - title: "Software Maintenance 🛠"
+      labels:
+        - maintenance
+        - chore
+        - dependencies
+    - title: "Other Changes"
       labels:
         - "*"
