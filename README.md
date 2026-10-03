@@ -21,7 +21,7 @@ Grafana Bridge is a standalone Python application. It translates the IBM Storage
 * [Setup a Grafana environment for monitoring performance data of an IBM Storage Scale container native project in a k8s OCP environment](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Setup-Grafana-for-monitoring-a-CNSA-cluster--in-a-k8s-OCP-environment)
 
 The ***latest*** article:
-* [How to integrate performance monitoring of an IBM Storage Scale container native project in the Openshift Monitoring Stack](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/Setup-Openshift-Monitoring-Stack-for-monitoring-IBM-Storage-Scale-container-native-project)
+* [How to change grafana bridge config parameters at runtime using HTTP REST API ](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki/How-to-change-config-at-runtime)
 
 Find more helpful information about the bridge usage in the project [Wiki](https://github.com/IBM/ibm-spectrum-scale-bridge-for-grafana/wiki)
 
