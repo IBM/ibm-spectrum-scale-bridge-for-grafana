@@ -457,10 +457,11 @@ def main(argv):
                          }
                         )
 
-    # register liveness probe
+    # register liveness probe — no authentication required, even when basic auth is globally enabled
     cherrypy.tree.mount(HealthCheck(), '/health',
                         {'/':
-                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                         {'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                          'tools.auth_basic.on': False}
                          }
                         )
 
