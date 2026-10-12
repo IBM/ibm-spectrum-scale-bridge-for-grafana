@@ -128,10 +128,10 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         # Should have at least the metric we just added
         self.assertGreaterEqual(len(recent_metrics), 1)
 
-    def test_get_prometheus_metrics(self):
+    def test_get_metrics_prometheus(self):
         """Test Prometheus metrics format generation"""
         self.collector.record_metric(self.labels, self.metrics)
-        lines = self.collector.get_prometheus_metrics()
+        lines = self.collector.get_metrics_prometheus()
         # Check that output contains expected elements
         output = '\n'.join(lines)
         self.assertIn('# HELP', output)
@@ -146,7 +146,7 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         """Test OpenTSDB format generation via HTTPMetricsCollector"""
         self.collector.record_metric(self.labels, self.metrics)
         # Get metrics in OpenTSDB format
-        opentsdb_response = self.collector.get_opentsdb_metrics()
+        opentsdb_response = self.collector.get_metrics_opentsdb()
         # Check that response is a list
         self.assertIsInstance(opentsdb_response, list)
         self.assertGreater(len(opentsdb_response), 0)
@@ -165,14 +165,14 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         """Test OpenTSDB format generation with aggregated tags"""
         self.collector.record_metric(self.labels, self.metrics)
         aggregated_tags = ['node', 'cluster']
-        opentsdb_response = self.collector.get_opentsdb_metrics(aggregated_tags=aggregated_tags)
+        opentsdb_response = self.collector.get_metrics_opentsdb(aggregated_tags=aggregated_tags)
         # Check that aggregatedTags is present in response
         self.assertGreater(len(opentsdb_response), 0)
         first_metric = opentsdb_response[0]
         self.assertIn('aggregatedTags', first_metric)
         self.assertEqual(first_metric['aggregatedTags'], aggregated_tags)
 
-    def test_get_csv_metrics(self):
+    def test_get_metrics_csv(self):
         """Test CSV metrics format generation"""
         # Add metrics with different label sets
         labels1 = {'bundle_id': 'bundle1', 'collector_name': 'Collector1', 'job': 'job1'}
@@ -181,7 +181,7 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.collector.record_metric(labels1, self.metrics)
         self.collector.record_metric(labels2, self.metrics)
 
-        csv_output = self.collector.get_csv_metrics()
+        csv_output = self.collector.get_metrics_csv()
         reader = csv.DictReader(StringIO(csv_output))
         rows = list(reader)
 
@@ -203,22 +203,22 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         bundle2_rows = [r for r in rows if r['bundle_id'] == 'bundle2']
         self.assertTrue(all(r['job'] == '' for r in bundle2_rows))
 
-    def test_get_csv_metrics_empty(self):
+    def test_get_metrics_csv_empty(self):
         """Test CSV generation with no metrics"""
-        csv_output = self.collector.get_csv_metrics()
+        csv_output = self.collector.get_metrics_csv()
 
         lines = csv_output.strip().split('\n')
         self.assertEqual(len(lines), 1)  # Only header
         self.assertIn('timestamp', lines[0])
 
-    def test_get_csv_metrics_with_limit(self):
+    def test_get_metrics_csv_with_limit(self):
         """Test CSV metrics format generation with limit parameter"""
         # Record multiple metrics
         for i in range(5):
             labels = self.labels.copy()
             labels['iteration'] = str(i)
             self.collector.record_metric(labels, self.metrics)
-        csv_content = self.collector.get_csv_metrics(limit=2)
+        csv_content = self.collector.get_metrics_csv(limit=2)
         self.assertIsInstance(csv_content, str)
         self.assertGreater(len(csv_content), 0)
         # Check for header row and limited data rows
@@ -227,7 +227,7 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         # Each metric generates multiple rows (one per metric key)
         self.assertGreater(len(lines), 1)  # At least header + some data
         # Verify we got limited results (not all 5 iterations)
-        csv_full = self.collector.get_csv_metrics()
+        csv_full = self.collector.get_metrics_csv()
         lines_full = csv_full.strip().split('\n')
         self.assertLess(len(lines), len(lines_full))
 
@@ -244,6 +244,73 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.assertEqual(stats['metrics_in_memory_count'], 5)
         self.assertIn('metrics_in_memory_size', stats)
         self.assertGreater(stats['metrics_in_memory_size'], 0)
+
+    def test_flatten_stats_extracts_pid_as_label(self):
+        """pid must appear as a label, not as a metric value"""
+        import os
+        self.collector.record_metric(self.labels, self.metrics)
+        stats = self.collector.get_statistics()
+        metrics, labels = self.collector._flatten_stats(stats)
+        metric_names = [name for name, _ in metrics]
+        # pid must be in labels
+        self.assertEqual(labels.get('pid'), str(os.getpid()))
+        # pid must not appear as a standalone metric
+        self.assertNotIn('process_pid', metric_names)
+        self.assertNotIn('pid', metric_names)
+
+    def test_flatten_stats_skips_strings(self):
+        """String fields (e.g. cpu.raw) must be silently skipped"""
+        stats = {'total_requests': 10, 'process': {'pid': 1, 'cpu': {'raw': 'max 100000', 'threads': 4}}}
+        metrics, labels = self.collector._flatten_stats(stats)
+        metric_names = [name for name, _ in metrics]
+        self.assertNotIn('process_cpu_raw', metric_names)
+        self.assertIn('process_cpu_threads', metric_names)
+
+    def test_flatten_stats_recurses_nested_dicts(self):
+        """Nested dicts must be flattened with underscore-joined keys"""
+        stats = {'process': {'pid': 1, 'memory': {'rss_mb': 74.3, 'limit_mb': 512.0}}}
+        metrics, _ = self.collector._flatten_stats(stats)
+        metric_names = [name for name, _ in metrics]
+        self.assertIn('process_memory_rss_mb', metric_names)
+        self.assertIn('process_memory_limit_mb', metric_names)
+
+    def test_get_statistics_prometheus(self):
+        """Prometheus output must contain TYPE lines and pid label"""
+        self.collector.record_metric(self.labels, self.metrics)
+        output = self.collector.get_statistics_prometheus()
+        self.assertIn('# TYPE grafana_bridge_internal_total_requests gauge', output)
+        self.assertIn('pid="', output)
+        # must end with newline
+        self.assertTrue(output.endswith('\n'))
+
+    def test_get_statistics_opentsdb(self):
+        """OpenTSDB output must be a list of dicts with metric/tags/dps keys and pid tag"""
+        self.collector.record_metric(self.labels, self.metrics)
+        result = self.collector.get_statistics_opentsdb()
+        self.assertIsInstance(result, list)
+        self.assertGreater(len(result), 0)
+        first = result[0]
+        self.assertIn('metric', first)
+        self.assertIn('tags', first)
+        self.assertIn('aggregatedTags', first)
+        self.assertIn('dps', first)
+        self.assertIn('pid', first['tags'])
+        self.assertTrue(first['metric'].startswith('grafana_bridge_internal_'))
+
+    def test_get_statistics_csv(self):
+        """CSV output must have timestamp/pid/metric/value columns"""
+        self.collector.record_metric(self.labels, self.metrics)
+        output = self.collector.get_statistics_csv()
+        reader = csv.DictReader(StringIO(output))
+        rows = list(reader)
+        self.assertGreater(len(rows), 0)
+        headers = reader.fieldnames
+        self.assertIn('timestamp', headers)
+        self.assertIn('pid', headers)
+        self.assertIn('metric', headers)
+        self.assertIn('value', headers)
+        # pid column must be populated
+        self.assertTrue(all(r['pid'] != '' for r in rows))
 
     def test_reset_statistics(self):
         """Test resetting statistics"""

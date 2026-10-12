@@ -29,6 +29,7 @@ from threading import Lock, Timer
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime
+from processinfo import collect_process_info
 
 
 @dataclass
@@ -240,9 +241,14 @@ class HTTPMetricsCollector:
         except Exception:
             pass
 
+        try:
+            stats_copy['process'] = collect_process_info()
+        except Exception:
+            pass
+
         return stats_copy
 
-    def get_prometheus_metrics(self, metric_prefix='grafana_bridge') -> List[str]:
+    def get_metrics_prometheus(self, metric_prefix='grafana_bridge') -> List[str]:
         """
         Generate Prometheus exposition format metrics from the last 5 minutes.
         Args:
@@ -284,7 +290,7 @@ class HTTPMetricsCollector:
 
         return lines
 
-    def get_csv_metrics(self, limit: Optional[int] = None) -> str:
+    def get_metrics_csv(self, limit: Optional[int] = None) -> str:
         """
         Generate CSV format metrics with flexible headers.
         Args:
@@ -349,7 +355,7 @@ class HTTPMetricsCollector:
 
         return output.getvalue()
 
-    def get_opentsdb_metrics(self, limit: Optional[int] = None,
+    def get_metrics_opentsdb(self, limit: Optional[int] = None,
                              aggregated_tags: Optional[List[str]] = None) -> List[Dict[str, Any]]:
         """
         Generate OpenTSDB format metrics.
@@ -374,7 +380,7 @@ class HTTPMetricsCollector:
             ...     labels={"bundle_id": "abc123", "collector_name": "test"},
             ...     metrics={"request_count": 100, "response_time_ms": 250}
             ... )
-            >>> response = collector.get_opentsdb_metrics()
+            >>> response = collector.get_metrics_opentsdb()
             >>> print(response)
             [
                 {
@@ -419,6 +425,82 @@ class HTTPMetricsCollector:
         # Convert map to list of response objects
         return list(timeseries_map.values())
 
+    def _flatten_stats(self, stats: Dict, prefix: str = '') -> tuple:
+        """
+        Recursively flatten get_statistics() into (metrics, labels) where:
+          - metrics: list of (flat_name, numeric_value) — one entry per plottable scalar
+          - labels: dict of identifier fields (currently just pid) to attach to every metric
+        String-valued fields (e.g. cpu.raw) are silently skipped.
+        """
+        labels = {}
+        # Extract pid at the top level before recursing
+        pid = stats.get('process', {}).get('pid')
+        if pid is not None:
+            labels['pid'] = str(pid)
+
+        def _recurse(obj, pfx):
+            rows = []
+            for key, val in obj.items():
+                # pid is already captured as a label — skip it as a metric
+                if key == 'pid':
+                    continue
+                flat_name = f'{pfx}{key}' if not pfx else f'{pfx}_{key}'
+                if isinstance(val, dict):
+                    rows.extend(_recurse(val, flat_name))
+                elif isinstance(val, (int, float)):
+                    rows.append((flat_name, val))
+                # strings (e.g. cpu.raw) are skipped
+            return rows
+
+        metrics = _recurse(stats, prefix)
+        return metrics, labels
+
+    def get_statistics_prometheus(self, metric_prefix='grafana_bridge_internal') -> str:
+        """Render get_statistics() as Prometheus exposition text."""
+        stats = self.get_statistics()
+        ts = int(time.time() * 1000)
+        metrics, labels = self._flatten_stats(stats)
+        label_str = ','.join(f'{k}="{v}"' for k, v in labels.items())
+        lines = []
+        for name, val in metrics:
+            full_name = f'{metric_prefix}_{name}'
+            lines.append(f'# TYPE {full_name} gauge')
+            if label_str:
+                lines.append(f'{full_name}{{{label_str}}} {val} {ts}')
+            else:
+                lines.append(f'{full_name} {val} {ts}')
+        return '\n'.join(lines) + '\n'
+
+    def get_statistics_opentsdb(self, metric_prefix='grafana_bridge_internal') -> List[Dict[str, Any]]:
+        """Render get_statistics() as an OpenTSDB-style dps response."""
+        stats = self.get_statistics()
+        ts_ms = str(int(time.time() * 1000))
+        metrics, labels = self._flatten_stats(stats)
+        result = []
+        for name, val in metrics:
+            result.append({
+                'metric': f'{metric_prefix}_{name}',
+                'tags': labels.copy(),
+                'aggregatedTags': [],
+                'dps': {ts_ms: val}
+            })
+        return result
+
+    def get_statistics_csv(self) -> str:
+        """Render get_statistics() as CSV with columns: timestamp, pid, metric, value."""
+        import csv
+        from io import StringIO
+        stats = self.get_statistics()
+        ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        metrics, labels = self._flatten_stats(stats)
+        pid = labels.get('pid', '')
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['timestamp', 'pid', 'metric', 'value'])
+        for name, val in metrics:
+            writer.writerow([ts, pid, name, val])
+        return output.getvalue()
+
     def reset_statistics(self):
         """Reset all statistics and clear metrics history"""
         with self.lock:
@@ -452,7 +534,7 @@ class HTTPMetricsAPI:
         """
         Get HTTP metrics or bundle IDs.
         Query parameters:
-            format: 'prometheus' (default), 'json', 'csv', 'opentsdb', or 'stats' (for /http_metrics)
+            format: 'prometheus' (default), 'json', 'csv', 'opentsdb' (for /http_metrics and /internal_stats)
             limit: Number of recent metrics to return (for json format)
             bundle_id: Specific bundle ID to retrieve (for /bundle_ids)
             registry: 'opentsdb', 'prometheus', or 'all' (default 'all') (for /bundle_ids)
@@ -517,29 +599,25 @@ class HTTPMetricsAPI:
         # /http_metrics
         elif '/http_metrics' == cherrypy.request.script_name:
             # Validate format parameter
-            supported_formats = ['json', 'prometheus', 'csv', 'opentsdb', 'stats']
+            supported_formats = ['json', 'prometheus', 'csv', 'opentsdb']
             if format not in supported_formats:
                 raise cherrypy.HTTPError(400, f"Unsupported format '{format}'. Supported formats: {', '.join(supported_formats)}")
             try:
                 if format == 'prometheus':
-                    metrics_lines = self.collector.get_prometheus_metrics()
+                    metrics_lines = self.collector.get_metrics_prometheus()
                     cherrypy.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
                     resString = '\n'.join(metrics_lines) + '\n'
                     return resString
                 elif format == 'opentsdb':
-                    opentsdb_response = self.collector.get_opentsdb_metrics()
+                    opentsdb_response = self.collector.get_metrics_opentsdb()
                     cherrypy.response.headers['Content-Type'] = 'application/json'
                     return json.dumps(opentsdb_response)
                 elif format == 'csv':
                     limit_int = int(limit) if limit else None
-                    csv_content = self.collector.get_csv_metrics(limit=limit_int)
+                    csv_content = self.collector.get_metrics_csv(limit=limit_int)
                     cherrypy.response.headers['Content-Type'] = 'text/csv; charset=utf-8'
                     cherrypy.response.headers['Content-Disposition'] = 'attachment; filename="http_metrics.csv"'
                     return csv_content
-                elif format == 'stats':
-                    resp = self.collector.get_statistics()
-                    cherrypy.response.headers['Content-Type'] = 'application/json'
-                    return json.dumps(resp)
                 else:  # json format
                     limit_int = int(limit) if limit else None
                     return {
@@ -549,11 +627,28 @@ class HTTPMetricsAPI:
             except Exception as e:
                 self.logger.error(f'Error retrieving HTTP metrics: {e}')
                 raise cherrypy.HTTPError(500, f'Error retrieving metrics: {str(e)}')
-        # /internal_stat
+        # /internal_stats
         elif '/internal_stats' == cherrypy.request.script_name:
-            resp = self.collector.get_statistics()
-            cherrypy.response.headers['Content-Type'] = 'application/json'
-            return json.dumps(resp)
+            supported_formats = ['json', 'prometheus', 'csv', 'opentsdb']
+            if format not in supported_formats:
+                raise cherrypy.HTTPError(400, f"Unsupported format '{format}'. Supported formats: {', '.join(supported_formats)}")
+            try:
+                if format == 'prometheus':
+                    cherrypy.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+                    return self.collector.get_statistics_prometheus()
+                elif format == 'opentsdb':
+                    cherrypy.response.headers['Content-Type'] = 'application/json'
+                    return json.dumps(self.collector.get_statistics_opentsdb())
+                elif format == 'csv':
+                    cherrypy.response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+                    cherrypy.response.headers['Content-Disposition'] = 'attachment; filename="internal_stats.csv"'
+                    return self.collector.get_statistics_csv()
+                else:  # json
+                    cherrypy.response.headers['Content-Type'] = 'application/json'
+                    return json.dumps(self.collector.get_statistics())
+            except Exception as e:
+                self.logger.error(f'Error retrieving internal stats: {e}')
+                raise cherrypy.HTTPError(500, f'Error retrieving internal stats: {str(e)}')
 
     @cherrypy.tools.json_out()
     def DELETE(self):
