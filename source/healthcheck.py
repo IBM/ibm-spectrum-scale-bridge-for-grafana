@@ -15,12 +15,14 @@
 # limitations under the License.
 ##############################################################################
 
-Created on Sep 29, 2026
+Created on Apr 17, 2026
 
 @author: HWASSMAN
 '''
 
 import cherrypy
+import json
+from processinfo import collect_process_info
 
 
 class HealthCheck:
@@ -29,4 +31,8 @@ class HealthCheck:
 
     def GET(self, details='false'):
         cherrypy.response.headers['Content-Type'] = 'application/json'
+        if details.lower() == 'true':
+            response = {'status': 'ok'}
+            response.update(collect_process_info())
+            return json.dumps(response).encode('utf-8')
         return b'{"status": "ok"}'
