@@ -161,6 +161,17 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.assertIsInstance(first_metric['dps'], dict)
         self.assertGreater(len(first_metric['dps']), 0)
 
+    def test_get_opentsdb_format_timestamp_unit(self):
+        """dps keys are seconds by default, milliseconds only with ms_resolution=True"""
+        self.collector.record_metric(self.labels, self.metrics)
+        recorded = self.collector.get_recent_metrics()[0].timestamp
+        sec_keys = list(self.collector.get_metrics_opentsdb()[0]['dps'].keys())
+        ms_keys = list(self.collector.get_metrics_opentsdb(ms_resolution=True)[0]['dps'].keys())
+        self.assertEqual(sec_keys, [str(int(recorded))])
+        self.assertEqual(ms_keys, [str(int(recorded * 1000))])
+        self.assertEqual(len(sec_keys[0]), 10)
+        self.assertEqual(len(ms_keys[0]), 13)
+
     def test_get_opentsdb_format_with_aggregated_tags(self):
         """Test OpenTSDB format generation with aggregated tags"""
         self.collector.record_metric(self.labels, self.metrics)
@@ -296,6 +307,18 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.assertIn('dps', first)
         self.assertIn('pid', first['tags'])
         self.assertTrue(first['metric'].startswith('grafana_bridge_internal_'))
+
+    def test_get_statistics_opentsdb_timestamp_unit(self):
+        """dps keys are seconds by default, milliseconds only with ms_resolution=True"""
+        self.collector.record_metric(self.labels, self.metrics)
+        before = int(time.time())
+        sec_key = next(iter(self.collector.get_statistics_opentsdb()[0]['dps']))
+        ms_key = next(iter(self.collector.get_statistics_opentsdb(ms_resolution=True)[0]['dps']))
+        after = int(time.time())
+        self.assertEqual(len(sec_key), 10)
+        self.assertTrue(before <= int(sec_key) <= after)
+        self.assertEqual(len(ms_key), 13)
+        self.assertTrue(before * 1000 <= int(ms_key) <= (after + 1) * 1000)
 
     def test_get_statistics_csv(self):
         """CSV output must have timestamp/pid/metric/value columns"""
