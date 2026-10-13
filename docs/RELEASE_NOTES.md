@@ -1,3 +1,14 @@
+# Version 8.1.5 (10/13/2026)
+Added auto detection for time resolution in the data requests used by different Grafana versions \
+Added fallback to external libs zip package if required opensource python packages are not available on the host \
+Updated the Dockerfile parent image to registry.access.redhat.com/ubi9/ubi:9.8-1791269371 \
+
+Tested with OpenTSDB version 2.4
+Tested with Grafana version 12.0.2
+Tested with RedHat community-powered Grafana operator v.5
+
+
+
 # Version 8.1.4 (08/03/2026)
 Added support for --suppress-null values by perfmon query rawData format, allowing skipping of data rows with no data \
 Added script to check open-source package licenses during image build \
