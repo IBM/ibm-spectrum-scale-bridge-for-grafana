@@ -356,7 +356,8 @@ class HTTPMetricsCollector:
         return output.getvalue()
 
     def get_metrics_opentsdb(self, limit: Optional[int] = None,
-                             aggregated_tags: Optional[List[str]] = None) -> List[Dict[str, Any]]:
+                             aggregated_tags: Optional[List[str]] = None,
+                             ms_resolution: bool = False) -> List[Dict[str, Any]]:
         """
         Generate OpenTSDB format metrics.
         The response format follows the OpenTSDB specification at:
@@ -364,6 +365,8 @@ class HTTPMetricsCollector:
         Args:
             limit: Maximum number of metrics to include (None for all available metrics)
             aggregated_tags: Optional list of tag names that were aggregated over
+            ms_resolution: If True the dps timestamps are in milliseconds,
+                           otherwise in seconds (OpenTSDB default)
         Returns:
             List of dictionaries, each representing a time series in OpenTSDB format:
             [
@@ -401,7 +404,7 @@ class HTTPMetricsCollector:
         # Dictionary to group time series by (metric_name, labels_tuple)
         timeseries_map: Dict[tuple, Dict[str, Any]] = {}
         for http_metric in metrics_list:
-            timestamp_ms = str(int(http_metric.timestamp * 1000))
+            timestamp_key = str(int(http_metric.timestamp * 1000) if ms_resolution else int(http_metric.timestamp))
 
             # Create a hashable key from labels for grouping
             labels_key = frozenset(http_metric.labels.items())
@@ -420,7 +423,7 @@ class HTTPMetricsCollector:
                     }
 
                 # Add datapoint to this time series
-                timeseries_map[ts_key]["dps"][timestamp_ms] = metric_value
+                timeseries_map[ts_key]["dps"][timestamp_key] = metric_value
 
         # Convert map to list of response objects
         return list(timeseries_map.values())
@@ -471,10 +474,13 @@ class HTTPMetricsCollector:
                 lines.append(f'{full_name} {val} {ts}')
         return '\n'.join(lines) + '\n'
 
-    def get_statistics_opentsdb(self, metric_prefix='grafana_bridge_internal') -> List[Dict[str, Any]]:
-        """Render get_statistics() as an OpenTSDB-style dps response."""
+    def get_statistics_opentsdb(self, metric_prefix='grafana_bridge_internal',
+                                ms_resolution: bool = False) -> List[Dict[str, Any]]:
+        """Render get_statistics() as an OpenTSDB-style dps response.
+        The dps timestamps are in seconds (OpenTSDB default), or in milliseconds if ms_resolution is True."""
         stats = self.get_statistics()
-        ts_ms = str(int(time.time() * 1000))
+        now = time.time()
+        ts_key = str(int(now * 1000) if ms_resolution else int(now))
         metrics, labels = self._flatten_stats(stats)
         result = []
         for name, val in metrics:
@@ -482,7 +488,7 @@ class HTTPMetricsCollector:
                 'metric': f'{metric_prefix}_{name}',
                 'tags': labels.copy(),
                 'aggregatedTags': [],
-                'dps': {ts_ms: val}
+                'dps': {ts_key: val}
             })
         return result
 
@@ -535,6 +541,7 @@ class HTTPMetricsAPI:
         Get HTTP metrics or bundle IDs.
         Query parameters:
             format: 'prometheus' (default), 'json', 'csv', 'opentsdb' (for /http_metrics and /internal_stats)
+            msResolution: 'true' returns opentsdb dps timestamps in milliseconds, default 'false' (seconds)
             limit: Number of recent metrics to return (for json format)
             bundle_id: Specific bundle ID to retrieve (for /bundle_ids)
             registry: 'opentsdb', 'prometheus', or 'all' (default 'all') (for /bundle_ids)
@@ -543,6 +550,7 @@ class HTTPMetricsAPI:
         limit = params.get('limit', None)
         bundle_id = params.get('bundle_id', None)
         registry = params.get('registry', 'all')
+        ms_resolution = str(params.get('msResolution', 'false')).lower() == 'true'
         # /bundle_ids - Unified endpoint for both OpenTSDB and Prometheus bundle IDs
         if '/bundle_ids' == cherrypy.request.script_name:
             try:
@@ -609,7 +617,7 @@ class HTTPMetricsAPI:
                     resString = '\n'.join(metrics_lines) + '\n'
                     return resString
                 elif format == 'opentsdb':
-                    opentsdb_response = self.collector.get_metrics_opentsdb()
+                    opentsdb_response = self.collector.get_metrics_opentsdb(ms_resolution=ms_resolution)
                     cherrypy.response.headers['Content-Type'] = 'application/json'
                     return json.dumps(opentsdb_response)
                 elif format == 'csv':
@@ -638,7 +646,7 @@ class HTTPMetricsAPI:
                     return self.collector.get_statistics_prometheus()
                 elif format == 'opentsdb':
                     cherrypy.response.headers['Content-Type'] = 'application/json'
-                    return json.dumps(self.collector.get_statistics_opentsdb())
+                    return json.dumps(self.collector.get_statistics_opentsdb(ms_resolution=ms_resolution))
                 elif format == 'csv':
                     cherrypy.response.headers['Content-Type'] = 'text/csv; charset=utf-8'
                     cherrypy.response.headers['Content-Disposition'] = 'attachment; filename="internal_stats.csv"'
