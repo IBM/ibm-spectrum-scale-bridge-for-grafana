@@ -1,6 +1,6 @@
 # Global ARGs defined before any FROM statement
 ARG BUILD_ENV=prod
-ARG BASE=registry.access.redhat.com/ubi9/ubi:9.8-1785388874
+ARG BASE=registry.access.redhat.com/ubi9/ubi:9.8-1791269371
 # Default to 3.12 if no PY_VER is passed via --build-arg
 ARG PY_VER=3.12
 
