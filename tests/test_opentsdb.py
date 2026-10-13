@@ -2,10 +2,14 @@ import logging
 import os
 from unittest import mock
 from nose2.tools.decorators import with_setup
+from source.bridgeLogger import configureLogging
 from source.queryHandler.QueryHandler import ColumnInfo, Key
 from source.profiler import Profiler
 from source.collector import MetricTimeSeries, TimeSeries
 from source.opentsdb import OpenTsdbApi
+from source.utils import is_milliseconds, to_seconds
+
+configureLogging(os.getcwd(), None)
 
 
 def my_setup():
@@ -246,6 +250,99 @@ def test_case07():
         assert 'node' in resp[0].get('tags')
         assert isinstance(resp[0].get('dps'), list)
         assert len(resp[0].get('dps')) == 0
+
+
+@with_setup(my_setup)
+def test_case09():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_ms = jreq.copy()
+        jreq_ms['msResolution'] = True
+        resp = opentsdb.format_response(data, jreq_ms)
+        expected_dps = {ts * 1000: v for ts, v in dps1.items()}
+        assert resp[0].get('dps') == expected_dps
+        assert all(isinstance(k, int) for k in resp[0].get('dps').keys())
+        ts_dps = data['gpfs_fs_bytes_read'].timeseries[0].dps
+        assert set(ts_dps.keys()) == set(dps1.keys())
+
+
+@with_setup(my_setup)
+def test_case10():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_false = jreq.copy()
+        jreq_false['msResolution'] = False
+        resp = opentsdb.format_response(data, jreq_false)
+        assert resp[0].get('dps') == dps1
+
+
+@with_setup(my_setup)
+def test_case11():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_no_flag = jreq.copy()
+        jreq_no_flag.pop('msResolution', None)
+        resp = opentsdb.format_response(data, jreq_no_flag)
+        assert resp[0].get('dps') == dps1
+
+
+@with_setup(query_arrays_setup)
+def test_case12():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_ms = jreq.copy()
+        jreq_ms['msResolution'] = True
+        resp = opentsdb.format_response(data, jreq_ms)
+        expected_dps = [[ts * 1000, v] for ts, v in dps1]
+        assert resp[0].get('dps') == expected_dps
+        assert data['cpu_user'].timeseries[0].dps == dps1
+
+
+@with_setup(query_arrays_setup)
+def test_case13():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_false = jreq.copy()
+        jreq_false['msResolution'] = False
+        resp = opentsdb.format_response(data, jreq_false)
+        assert resp[0].get('dps') == dps1
+
+
+@with_setup(query_arrays_setup)
+def test_case14():
+    with mock.patch('source.metadata.MetadataHandler') as md:
+        md_instance = md.return_value
+        logger = logging.getLogger(__name__)
+        opentsdb = OpenTsdbApi(logger, md_instance, '9999')
+        jreq_no_flag = jreq.copy()
+        jreq_no_flag.pop('msResolution', None)
+        resp = opentsdb.format_response(data, jreq_no_flag)
+        assert resp[0].get('dps') == dps1
+
+
+def test_case15():
+    # start/end unit is detected from the value: 13 digits = ms, 10 digits = seconds
+    assert to_seconds(1715916393902) == 1715916393
+    assert to_seconds('1715916393902') == 1715916393
+    assert to_seconds(1715916393) == 1715916393
+    assert to_seconds('1715916393') == 1715916393
+
+
+def test_case16():
+    assert is_milliseconds(1715916393902) is True
+    assert is_milliseconds('1715916393902') is True
+    assert is_milliseconds(1715916393) is False
+    assert is_milliseconds('1715916393') is False
 
 
 @with_setup(query_raw_data_setup)
