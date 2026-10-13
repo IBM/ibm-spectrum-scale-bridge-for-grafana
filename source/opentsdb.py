@@ -30,7 +30,7 @@ from messages import ERR, MSG
 from collections import defaultdict, OrderedDict
 from threading import Lock
 from collector import SensorCollector, QueryPolicy
-from utils import getTimeMultiplier, execution_time, cond_execution_time, get_request_host
+from utils import getTimeMultiplier, execution_time, cond_execution_time, get_request_host, to_seconds
 from typing import List, TypeVar, Tuple, Optional, Union, Dict, Any
 
 T = TypeVar('T', dict, list)
@@ -248,6 +248,7 @@ class OpenTsdbApi(object):
                                                        st.tags)
                     respList.append(res.to_dict())
         else:
+            ms_res = bool(jreq.get('msResolution'))
             for metric in metrics:
                 for st in metric.timeseries:
                     res = SingleTimeSeriesResponse(jreq.get('inputQuery'),
@@ -256,7 +257,13 @@ class OpenTsdbApi(object):
                                                    st.tags, st.aggregatedTags)
                     # self.logger.trace(f'OpenTSDB queryResponse for :
                     #                   {data.keys()[0]} with {len(st.dps)} datapoints')
-                    respList.append(res.to_dict(st.dps))
+                    dps = st.dps
+                    if ms_res and dps:
+                        if isinstance(dps, dict):
+                            dps = {ts * 1000: v for ts, v in dps.items()}
+                        elif isinstance(dps, list):
+                            dps = [[ts * 1000, v] for ts, v in dps]
+                    respList.append(res.to_dict(dps))
         return respList
 
     @execution_time()
@@ -367,9 +374,9 @@ class OpenTsdbApi(object):
             if q.get('tags'):
                 args['filters'] = q.get('tags')
         else:
-            args['start'] = str(int(int(str(jreq.get('start'))) / 1000))
+            args['start'] = str(to_seconds(jreq.get('start')))
             if jreq.get('end') is not None:
-                args['end'] = str(int(int(str(jreq.get('end'))) / 1000))
+                args['end'] = str(to_seconds(jreq.get('end')))
 
             if q.get('downsample'):
                 args['dsOp'] = self._get_downsmpl_op(q.get('downsample'))
@@ -661,6 +668,13 @@ class OpenTsdbApi(object):
             if jreq.get('queries') is None:
                 self.logger.error(MSG['QueryError'].format('empty'))
                 raise cherrypy.HTTPError(400, ERR[400])
+
+            if 'msResolution' in jreq:
+                self.logger.debug(MSG['MsResolutionSent'].format(jreq['msResolution']))
+            else:
+                # Grafana sometimes omits the field: treat it as not set (timestamps in seconds)
+                self.logger.details(MSG['MsResolutionNotSent'])
+                jreq['msResolution'] = False
 
             if params and params.get('arrays') == 'true':
                 jreq['arrays'] = True

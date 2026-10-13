@@ -161,6 +161,17 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.assertIsInstance(first_metric['dps'], dict)
         self.assertGreater(len(first_metric['dps']), 0)
 
+    def test_get_opentsdb_format_timestamp_unit(self):
+        """dps keys are seconds by default, milliseconds only with ms_resolution=True"""
+        self.collector.record_metric(self.labels, self.metrics)
+        recorded = self.collector.get_recent_metrics()[0].timestamp
+        sec_keys = list(self.collector.get_opentsdb_metrics()[0]['dps'].keys())
+        ms_keys = list(self.collector.get_opentsdb_metrics(ms_resolution=True)[0]['dps'].keys())
+        self.assertEqual(sec_keys, [str(int(recorded))])
+        self.assertEqual(ms_keys, [str(int(recorded * 1000))])
+        self.assertEqual(len(sec_keys[0]), 10)
+        self.assertEqual(len(ms_keys[0]), 13)
+
     def test_get_opentsdb_format_with_aggregated_tags(self):
         """Test OpenTSDB format generation with aggregated tags"""
         self.collector.record_metric(self.labels, self.metrics)

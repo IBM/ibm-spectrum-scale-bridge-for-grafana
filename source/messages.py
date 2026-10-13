@@ -96,6 +96,8 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'InternalExecutionMetricsCacheFailed': 'Failed to cache internal execution time metrics: {}',
        'BundleIdGenerated': '{} bundle_id: {}',
        'BundleIdNotFound': 'Bundle ID not found in registry',
+       'MsResolutionSent': 'msResolution field sent in request, value: {}',
+       'MsResolutionNotSent': 'msResolution field not sent in request, defaulting to False',
        'RestApiInfo': 'Use http(s)://<grafana-bridge ip>:<app port>/endpoints with optional flags \n\t \
 -u <credentials> for basic authentication and \n\t \
 -k to bypass certificate verification,\n \
