@@ -86,6 +86,8 @@ MSG = {'IntError': 'Server internal error occurred. Reason: {}',
        'ConnApplications': 'Registered applications: \n {}',
        'WrongFormat': 'The {} specified in wrong format.',
        'AuthValidationError': 'Basic authentication data not valid',
+       'MsResolutionSent': 'msResolution field sent in request, value: {}',
+       'MsResolutionNotSent': 'msResolution field not sent in request, defaulting to False',
        'RestApiInfo': 'Use http(s)://<graana-bridge ip>:<app port>/endpoints with optional flags \n\t \
 -u <credentials> for basic authentication and \n\t \
 -k to bypass certificate verification,\n \

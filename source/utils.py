@@ -139,3 +139,15 @@ def classattributes(default_attr: dict, more_allowed_attr: list):
 def getTimeMultiplier(timeunit):
     """ Translate OpenTSDB time units, ignoring ms (milliseconds) """
     return {'s': 1, 'm': 60, 'h': 3600, 'd': 86400, 'w': 604800, 'n': 2628000, 'y': 31536000}.get(timeunit, -1)
+
+
+def is_milliseconds(value) -> bool:
+    """ True if a request time (start/end) is in milliseconds (13 digits),
+        False if it is in seconds (10 digits) """
+    return int(str(value)) > 9999999999
+
+
+def to_seconds(value) -> int:
+    """ Convert a request time (start/end) to Unix seconds.
+        The unit is detected from the value: 13 digits are milliseconds, 10 digits are seconds """
+    return int(str(value)) // 1000 if is_milliseconds(value) else int(str(value))
