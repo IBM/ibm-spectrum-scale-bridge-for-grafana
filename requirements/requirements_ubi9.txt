@@ -7,13 +7,13 @@ annotated-doc==0.0.5
     # via typer
 certifi==2026.7.22
     # via requests
-charset-normalizer==3.4.9
+charset-normalizer==3.5.2
     # via requests
 cheroot==11.1.2
     # via cherrypy
 cherrypy==18.10.0
     # via -r /root/requirements_ubi.in
-idna==3.18
+idna==3.20
     # via requests
 jaraco-collections==5.2.1
     # via
@@ -34,7 +34,7 @@ markdown-it-py==4.2.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==11.1.0
+more-itertools==11.2.0
     # via
     #   cheroot
     #   cherrypy
@@ -42,7 +42,7 @@ more-itertools==11.1.0
     #   jaraco-text
 portend==3.2.1
     # via cherrypy
-pygments==2.20.0
+pygments==2.21.0
     # via rich
 python-dateutil==2.9.0.post0
     # via tempora
@@ -56,15 +56,15 @@ shellingham==1.5.4
     # via typer
 six==1.17.0
     # via python-dateutil
-tempora==5.12.0
+tempora==5.13.0
     # via portend
-typer==0.27.1
+typer==0.27.3
     # via typer-slim
 typer-slim==0.24.0
     # via jaraco-text
 typing-extensions==4.16.0
     # via tempora
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
 zc-lockfile==4.0
     # via cherrypy
