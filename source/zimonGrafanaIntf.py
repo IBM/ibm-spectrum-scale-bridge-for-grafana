@@ -403,6 +403,11 @@ def main(argv):
                                  {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                  }
                                 )
+            cherrypy.tree.mount(conf_generator, '/scrape_configs.yml',
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
             registered_apps.append("Prometheus Config Generator Api")
         except ImportError:
             logger.warning("Prometheus Config Generator Api requires python PyYaml packages. Skip registering API.")
