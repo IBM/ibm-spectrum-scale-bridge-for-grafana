@@ -36,6 +36,10 @@ import analytics
 if not isinstance(yaml, ImportError):
     class MyDumper(yaml.Dumper):
 
+        def ignore_aliases(self, data):
+            # Jobs share the same nested dicts; emit them in full instead of &idNNN/*idNNN anchors
+            return True
+
         def increase_indent(self, flow=False, indentless=False):
             return super(MyDumper, self).increase_indent(flow, False)
 else:
