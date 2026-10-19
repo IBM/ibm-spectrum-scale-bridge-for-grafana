@@ -496,7 +496,7 @@ def test_no_target_uses_detect_outbound_ip_on_wildcard():
     """When promBindIp is a wildcard, outbound-route detection is used."""
     wildcard_attr = dict(attr, promBindIp='0.0.0.0')
     gen, _p = _make_generator(attr_override=wildcard_attr,
-                               endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
+                              endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
     try:
         with mock.patch.object(gen, '_detect_outbound_ip', return_value='10.1.2.3') as mock_detect:
             jobs = gen.build_scrape_jobs()
@@ -511,7 +511,7 @@ def test_no_target_uses_prombindip_when_not_wildcard():
     """When promBindIp is a real IP, it is used directly without network calls."""
     bound_attr = dict(attr, promBindIp='172.16.0.5')
     gen, _p = _make_generator(attr_override=bound_attr,
-                               endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
+                              endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
     try:
         with mock.patch.object(gen, '_detect_outbound_ip') as mock_detect:
             jobs = gen.build_scrape_jobs()

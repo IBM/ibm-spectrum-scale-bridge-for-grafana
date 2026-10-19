@@ -21,7 +21,6 @@ Created on Mai 30, 2024
 '''
 
 import cherrypy
-import json
 import socket
 import os
 import re
