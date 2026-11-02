@@ -8,7 +8,7 @@ import cherrypy
 from nose2.tools.decorators import with_setup
 from source.profiler import Profiler
 from source.metadata import MetadataHandler
-from source.confgenerator import PrometheusConfigGenerator, INTERNAL_METRICS_JOBS
+from source.confgenerator import PrometheusConfigGenerator, TlsCertsServer, INTERNAL_METRICS_JOBS
 
 
 def my_setup():
@@ -902,9 +902,6 @@ def test_copy_certs_io_error_raises_500():
 # ---------------------------------------------------------------------------
 # TlsCertsServer
 # ---------------------------------------------------------------------------
-
-from source.confgenerator import TlsCertsServer
-
 
 def _make_tls_server(src_dir, cert_file='cert.pem', key_file='privkey.pem'):
     """Return a TlsCertsServer pointing at real cert/key files in src_dir."""
