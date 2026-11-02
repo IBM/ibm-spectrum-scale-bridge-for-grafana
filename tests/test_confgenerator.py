@@ -1,5 +1,7 @@
+import io
 import logging
 import os
+import tarfile
 import tempfile
 from unittest import mock
 import cherrypy
@@ -664,3 +666,371 @@ def test_parse_params_empty_path_by_default():
         assert path == ''
     finally:
         _p.stop()
+
+
+# ---------------------------------------------------------------------------
+# _tls_cert_paths — per-suffix subdirectory
+# ---------------------------------------------------------------------------
+
+@with_setup(my_setup)
+def test_tls_cert_paths_no_suffix():
+    """Without a job_suffix, cert/key paths live directly in tlsKeyPath."""
+    base = os.path.join(os.sep, 'etc', 'bridge_ssl', 'certs')
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath=base,
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(attr_override=https_attr)
+    try:
+        cert, key = gen._tls_cert_paths('')
+        assert cert == os.path.join(base, 'cert.pem')
+        assert key == os.path.join(base, 'privkey.pem')
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_tls_cert_paths_with_suffix():
+    """With a job_suffix, cert/key paths are placed in a per-suffix subdirectory."""
+    base = os.path.join(os.sep, 'etc', 'bridge_ssl', 'certs')
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath=base,
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(attr_override=https_attr)
+    try:
+        cert, key = gen._tls_cert_paths('_cluster2')
+        assert cert == os.path.join(base, 'cluster2', 'cert.pem')
+        assert key == os.path.join(base, 'cluster2', 'privkey.pem')
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_tls_cert_paths_suffix_leading_dot_stripped():
+    """A leading dot in the suffix is also stripped when forming the subdirectory name."""
+    base = os.path.join(os.sep, 'etc', 'bridge_ssl', 'certs')
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath=base,
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(attr_override=https_attr)
+    try:
+        cert, key = gen._tls_cert_paths('.prod')
+        assert cert == os.path.join(base, 'prod', 'cert.pem')
+        assert key == os.path.join(base, 'prod', 'privkey.pem')
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_build_scrape_jobs_https_suffix_uses_subdir_paths():
+    """build_scrape_jobs with https + job_suffix embeds per-suffix cert paths."""
+    base = os.path.join(os.sep, 'etc', 'bridge_ssl', 'certs')
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath=base,
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(
+        attr_override=https_attr,
+        endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
+    try:
+        with _patch_resolved_target(gen):
+            jobs = gen.build_scrape_jobs(job_suffix='_cluster2')
+        tls = jobs[0]['tls_config']
+        assert tls['cert_file'] == os.path.join(base, 'cluster2', 'cert.pem')
+        assert tls['key_file'] == os.path.join(base, 'cluster2', 'privkey.pem')
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_build_scrape_jobs_https_no_suffix_uses_base_paths():
+    """build_scrape_jobs with https but no job_suffix embeds the base cert paths."""
+    base = os.path.join(os.sep, 'etc', 'bridge_ssl', 'certs')
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath=base,
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(
+        attr_override=https_attr,
+        endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
+    try:
+        with _patch_resolved_target(gen):
+            jobs = gen.build_scrape_jobs(job_suffix='')
+        tls = jobs[0]['tls_config']
+        assert tls['cert_file'] == os.path.join(base, 'cert.pem')
+        assert tls['key_file'] == os.path.join(base, 'privkey.pem')
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_two_clusters_get_distinct_cert_paths():
+    """Two calls with different job_suffixes produce distinct cert/key paths."""
+    https_attr = dict(attr,
+                      protocol='https',
+                      tlsKeyPath='/etc/bridge_ssl/certs',
+                      tlsCertFile='cert.pem',
+                      tlsKeyFile='privkey.pem')
+    gen, _p = _make_generator(
+        attr_override=https_attr,
+        endpoints_override={'/metrics_gpfs_filesystem': 'GPFSFilesystem'})
+    try:
+        with _patch_resolved_target(gen):
+            jobs1 = gen.build_scrape_jobs(job_suffix='_cluster1')
+            jobs2 = gen.build_scrape_jobs(job_suffix='_cluster2')
+        cert1 = jobs1[0]['tls_config']['cert_file']
+        cert2 = jobs2[0]['tls_config']['cert_file']
+        assert cert1 != cert2, f"Expected distinct cert paths, got {cert1!r} for both"
+    finally:
+        _p.stop()
+
+
+# ---------------------------------------------------------------------------
+# _copy_certs — cert files written to disk
+# ---------------------------------------------------------------------------
+
+@with_setup(my_setup)
+def test_copy_certs_no_suffix_copies_to_dest_dir():
+    """_copy_certs with no suffix copies cert and key into dest_dir."""
+    gen, _p = _make_generator()
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_dir = os.path.join(tmpdir, 'src')
+            os.makedirs(src_dir)
+            cert_src = os.path.join(src_dir, 'cert.pem')
+            key_src = os.path.join(src_dir, 'privkey.pem')
+            open(cert_src, 'w').close()
+            open(key_src, 'w').close()
+
+            gen.attr['tlsKeyPath'] = src_dir
+            gen.attr['tlsCertFile'] = 'cert.pem'
+            gen.attr['tlsKeyFile'] = 'privkey.pem'
+
+            dest = os.path.join(tmpdir, 'dest')
+            os.makedirs(dest)
+            gen._copy_certs(dest, '')
+
+            assert os.path.isfile(os.path.join(dest, 'cert.pem'))
+            assert os.path.isfile(os.path.join(dest, 'privkey.pem'))
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_copy_certs_with_suffix_copies_to_subdir():
+    """_copy_certs with a job_suffix copies files into a suffix-named subdirectory."""
+    gen, _p = _make_generator()
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_dir = os.path.join(tmpdir, 'src')
+            os.makedirs(src_dir)
+            open(os.path.join(src_dir, 'cert.pem'), 'w').close()
+            open(os.path.join(src_dir, 'privkey.pem'), 'w').close()
+
+            gen.attr['tlsKeyPath'] = src_dir
+            gen.attr['tlsCertFile'] = 'cert.pem'
+            gen.attr['tlsKeyFile'] = 'privkey.pem'
+
+            dest = os.path.join(tmpdir, 'dest')
+            os.makedirs(dest)
+            gen._copy_certs(dest, '_cluster2')
+
+            subdir = os.path.join(dest, 'cluster2')
+            assert os.path.isfile(os.path.join(subdir, 'cert.pem'))
+            assert os.path.isfile(os.path.join(subdir, 'privkey.pem'))
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_copy_certs_creates_subdir_if_missing():
+    """_copy_certs creates the subdirectory if it does not yet exist."""
+    gen, _p = _make_generator()
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_dir = os.path.join(tmpdir, 'src')
+            os.makedirs(src_dir)
+            open(os.path.join(src_dir, 'cert.pem'), 'w').close()
+            open(os.path.join(src_dir, 'privkey.pem'), 'w').close()
+
+            gen.attr['tlsKeyPath'] = src_dir
+            gen.attr['tlsCertFile'] = 'cert.pem'
+            gen.attr['tlsKeyFile'] = 'privkey.pem'
+
+            dest = os.path.join(tmpdir, 'newdir')   # does not exist yet
+            gen._copy_certs(dest, '_clusterA')
+
+            subdir = os.path.join(dest, 'clusterA')
+            assert os.path.isdir(subdir)
+            assert os.path.isfile(os.path.join(subdir, 'cert.pem'))
+    finally:
+        _p.stop()
+
+
+@with_setup(my_setup)
+def test_copy_certs_io_error_raises_500():
+    """_copy_certs raises cherrypy.HTTPError(500) when shutil.copy2 fails."""
+    gen, _p = _make_generator()
+    try:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            src_dir = os.path.join(tmpdir, 'src')
+            os.makedirs(src_dir)
+            open(os.path.join(src_dir, 'cert.pem'), 'w').close()
+            open(os.path.join(src_dir, 'privkey.pem'), 'w').close()
+
+            gen.attr['tlsKeyPath'] = src_dir
+            gen.attr['tlsCertFile'] = 'cert.pem'
+            gen.attr['tlsKeyFile'] = 'privkey.pem'
+
+            with mock.patch('shutil.copy2', side_effect=OSError('permission denied')):
+                try:
+                    gen._copy_certs(tmpdir, '')
+                    assert False, 'Expected cherrypy.HTTPError'
+                except cherrypy.HTTPError as e:
+                    assert e.status == 500
+    finally:
+        _p.stop()
+
+
+# ---------------------------------------------------------------------------
+# TlsCertsServer
+# ---------------------------------------------------------------------------
+
+from source.confgenerator import TlsCertsServer
+
+
+def _make_tls_server(src_dir, cert_file='cert.pem', key_file='privkey.pem'):
+    """Return a TlsCertsServer pointing at real cert/key files in src_dir."""
+    logger = logging.getLogger(__name__)
+    config_attr = {
+        'protocol': 'https',
+        'tlsKeyPath': src_dir,
+        'tlsCertFile': cert_file,
+        'tlsKeyFile': key_file,
+    }
+    return TlsCertsServer(logger, config_attr)
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_no_suffix_archive_contains_flat_files():
+    """GET /tls_certs with no suffix returns a tar.gz with cert and key at the root."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        open(os.path.join(tmpdir, 'cert.pem'), 'w').write('CERT')
+        open(os.path.join(tmpdir, 'privkey.pem'), 'w').write('KEY')
+        srv = _make_tls_server(tmpdir)
+        data = srv._build_archive('')
+        buf = io.BytesIO(data)
+        with tarfile.open(fileobj=buf, mode='r:gz') as tar:
+            names = tar.getnames()
+        assert 'cert.pem' in names
+        assert 'privkey.pem' in names
+        assert not any('/' in n for n in names), f"Expected flat archive, got {names}"
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_with_suffix_archive_uses_subdir():
+    """GET /tls_certs?job_suffix=_cluster2 returns archive with files in cluster2/."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        open(os.path.join(tmpdir, 'cert.pem'), 'w').write('CERT')
+        open(os.path.join(tmpdir, 'privkey.pem'), 'w').write('KEY')
+        srv = _make_tls_server(tmpdir)
+        data = srv._build_archive('_cluster2')
+        buf = io.BytesIO(data)
+        with tarfile.open(fileobj=buf, mode='r:gz') as tar:
+            names = tar.getnames()
+        assert 'cluster2/cert.pem' in names
+        assert 'cluster2/privkey.pem' in names
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_archive_members_use_forward_slash():
+    """Archive member names always use '/' (tar convention), not OS sep."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        open(os.path.join(tmpdir, 'cert.pem'), 'w').write('CERT')
+        open(os.path.join(tmpdir, 'privkey.pem'), 'w').write('KEY')
+        srv = _make_tls_server(tmpdir)
+        data = srv._build_archive('_cluster2')
+        buf = io.BytesIO(data)
+        with tarfile.open(fileobj=buf, mode='r:gz') as tar:
+            names = tar.getnames()
+        for name in names:
+            assert '\\' not in name, f"Backslash found in archive member name: {name!r}"
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_validate_raises_503_when_http():
+    """_validate_tls_config raises HTTPError(503) when protocol is http."""
+    logger = logging.getLogger(__name__)
+    srv = TlsCertsServer(logger, {'protocol': 'http',
+                                  'tlsKeyPath': '/some/path',
+                                  'tlsCertFile': 'cert.pem',
+                                  'tlsKeyFile': 'privkey.pem'})
+    try:
+        srv._validate_tls_config()
+        assert False, 'Expected cherrypy.HTTPError'
+    except cherrypy.HTTPError as e:
+        assert e.status == 503
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_validate_raises_503_when_incomplete():
+    """_validate_tls_config raises HTTPError(503) when tlsKeyPath is missing."""
+    logger = logging.getLogger(__name__)
+    srv = TlsCertsServer(logger, {'protocol': 'https',
+                                  'tlsKeyPath': None,
+                                  'tlsCertFile': 'cert.pem',
+                                  'tlsKeyFile': 'privkey.pem'})
+    try:
+        srv._validate_tls_config()
+        assert False, 'Expected cherrypy.HTTPError'
+    except cherrypy.HTTPError as e:
+        assert e.status == 503
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_parse_invalid_suffix_raises_400():
+    """_parse_job_suffix raises HTTPError(400) for an invalid job_suffix."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        open(os.path.join(tmpdir, 'cert.pem'), 'w').write('')
+        open(os.path.join(tmpdir, 'privkey.pem'), 'w').write('')
+        srv = _make_tls_server(tmpdir)
+        try:
+            srv._parse_job_suffix({'job_suffix': 'bad suffix!'})
+            assert False, 'Expected cherrypy.HTTPError'
+        except cherrypy.HTTPError as e:
+            assert e.status == 400
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_build_archive_ioerror_propagates():
+    """_build_archive propagates OSError when a source file is missing."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Do NOT create the cert/key files — they are missing
+        srv = _make_tls_server(tmpdir)
+        try:
+            srv._build_archive('')
+            assert False, 'Expected OSError'
+        except OSError:
+            pass  # expected
+
+
+@with_setup(my_setup)
+def test_tls_certs_server_dot_suffix_stripped():
+    """A leading dot in job_suffix is stripped the same way as underscore."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        open(os.path.join(tmpdir, 'cert.pem'), 'w').write('CERT')
+        open(os.path.join(tmpdir, 'privkey.pem'), 'w').write('KEY')
+        srv = _make_tls_server(tmpdir)
+        data = srv._build_archive('.prod')
+        buf = io.BytesIO(data)
+        with tarfile.open(fileobj=buf, mode='r:gz') as tar:
+            names = tar.getnames()
+        assert 'prod/cert.pem' in names
+        assert 'prod/privkey.pem' in names

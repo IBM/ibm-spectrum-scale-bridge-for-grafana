@@ -36,7 +36,7 @@ from __version__ import __version__
 from messages import ERR, MSG
 from bridgeLogger import configureLogging, getBridgeLogger
 from confParser import getSettings
-from confgenerator import PrometheusConfigGenerator
+from confgenerator import PrometheusConfigGenerator, TlsCertsServer
 from metadata import MetadataHandler
 from opentsdb import OpenTsdbApi
 from prometheus import PrometheusExporter
@@ -404,6 +404,12 @@ def main(argv):
                                  }
                                 )
             cherrypy.tree.mount(conf_generator, '/scrape_configs.yml',
+                                {'/':
+                                 {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
+                                 }
+                                )
+            tls_certs_server = TlsCertsServer(logger, args)
+            cherrypy.tree.mount(tls_certs_server, '/tls_certs',
                                 {'/':
                                  {'request.dispatch': cherrypy.dispatch.MethodDispatcher()}
                                  }
