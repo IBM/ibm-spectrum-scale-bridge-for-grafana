@@ -24,6 +24,7 @@ import cherrypy
 import re
 import json
 import sys
+import time
 import analytics
 from functools import lru_cache
 from messages import ERR, MSG
@@ -44,6 +45,7 @@ T = TypeVar('T', dict, list)
 _opentsdb_bundle_registry: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 _registry_lock = Lock()
 _MAX_REGISTRY_SIZE = 100  # Keep last 100 bundle_ids for debugging
+DEFAULT_ACTIVE_WINDOW_SECONDS = 300  # A bundle is "active" if it was requested within the last 5 minutes
 
 
 def _normalize_query(query: dict) -> dict:
@@ -136,16 +138,19 @@ def _register_bundle_id(bundle_id: str, queries: List[dict], host: str, jreq: di
         jreq: Full request dictionary used to extract start and end values
     """
     with _registry_lock:
+        now = time.time()
         # If bundle_id already exists, move it to end (most recent)
         if bundle_id in _opentsdb_bundle_registry:
             _opentsdb_bundle_registry.move_to_end(bundle_id)
+            _opentsdb_bundle_registry[bundle_id]['last_seen'] = now
         else:
             # Add new entry
             _opentsdb_bundle_registry[bundle_id] = {
                 'queries': queries,
                 'host': host,
                 'start': jreq.get('start'),
-                'end': jreq.get('end')
+                'end': jreq.get('end'),
+                'last_seen': now
             }
 
             # Evict oldest entry if size limit exceeded
@@ -190,19 +195,24 @@ def clear_bundle_registry():
         _opentsdb_bundle_registry.clear()
 
 
-def get_bundle_registry_stats() -> Dict[str, Any]:
+def get_bundle_registry_stats(active_window_seconds: int = DEFAULT_ACTIVE_WINDOW_SECONDS) -> Dict[str, Any]:
     """
     Get statistics about the bundle ID registry.
+    Args:
+        active_window_seconds: A bundle counts as active if it was requested within this many seconds
     Returns:
         Dictionary with registry statistics
     """
+    cutoff = time.time() - active_window_seconds
     with _registry_lock:
+        active_size = sum(1 for info in _opentsdb_bundle_registry.values() if info.get('last_seen', 0) >= cutoff)
         memory_size = sys.getsizeof(_opentsdb_bundle_registry) + sum(
             sys.getsizeof(bundle_id) + sys.getsizeof(bundle_info)
             for bundle_id, bundle_info in _opentsdb_bundle_registry.items()
         )
         return {
             'size': len(_opentsdb_bundle_registry),
+            'active_size': active_size,
             'max_size': _MAX_REGISTRY_SIZE,
             'memory_size': memory_size,
             'bundle_ids': list(_opentsdb_bundle_registry.keys())

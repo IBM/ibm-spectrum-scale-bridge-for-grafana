@@ -23,6 +23,7 @@ Created on Oct 30, 2023
 import cherrypy
 import json
 import sys
+import time
 import analytics
 from functools import lru_cache
 from messages import ERR, MSG
@@ -42,6 +43,7 @@ from utils import execution_time, cond_execution_time, get_request_host
 _prometheus_bundle_registry: OrderedDict[str, Dict[str, Any]] = OrderedDict()
 _prometheus_registry_lock = Lock()
 _PROMETHEUS_MAX_REGISTRY_SIZE = 100  # Keep last 100 bundle_ids for debugging
+DEFAULT_ACTIVE_WINDOW_SECONDS = 300  # A bundle is "active" if it was requested within the last 5 minutes
 
 
 def _normalize_prometheus_request(sensors: list, filters: Optional[dict] = None) -> dict:
@@ -124,15 +126,18 @@ def _register_prometheus_bundle_id(bundle_id: str, sensors: list, filters: Optio
         host: Request host
     """
     with _prometheus_registry_lock:
+        now = time.time()
         # If bundle_id already exists, move it to end (most recent)
         if bundle_id in _prometheus_bundle_registry:
             _prometheus_bundle_registry.move_to_end(bundle_id)
+            _prometheus_bundle_registry[bundle_id]['last_seen'] = now
         else:
             # Add new entry
             _prometheus_bundle_registry[bundle_id] = {
                 'sensors': sensors,
                 'filters': filters if filters else {},
-                'host': host
+                'host': host,
+                'last_seen': now
             }
 
             # Evict oldest entry if size limit exceeded
@@ -178,19 +183,24 @@ def clear_prometheus_bundle_registry():
         _prometheus_bundle_registry.clear()
 
 
-def get_prometheus_bundle_registry_stats() -> Dict[str, Any]:
+def get_prometheus_bundle_registry_stats(active_window_seconds: int = DEFAULT_ACTIVE_WINDOW_SECONDS) -> Dict[str, Any]:
     """
     Get statistics about the Prometheus bundle ID registry.
+    Args:
+        active_window_seconds: A bundle counts as active if it was requested within this many seconds
     Returns:
         Dictionary with registry statistics
     """
+    cutoff = time.time() - active_window_seconds
     with _prometheus_registry_lock:
+        active_size = sum(1 for info in _prometheus_bundle_registry.values() if info.get('last_seen', 0) >= cutoff)
         memory_size = sys.getsizeof(_prometheus_bundle_registry) + sum(
             sys.getsizeof(bundle_id) + sys.getsizeof(bundle_info)
             for bundle_id, bundle_info in _prometheus_bundle_registry.items()
         )
         return {
             'size': len(_prometheus_bundle_registry),
+            'active_size': active_size,
             'max_size': _PROMETHEUS_MAX_REGISTRY_SIZE,
             'memory_size': memory_size,
             'bundle_ids': list(_prometheus_bundle_registry.keys())
