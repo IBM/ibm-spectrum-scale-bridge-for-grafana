@@ -403,6 +403,7 @@ class PrometheusExporter(object):
                 try:
                     from stats import get_metrics_collector
                     import threading
+                    get_metrics_collector().add_response_bytes(len(resString.encode('utf-8')))
                     current = threading.current_thread()
                     if current.ident in self.internal_metrics:
                         metrics = self.internal_metrics.pop(current.ident)

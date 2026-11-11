@@ -91,7 +91,7 @@ class HTTPMetricsCollector:
         self.lock = Lock()
 
         # Aggregated statistics
-        self.stats = {'total_requests': 0}
+        self.stats = {'total_requests': 0, 'total_response_bytes': 0}
 
         # Cleanup timer
         self._cleanup_timer: Optional[Timer] = None
@@ -120,6 +120,11 @@ class HTTPMetricsCollector:
 
             # Update aggregated statistics
             self.stats['total_requests'] += 1
+
+    def add_response_bytes(self, size: int):
+        """Add the size in bytes of a response returned by the bridge to Prometheus/Grafana."""
+        with self.lock:
+            self.stats['total_response_bytes'] += size
 
     def cleanup_old_metrics(self):
         """Remove metrics older than retention_seconds"""
@@ -219,7 +224,7 @@ class HTTPMetricsCollector:
             stats_copy = {
                 'total_requests': self.stats['total_requests'],
                 # 'total_request_bytes': self.stats['total_request_bytes'],
-                # 'total_response_bytes': self.stats['total_response_bytes'],
+                'total_response_bytes': self.stats['total_response_bytes'],
                 # 'total_transfer_bytes': self.stats['total_request_bytes'] + self.stats['total_response_bytes'],
                 # 'by_endpoint': dict(self.stats['by_endpoint']),
                 # 'by_status': dict(self.stats['by_status']),
@@ -529,6 +534,7 @@ class HTTPMetricsCollector:
             self.metrics.clear()
             self.stats = {
                 'total_requests': 0,
+                'total_response_bytes': 0,
             }
 
 
