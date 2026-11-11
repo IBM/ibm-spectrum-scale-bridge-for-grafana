@@ -63,6 +63,18 @@ def _proc_threads(pid):
     return None
 
 
+def _system_total_mb():
+    """Read MemTotal from /proc/meminfo. Returns float MB or None."""
+    try:
+        with open('/proc/meminfo') as f:
+            for line in f:
+                if line.startswith('MemTotal:'):
+                    return round(int(line.split()[1]) / 1024, 1)
+    except (OSError, ValueError, IndexError):
+        pass
+    return None
+
+
 def _cgroup_memory():
     """
     Read container memory limit and current usage from cgroups v2.
@@ -111,6 +123,10 @@ def collect_process_info():
     rss = _proc_rss_mb(pid)
     if rss is not None:
         memory['rss_mb'] = rss
+        total = _system_total_mb()
+        if total:
+            memory['system_total_mb'] = total
+            memory['rss_percent'] = round(rss / total * 100, 2)
     memory.update(_cgroup_memory())
     if memory:
         info['memory'] = memory

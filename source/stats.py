@@ -171,14 +171,20 @@ class HTTPMetricsCollector:
             return metrics_list
 
     def get_metrics_last_5_minutes(self) -> List['HTTPRequestMetric']:
+        """Get metrics from the last 5 minutes."""
+        return self.get_metrics_last_seconds(300)
+
+    def get_metrics_last_seconds(self, window_seconds: int = 300) -> List['HTTPRequestMetric']:
         """
-        Get metrics from the last 5 minutes.
+        Get metrics from the last window_seconds seconds.
         This method leverages the fact that metrics are stored in chronological order
         (oldest first) in the deque, allowing for efficient filtering.
+        Args:
+            window_seconds: Size of the time window in seconds (default: 300 = 5 minutes)
         Returns:
-            List of HTTPRequestMetric objects with timestamps from the last 5 minutes
+            List of HTTPRequestMetric objects with timestamps from the requested window
         """
-        cutoff_time = time.time() - 300  # 300 seconds = 5 minutes
+        cutoff_time = time.time() - window_seconds
         # print(f"cutoff_time: {cutoff_time}")
         # print(f"cutoff_time int: {(int(time.time()) * 1000) - 300}")
 
@@ -199,9 +205,12 @@ class HTTPMetricsCollector:
             # Extract only the metrics dict from matching HTTPRequestMetric objects
             return metrics_list[left:]
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self, active_window_seconds: int = 300) -> Dict:
         """
         Get aggregated statistics.
+        Args:
+            active_window_seconds: A bundle ID counts as active if it was requested within
+                                   this many seconds (default: 300 = 5 minutes)
         Returns:
             Dictionary containing aggregated statistics
         """
@@ -222,11 +231,13 @@ class HTTPMetricsCollector:
             from opentsdb import get_bundle_registry_stats
             from prometheus import get_prometheus_bundle_registry_stats
 
-            opentsdb_stats = get_bundle_registry_stats()
-            prometheus_stats = get_prometheus_bundle_registry_stats()
+            opentsdb_stats = get_bundle_registry_stats(active_window_seconds)
+            prometheus_stats = get_prometheus_bundle_registry_stats(active_window_seconds)
 
             opentsdb_count = opentsdb_stats.get('size', 0)
             prometheus_count = prometheus_stats.get('size', 0)
+            opentsdb_active = opentsdb_stats.get('active_size', 0)
+            prometheus_active = prometheus_stats.get('active_size', 0)
             opentsdb_memory_size = opentsdb_stats.get('memory_size', 0)
             prometheus_memory_size = prometheus_stats.get('memory_size', 0)
 
@@ -234,6 +245,9 @@ class HTTPMetricsCollector:
                 'opentsdb_bundle_ids_count': opentsdb_count,
                 'prometheus_bundle_ids_count': prometheus_count,
                 'bundle_ids_count_total': opentsdb_count + prometheus_count,
+                'opentsdb_bundle_ids_active_count': opentsdb_active,
+                'prometheus_bundle_ids_active_count': prometheus_active,
+                'bundle_ids_active_count_total': opentsdb_active + prometheus_active,
                 'opentsdb_bundle_registry_memory_size': opentsdb_memory_size,
                 'prometheus_bundle_registry_memory_size': prometheus_memory_size,
                 'bundle_registry_memory_size_total': opentsdb_memory_size + prometheus_memory_size,
@@ -248,15 +262,16 @@ class HTTPMetricsCollector:
 
         return stats_copy
 
-    def get_metrics_prometheus(self, metric_prefix='grafana_bridge') -> List[str]:
+    def get_metrics_prometheus(self, metric_prefix='grafana_bridge', window_seconds: int = 300) -> List[str]:
         """
-        Generate Prometheus exposition format metrics from the last 5 minutes.
+        Generate Prometheus exposition format metrics from the last window_seconds seconds.
         Args:
             metric_prefix: Prefix for metric names (currently unused)
+            window_seconds: Size of the time window in seconds (default: 300 = 5 minutes)
         Returns:
             List of formatted metric lines in Prometheus exposition format
         """
-        metrics = self.get_metrics_last_5_minutes()
+        metrics = self.get_metrics_last_seconds(window_seconds)
         # Use defaultdict to avoid setdefault calls
         merged: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
         for metric in metrics:
@@ -458,9 +473,9 @@ class HTTPMetricsCollector:
         metrics = _recurse(stats, prefix)
         return metrics, labels
 
-    def get_statistics_prometheus(self, metric_prefix='grafana_bridge_internal') -> str:
+    def get_statistics_prometheus(self, metric_prefix='grafana_bridge_internal', active_window_seconds: int = 300) -> str:
         """Render get_statistics() as Prometheus exposition text."""
-        stats = self.get_statistics()
+        stats = self.get_statistics(active_window_seconds)
         ts = int(time.time() * 1000)
         metrics, labels = self._flatten_stats(stats)
         label_str = ','.join(f'{k}="{v}"' for k, v in labels.items())
@@ -475,10 +490,11 @@ class HTTPMetricsCollector:
         return '\n'.join(lines) + '\n'
 
     def get_statistics_opentsdb(self, metric_prefix='grafana_bridge_internal',
-                                ms_resolution: bool = False) -> List[Dict[str, Any]]:
+                                ms_resolution: bool = False,
+                                active_window_seconds: int = 300) -> List[Dict[str, Any]]:
         """Render get_statistics() as an OpenTSDB-style dps response.
         The dps timestamps are in seconds (OpenTSDB default), or in milliseconds if ms_resolution is True."""
-        stats = self.get_statistics()
+        stats = self.get_statistics(active_window_seconds)
         now = time.time()
         ts_key = str(int(now * 1000) if ms_resolution else int(now))
         metrics, labels = self._flatten_stats(stats)
@@ -492,11 +508,11 @@ class HTTPMetricsCollector:
             })
         return result
 
-    def get_statistics_csv(self) -> str:
+    def get_statistics_csv(self, active_window_seconds: int = 300) -> str:
         """Render get_statistics() as CSV with columns: timestamp, pid, metric, value."""
         import csv
         from io import StringIO
-        stats = self.get_statistics()
+        stats = self.get_statistics(active_window_seconds)
         ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         metrics, labels = self._flatten_stats(stats)
         pid = labels.get('pid', '')
@@ -542,6 +558,8 @@ class HTTPMetricsAPI:
         Query parameters:
             format: 'prometheus' (default), 'json', 'csv', 'opentsdb' (for /http_metrics and /internal_stats)
             msResolution: 'true' returns opentsdb dps timestamps in milliseconds, default 'false' (seconds)
+            window: Time window in seconds for prometheus format (for /http_metrics), default 300
+            active_window: Seconds within which a bundle ID counts as active (for /internal_stats), default 300
             limit: Number of recent metrics to return (for json format)
             bundle_id: Specific bundle ID to retrieve (for /bundle_ids)
             registry: 'opentsdb', 'prometheus', or 'all' (default 'all') (for /bundle_ids)
@@ -611,8 +629,15 @@ class HTTPMetricsAPI:
             if format not in supported_formats:
                 raise cherrypy.HTTPError(400, f"Unsupported format '{format}'. Supported formats: {', '.join(supported_formats)}")
             try:
+                window_seconds = int(params.get('window', 300))
+                self.logger.info(f'/http_metrics window: {window_seconds}')
+            except (TypeError, ValueError):
+                raise cherrypy.HTTPError(400, "Parameter 'window' must be an integer number of seconds")
+            if window_seconds < 1:
+                raise cherrypy.HTTPError(400, "Parameter 'window' must be greater than 0")
+            try:
                 if format == 'prometheus':
-                    metrics_lines = self.collector.get_metrics_prometheus()
+                    metrics_lines = self.collector.get_metrics_prometheus(window_seconds=window_seconds)
                     cherrypy.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
                     resString = '\n'.join(metrics_lines) + '\n'
                     return resString
@@ -641,19 +666,26 @@ class HTTPMetricsAPI:
             if format not in supported_formats:
                 raise cherrypy.HTTPError(400, f"Unsupported format '{format}'. Supported formats: {', '.join(supported_formats)}")
             try:
+                active_window = int(params.get('active_window', 300))
+            except (TypeError, ValueError):
+                raise cherrypy.HTTPError(400, "Parameter 'active_window' must be an integer number of seconds")
+            if active_window < 1:
+                raise cherrypy.HTTPError(400, "Parameter 'active_window' must be greater than 0")
+            try:
                 if format == 'prometheus':
                     cherrypy.response.headers['Content-Type'] = 'text/plain; charset=utf-8'
-                    return self.collector.get_statistics_prometheus()
+                    return self.collector.get_statistics_prometheus(active_window_seconds=active_window)
                 elif format == 'opentsdb':
                     cherrypy.response.headers['Content-Type'] = 'application/json'
-                    return json.dumps(self.collector.get_statistics_opentsdb(ms_resolution=ms_resolution))
+                    return json.dumps(self.collector.get_statistics_opentsdb(
+                        ms_resolution=ms_resolution, active_window_seconds=active_window))
                 elif format == 'csv':
                     cherrypy.response.headers['Content-Type'] = 'text/csv; charset=utf-8'
                     cherrypy.response.headers['Content-Disposition'] = 'attachment; filename="internal_stats.csv"'
-                    return self.collector.get_statistics_csv()
+                    return self.collector.get_statistics_csv(active_window_seconds=active_window)
                 else:  # json
                     cherrypy.response.headers['Content-Type'] = 'application/json'
-                    return json.dumps(self.collector.get_statistics())
+                    return json.dumps(self.collector.get_statistics(active_window_seconds=active_window))
             except Exception as e:
                 self.logger.error(f'Error retrieving internal stats: {e}')
                 raise cherrypy.HTTPError(500, f'Error retrieving internal stats: {str(e)}')
