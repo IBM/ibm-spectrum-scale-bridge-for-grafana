@@ -256,6 +256,15 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         self.assertIn('metrics_in_memory_size', stats)
         self.assertGreater(stats['metrics_in_memory_size'], 0)
 
+    def test_add_response_bytes(self):
+        """add_response_bytes accumulates into total_response_bytes, reset clears it"""
+        self.assertEqual(self.collector.get_statistics()['total_response_bytes'], 0)
+        self.collector.add_response_bytes(100)
+        self.collector.add_response_bytes(50)
+        self.assertEqual(self.collector.get_statistics()['total_response_bytes'], 150)
+        self.collector.reset_statistics()
+        self.assertEqual(self.collector.get_statistics()['total_response_bytes'], 0)
+
     def test_flatten_stats_extracts_pid_as_label(self):
         """pid must appear as a label, not as a metric value"""
         import os
@@ -289,7 +298,9 @@ class TestHTTPMetricsCollector(unittest.TestCase):
         """Prometheus output must contain TYPE lines and pid label"""
         self.collector.record_metric(self.labels, self.metrics)
         output = self.collector.get_statistics_prometheus()
-        self.assertIn('# TYPE grafana_bridge_internal_total_requests gauge', output)
+        self.assertIn('# TYPE grafana_bridge_internal_total_requests counter', output)
+        self.assertIn('# TYPE grafana_bridge_internal_total_response_bytes counter', output)
+        self.assertIn('# TYPE grafana_bridge_internal_metrics_in_memory_count gauge', output)
         self.assertIn('pid="', output)
         # must end with newline
         self.assertTrue(output.endswith('\n'))
