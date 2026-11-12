@@ -700,6 +700,9 @@ class OpenTsdbApi(object):
             if analytics.http_metrics_enabled:
                 try:
                     import threading
+                    from stats import get_metrics_collector
+                    # json_out serializes resp after this method returns; measure the same JSON encoding
+                    get_metrics_collector().add_response_bytes(len(json.dumps(resp).encode('utf-8')))
                     current = threading.current_thread()
                     if current.ident in self.internal_metrics:
                         metrics = self.internal_metrics.pop(current.ident)
