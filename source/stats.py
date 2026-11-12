@@ -76,6 +76,9 @@ class HTTPMetricsCollector:
     by running a background cleanup task at regular intervals (cleanup_interval).
     """
 
+    # Statistics that only increase while the process is running (exposed as Prometheus counters)
+    COUNTER_STATS = ('total_requests', 'total_response_bytes')
+
     def __init__(self, max_history: int = 1000, retention_seconds: int = 3600, cleanup_interval: int = 300):
         """
         Initialize the metrics collector.
@@ -487,7 +490,8 @@ class HTTPMetricsCollector:
         lines = []
         for name, val in metrics:
             full_name = f'{metric_prefix}_{name}'
-            lines.append(f'# TYPE {full_name} gauge')
+            metric_type = 'counter' if name in self.COUNTER_STATS else 'gauge'
+            lines.append(f'# TYPE {full_name} {metric_type}')
             if label_str:
                 lines.append(f'{full_name}{{{label_str}}} {val} {ts}')
             else:
